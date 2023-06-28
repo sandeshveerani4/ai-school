@@ -11,6 +11,7 @@ import Dashboard from "@mui/icons-material/Dashboard";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import MenuIcon from "@mui/icons-material/Menu";
+import Question from "@mui/icons-material/QuestionMark";
 import PersonIcon from "@mui/icons-material/Person";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import GroupsIcon from "@mui/icons-material/Groups";
@@ -76,6 +77,13 @@ const menuItems: MenuItem[] = [
     path: "/dashboard/classes",
     icon: <ClassIcon />,
     roles: ["ADMIN", "TEACHER"],
+  },
+  {
+    id: 6,
+    name: "Questions",
+    path: "/dashboard/questions",
+    icon: <Question />,
+    roles: ["ADMIN","TEACHER"],
   },
 ];
 const getValueFromPath = (path: string) => {
