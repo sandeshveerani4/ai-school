@@ -22,9 +22,10 @@ import Typography from "@mui/material/Typography";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { Metadata } from "next";
-import { signOut, useSession } from "next-auth/react";
+import { signOut } from "next-auth/react";
 import { config } from "@/consts";
 import Loading from "@/app/dashboard/loading";
+import { CircularProgress } from "@mui/material";
 
 export const metadata: Metadata = {
   title: "Dashboard",
@@ -83,7 +84,7 @@ const menuItems: MenuItem[] = [
     name: "Questions",
     path: "/dashboard/questions",
     icon: <Question />,
-    roles: ["ADMIN","TEACHER"],
+    roles: ["ADMIN", "TEACHER"],
   },
 ];
 const getValueFromPath = (path: string) => {
@@ -91,12 +92,7 @@ const getValueFromPath = (path: string) => {
   return match.length > 2 ? match[2] : match[1];
 };
 const DashboardLayout = (props: Props) => {
-  const { data: session, status, update } = useSession();
-
-  React.useEffect(() => {
-    const interval = setInterval(() => update(), 1000 * 60 * 60);
-    return () => clearInterval(interval);
-  }, [update]);
+  const [loading, setLoading] = React.useState(false);
 
   const currentPage = usePathname();
 
@@ -144,10 +140,16 @@ const DashboardLayout = (props: Props) => {
             size="large"
             color="light"
             sx={buttonSx}
-            onClick={() => signOut()}
+            onClick={() => {
+              setLoading(true);
+              signOut().finally(() => setLoading(false));
+            }}
+            {...(loading && {
+              disabled: true,
+            })}
             fullWidth
           >
-            <LogoutIcon />
+            {loading ? <CircularProgress size={20} /> : <LogoutIcon />}
             Log Out
           </Button>
         </ListItem>
