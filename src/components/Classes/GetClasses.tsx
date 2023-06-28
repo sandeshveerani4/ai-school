@@ -21,7 +21,7 @@ export const getClasses = async (token: string) => {
     },
     cache: "no-store",
   };
-  const res = await fetch(`http://localhost:3000/api/classes/`, options);
+  const res = await fetch(`/api/classes/`, options);
   return await res.json();
 };
 export const getSections = async (token: string, classId: number) => {
@@ -32,10 +32,7 @@ export const getSections = async (token: string, classId: number) => {
     },
     cache: "no-store",
   };
-  const res = await fetch(
-    `http://localhost:3000/api/classes/sections?classId=${classId}`,
-    options
-  );
+  const res = await fetch(`/api/classes/sections?classId=${classId}`, options);
   return await res.json();
 };
 const GetClasses = () => {

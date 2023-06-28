@@ -22,7 +22,7 @@ export const getTeachers = async (token: string) => {
     },
     cache: "no-store",
   };
-  const res = await fetch(`http://localhost:3000/api/teachers/`, options);
+  const res = await fetch(`/api/teachers/`, options);
   return await res.json();
 };
 const GetTeachers = () => {

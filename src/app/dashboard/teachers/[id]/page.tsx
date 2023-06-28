@@ -12,7 +12,7 @@ const getTeacher = async (token: string, id: string) => {
     },
     cache: "no-store",
   };
-  const res = await fetch(`http://localhost:3000/api/teachers/${id}`, options);
+  const res = await fetch(`/api/teachers/${id}`, options);
   return await res.json();
 };
 const ParticularTeacher = ({ params }: { params: { id: string } }) => {

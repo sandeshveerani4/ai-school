@@ -17,7 +17,7 @@ const ParticularStudent = ({ params }: { params: { id: string } }) => {
       cache: "no-store",
     };
     const res = await fetch(
-      `http://localhost:3000/api/students/${params.id}`,
+      `/api/students/${params.id}`,
       options
     );
     return await res.json();

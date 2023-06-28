@@ -22,7 +22,7 @@ export const getStudents = async (token: string) => {
     },
     cache: "no-store",
   };
-  const res = await fetch(`http://localhost:3000/api/students/`, options);
+  const res = await fetch(`/api/students/`, options);
   return await res.json();
 };
 const GetStudents = () => {

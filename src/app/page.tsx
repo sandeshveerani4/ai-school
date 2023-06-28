@@ -1,7 +1,8 @@
 "use client";
 import { config } from "@/consts";
 import { Button, Grid, Stack } from "@mui/material";
-import { signIn } from "next-auth/react";
+import Link from "next/link";
+import { redirect } from "next/navigation";
 
 export default function Home() {
   return (
@@ -12,13 +13,16 @@ export default function Home() {
       justifyContent="center"
       direction="column"
     >
-      <h1>Welcome.</h1>
+      <h1>{config.site.name}</h1>
       <Stack direction="row" columnGap={1}>
-        <Button variant="contained" onClick={() => signIn()}>
-          Students Portal
+        <Button
+          variant="contained"
+          color="secondary"
+          LinkComponent={Link}
+          href="/login"
+        >
+          Login
         </Button>
-        <Button variant="outlined">Admin Portal</Button>
-        <Button variant="outlined">Teachers Portal</Button>
       </Stack>
     </Grid>
   );
