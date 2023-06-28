@@ -1,0 +1,77 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  username  String   @unique
+  password  String
+  role      Role     @default(STUDENT)
+  profile   Profile?
+  student   Student?
+  teacher   Teacher?
+  admin     Admin?
+  createdAt DateTime @default(now())
+}
+
+model Admin {
+  id     Int  @id @default(autoincrement())
+  user   User @relation(fields: [userId], references: [id])
+  userId Int  @unique
+}
+
+model Student {
+  userId    Int      @id @default(autoincrement())
+  user      User     @relation(fields: [userId], references: [id])
+  class     Class?   @relation(fields: [classId], references: [id])
+  classId   Int
+  section   Section? @relation(fields: [sectionId], references: [id])
+  sectionId Int?
+}
+
+model Teacher {
+  userId Int     @id @default(autoincrement())
+  user   User    @relation(fields: [userId], references: [id])
+  class  Class[]
+}
+
+model Class {
+  id           Int       @id @default(autoincrement())
+  name         String
+  rank         Int
+  students     Student[]
+  sections     Section[]
+  classTeacher Teacher?  @relation(fields: [teacherId], references: [userId])
+  teacherId    Int?
+}
+
+model Section {
+  id       Int       @id @default(autoincrement())
+  name     String
+  class    Class     @relation(fields: [classId], references: [id])
+  classId  Int
+  Students Student[]
+}
+
+model Profile {
+  userId        Int       @id @default(autoincrement())
+  first_name    String?
+  last_name     String?
+  date_of_birth DateTime? @default(now()) @db.Date
+  pictureURL    String?
+  user          User      @relation(fields: [userId], references: [id])
+}
+
+enum Role {
+  STUDENT
+  TEACHER
+  ADMIN
+}
