@@ -25,6 +25,19 @@ export const getStudents = async (token: string) => {
   const res = await fetch(`/api/students/`, options);
   return await res.json();
 };
+export const deleteStudent = async (token: string, id: string) => {
+  const options: RequestInit = {
+    headers: {
+      "Content-Type": "application/json",
+      authorization: token,
+    },
+    method: "DELETE",
+    cache: "no-store",
+  };
+  const res = await fetch(`/api/students/${id}`, options);
+  return await res.json();
+};
+
 const GetStudents = ({
   data,
   setData,
@@ -33,15 +46,22 @@ const GetStudents = ({
   setData: React.Dispatch<React.SetStateAction<Student[]>>;
 }) => {
   const [loading, setLoading] = useState(true);
-
+  const deleteStd = async (id: number) => {
+    const session = await getSession();
+    if (session) {
+      await deleteStudent(session?.user.accessToken, String(id));
+      loadData();
+    }
+  };
+  const loadData = async () => {
+    const session = await getSession();
+    if (session) {
+      setData(await getStudents(session.user.accessToken));
+      setLoading(false);
+    }
+  };
   useEffect(() => {
-    (async () => {
-      const session = await getSession();
-      if (session) {
-        setData(await getStudents(session.user.accessToken));
-        setLoading(false);
-      }
-    })();
+    loadData();
   }, []);
   return (
     <Box className="w-100 overflow-x-auto">
@@ -80,7 +100,11 @@ const GetStudents = ({
                     >
                       View Details
                     </Button>
-                    <Button variant="outlined" color="error">
+                    <Button
+                      variant="outlined"
+                      onClick={() => deleteStd(data.id)}
+                      color="error"
+                    >
                       Delete
                     </Button>
                   </TableCell>
