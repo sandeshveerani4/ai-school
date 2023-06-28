@@ -1,3 +1,4 @@
+import { config } from "@/consts";
 import { NextAuthOptions } from "next-auth";
 import NextAuth from "next-auth/next";
 import CredentialsProvider from "next-auth/providers/credentials";
@@ -23,7 +24,7 @@ const authOptions: NextAuthOptions = {
       },
       async authorize(credentials, req) {
         // Add logic here to look up the user from the credentials supplied
-        const res = await fetch("/api/login", {
+        const res = await fetch(`${config.site.url}/api/login`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
