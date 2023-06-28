@@ -11,11 +11,8 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import { getSession } from "next-auth/react";
 import Loading from "@/app/dashboard/loading";
-export interface Class {
-  id: number;
-  name: string;
-  rank: number;
-}
+import { Class } from "@prisma/client";
+
 export const getClasses = async (token: string) => {
   const options: RequestInit = {
     headers: {

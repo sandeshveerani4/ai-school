@@ -17,10 +17,10 @@ export async function GET(
       }
     );
   }
-  const students = await prisma.user.findFirst({
-    where: { role: "STUDENT", id: Number(params.id) },
-    include: { profile: true, student: { include: { class: true } } },
+  const teachers = await prisma.user.findFirst({
+    where: { role: "TEACHER", id: Number(params.id) },
+    include: { profile: true },
     orderBy: { id: "desc" },
   });
-  return NextResponse.json(students);
+  return NextResponse.json(teachers);
 }

@@ -12,9 +12,9 @@ import Paper from "@mui/material/Paper";
 import { getSession } from "next-auth/react";
 import Loading from "@/app/dashboard/loading";
 import Link from "next/link";
-import { Student } from "./StudentFields";
+import { Teacher } from "./TeacherFields";
 
-export const getStudents = async (token: string) => {
+export const getTeachers = async (token: string) => {
   const options: RequestInit = {
     headers: {
       "Content-Type": "application/json",
@@ -22,10 +22,10 @@ export const getStudents = async (token: string) => {
     },
     cache: "no-store",
   };
-  const res = await fetch(`http://localhost:3000/api/students/`, options);
+  const res = await fetch(`http://localhost:3000/api/teachers/`, options);
   return await res.json();
 };
-const GetStudents = () => {
+const GetTeachers = () => {
   const [fetchedData, setData] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -33,7 +33,7 @@ const GetStudents = () => {
     (async () => {
       const session = await getSession();
       if (session) {
-        setData(await getStudents(session.user.accessToken));
+        setData(await getTeachers(session.user.accessToken));
         setLoading(false);
       }
     })();
@@ -56,7 +56,7 @@ const GetStudents = () => {
             {!loading && fetchedData.length == 0 ? (
               <Box>No Data Found</Box>
             ) : (
-              fetchedData.map((data: Student, index: number) => (
+              fetchedData.map((data: Teacher, index: number) => (
                 <TableRow
                   key={data.id}
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
@@ -65,12 +65,11 @@ const GetStudents = () => {
                   <TableCell>{data["username"]}</TableCell>
                   <TableCell>{data.profile?.first_name}</TableCell>
                   <TableCell>{data.profile?.last_name}</TableCell>
-                  <TableCell>{data.student?.class?.name}</TableCell>
                   <TableCell>
                     <Button
                       variant="outlined"
                       LinkComponent={Link}
-                      href={`/dashboard/students/${data["id"]}`}
+                      href={`/dashboard/teachers/${data["id"]}`}
                       className="mr-2"
                     >
                       View Details
@@ -89,4 +88,4 @@ const GetStudents = () => {
     </Box>
   );
 };
-export default GetStudents;
+export default GetTeachers;
