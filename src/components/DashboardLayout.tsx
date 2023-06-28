@@ -169,6 +169,7 @@ const DashboardLayout = (props: Props) => {
         sx={{
           width: { sm: `calc(100% - ${drawerWidth}px)` },
           ml: { sm: `${drawerWidth}px` },
+          boxShadow: 'unset!important',
         }}
       >
         <Toolbar className="py-5">
