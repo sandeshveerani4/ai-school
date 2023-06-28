@@ -24,7 +24,7 @@ export const inputProps = {
   },
 };
 export const inputWhite = { background: "white" };
-const TeacherFields = ({ data, ...props }: { data: Teacher }) => {
+const TeacherFields = ({ data, ...props }: { data: any }) => {
   const FieldComp = (props: TextFieldProps) => {
     return (
       <Grid item md={6}>

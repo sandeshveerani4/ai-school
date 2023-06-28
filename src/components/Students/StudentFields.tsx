@@ -32,7 +32,7 @@ export const inputProps = {
   },
 };
 export const inputWhite = { background: "white" };
-const StudentFields = ({ data, ...props }: { data: Student  }) => {
+const StudentFields = ({ data, ...props }: { data: any  }) => {
   const [classes, setClasses] = React.useState([]);
   const [selectedClass, setSelectedClass] = React.useState(0);
   const [sections, setSections] = React.useState([]);
