@@ -40,6 +40,7 @@ export default function SignInSide(props: Props) {
       callbackUrl: props?.searchParams?.callbackUrl ?? "/dashboard",
     });
     if (results?.error) {
+      console.log(results);
       setError(results.error);
     }
   };
