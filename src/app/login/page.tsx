@@ -14,6 +14,8 @@ import { config } from "@/consts";
 import { signIn, useSession } from "next-auth/react";
 import { useEffect, useRef, useState } from "react";
 import { redirect } from "next/navigation";
+import CircularProgress from "@mui/material/CircularProgress";
+
 interface Props {
   searchParams: SearchParams;
 }
@@ -26,19 +28,23 @@ export default function SignInSide(props: Props) {
   const userName = useRef("");
   const password = useRef("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   useEffect(() => {
     if (session && session.data?.user) {
-      redirect("/dashboard");
+      redirect(props?.searchParams?.callbackUrl ?? "/dashboard");
     }
   }, [session]);
   const handleLogin = async (e: any) => {
     e.preventDefault();
+    setError("");
+    setLoading(true);
     const results = await signIn("credentials", {
       username: userName.current,
       password: password.current,
       redirect: false,
       callbackUrl: props?.searchParams?.callbackUrl ?? "/dashboard",
     });
+    setLoading(false);
     if (results?.error) {
       console.log(results);
       setError(results.error);
@@ -91,9 +97,7 @@ export default function SignInSide(props: Props) {
                 {config.site.name} - Login
               </Typography>
               <Box component={"form"} sx={{ mt: 1 }} onSubmit={handleLogin}>
-                {error && (
-                  <Alert severity="error">{props.searchParams.error}</Alert>
-                )}
+                {error && <Alert severity="error">{error}</Alert>}
                 <TextField
                   margin="normal"
                   label="Username"
@@ -114,6 +118,12 @@ export default function SignInSide(props: Props) {
                   type="submit"
                   fullWidth
                   variant="contained"
+                  {...(loading && {
+                    disabled: true,
+                    startIcon: (
+                      <CircularProgress size={20} />
+                    ),
+                  })}
                   sx={{ mt: 3, mb: 2 }}
                 >
                   Sign In
