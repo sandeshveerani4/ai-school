@@ -4,9 +4,11 @@ import { Box, Button } from "@mui/material";
 import Add from "@mui/icons-material/Add";
 import React from "react";
 import GetStudents from "@/components/Students/GetStudents";
+import { Student } from "@/components/Students/StudentFields";
 
 const Students = () => {
   const [show, setShow] = React.useState(false);
+  const [data, setData] = React.useState<Student[]>([]);
   return (
     <Box>
       <Box overflow={"hidden"}>
@@ -27,8 +29,8 @@ const Students = () => {
           <Add /> Add Student
         </Button>
       </Box>
-      {show && <CreateStudent />}
-      <GetStudents />
+      {show && <CreateStudent data={data} setData={setData} />}
+      <GetStudents data={data} setData={setData}/>
     </Box>
   );
 };

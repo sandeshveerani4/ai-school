@@ -25,8 +25,13 @@ export const getStudents = async (token: string) => {
   const res = await fetch(`/api/students/`, options);
   return await res.json();
 };
-const GetStudents = () => {
-  const [fetchedData, setData] = useState([]);
+const GetStudents = ({
+  data,
+  setData,
+}: {
+  data: Student[];
+  setData: React.Dispatch<React.SetStateAction<Student[]>>;
+}) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -53,10 +58,10 @@ const GetStudents = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {!loading && fetchedData.length == 0 ? (
+            {!loading && data.length == 0 ? (
               <Box>No Data Found</Box>
             ) : (
-              fetchedData.map((data: Student, index: number) => (
+              data.map((data: Student, index: number) => (
                 <TableRow
                   key={data.id}
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}

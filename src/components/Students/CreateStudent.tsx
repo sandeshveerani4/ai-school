@@ -3,23 +3,32 @@ import { Box, Grid, MenuItem, Select, TextField } from "@mui/material";
 import { SelectChangeEvent } from "@mui/material/Select";
 import React from "react";
 import Button from "@mui/material/Button";
+import CircularProgress from "@mui/material/CircularProgress";
 import { getSession } from "next-auth/react";
 import { getClasses, getSections } from "../Classes/GetClasses";
 import { DatePicker } from "@mui/x-date-pickers";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { Class } from "@prisma/client";
+import { Student } from "./StudentFields";
 
 const fields = [
   { label: "First Name", name: "first_name", required: true },
   { label: "Last Name", name: "last_name", required: true },
   { label: "Username", name: "username", required: true },
-  { label: "Password", name: "password", required: true },
+  { label: "Password", name: "password", required: true, type: "password" },
   { label: "Class", name: "class", required: true },
   { label: "Section", name: "section" },
   { label: "Date of Birth", name: "date_of_birth" },
 ];
-const CreateStudent = () => {
+const CreateStudent = ({
+  data,
+  setData,
+}: {
+  data: Student[];
+  setData: React.Dispatch<React.SetStateAction<Student[]>>;
+}) => {
+  const [loading, setLoading] = React.useState(false);
   const [classes, setClasses] = React.useState([]);
   const [selectedClass, setSelectedClass] = React.useState(0);
   const [sections, setSections] = React.useState([]);
@@ -48,6 +57,7 @@ const CreateStudent = () => {
   }, [classes]);
   const handleSubmit = async (e: any) => {
     e.preventDefault();
+    setLoading(true);
     const session = await getSession();
     const formData = new FormData(e.target);
     const value = Object.fromEntries(formData.entries());
@@ -63,7 +73,8 @@ const CreateStudent = () => {
       cache: "no-store",
     };
     const response = await fetch(endpoint, options);
-    const result = await response.json();
+    setData([await response.json(), ...data]);
+    setLoading(false);
   };
   return (
     <Box component={"form"} onSubmit={handleSubmit}>
@@ -115,7 +126,15 @@ const CreateStudent = () => {
           )
         )}
       </Grid>
-      <Button type="submit" className="my-2" variant="contained">
+      <Button
+        type="submit"
+        {...(loading && {
+          disabled: true,
+          startIcon: <CircularProgress size={20} />,
+        })}
+        className="my-2"
+        variant="contained"
+      >
         Create Student
       </Button>
     </Box>
