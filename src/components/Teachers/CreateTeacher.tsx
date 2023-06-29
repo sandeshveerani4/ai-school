@@ -15,7 +15,7 @@ const fields = [
   { label: "First Name", name: "first_name", required: true },
   { label: "Last Name", name: "last_name", required: true },
   { label: "Username", name: "username", required: true },
-  { label: "Password", name: "password", required: true },
+  { label: "Password", name: "password", required: true,type:'password' },
   { label: "Date of Birth", name: "date_of_birth" },
 ];
 const CreateTeacher = ({
@@ -56,9 +56,6 @@ const CreateTeacher = ({
           )
         )}
       </Grid>
-      <Button type="submit" className="my-2" variant="contained">
-        Create Teacher
-      </Button>
     </FormWithLoading>
   );
 };

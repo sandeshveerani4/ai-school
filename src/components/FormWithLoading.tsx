@@ -1,5 +1,11 @@
 "use client";
-import { Alert, Box, Button, CircularProgress } from "@mui/material";
+import {
+  Alert,
+  Box,
+  Button,
+  ButtonProps,
+  CircularProgress,
+} from "@mui/material";
 import { getSession } from "next-auth/react";
 import React from "react";
 
@@ -10,6 +16,8 @@ const FormWithLoading = ({
   submitName,
   endpoint,
   setData,
+  buttonProps,
+  method = "POST",
 }: {
   data?: any;
   children: React.ReactNode;
@@ -17,6 +25,8 @@ const FormWithLoading = ({
   submitName: string;
   endpoint: string;
   setData?: React.Dispatch<React.SetStateAction<any>>;
+  buttonProps?: ButtonProps;
+  method?: string;
 }) => {
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState("");
@@ -33,7 +43,7 @@ const FormWithLoading = ({
       var JSONdata = JSON.stringify(value);
     }
     const options: RequestInit = {
-      method: "POST",
+      method: method,
       headers: {
         "Content-Type": "application/json",
         authorization: session?.user.accessToken ?? "",
@@ -71,6 +81,7 @@ const FormWithLoading = ({
           startIcon: <CircularProgress size={20} />,
         })}
         variant="contained"
+        {...buttonProps}
       >
         {submitName}
       </Button>

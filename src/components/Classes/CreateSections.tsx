@@ -30,7 +30,6 @@ const CreateSection = () => {
     };
     const response = await fetch(endpoint, options);
     const result = await response.json();
-    console.log(result);
   };
   return (
     <Box component={"form"} onSubmit={handleSubmit}>

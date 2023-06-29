@@ -25,8 +25,9 @@ import { Metadata } from "next";
 import { getSession, signOut, useSession } from "next-auth/react";
 import { config } from "@/consts";
 import Loading from "@/app/dashboard/loading";
-import { CircularProgress } from "@mui/material";
+import { CircularProgress, Fade, Grow, Slide } from "@mui/material";
 import InsightsIcon from "@mui/icons-material/Insights";
+import { TransitionGroup } from "react-transition-group";
 export const metadata: Metadata = {
   title: "Dashboard",
 };
@@ -102,7 +103,6 @@ const DashboardLayout = (props: Props) => {
   const [loading, setLoading] = React.useState(false);
   const { data: session } = useSession();
   const currentPage = usePathname();
-  console.log(session);
   const { window, children } = props;
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const buttonSx = {
@@ -115,22 +115,30 @@ const DashboardLayout = (props: Props) => {
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
-  const NavBarItem = (item: MenuItem) => (
-    <ListItem key={item.id} disablePadding>
-      <Button
-        key={item.id}
-        variant={currentPage == item.path.toLowerCase() ? "contained" : "text"}
-        href={item.path}
-        LinkComponent={Link}
-        sx={buttonSx}
-        size="large"
-        color={currentPage == item.path.toLowerCase() ? "secondary" : "light"}
-        fullWidth
-      >
-        {item.icon}
-        {item.name}
-      </Button>
-    </ListItem>
+  const NavBarItem = (item: MenuItem, index: number) => (
+    <Fade
+      in={true}
+      key={item.id}
+      style={{ transitionDelay: `${index * 100}ms` }}
+    >
+      <ListItem disablePadding>
+        <Button
+          key={item.id}
+          variant={
+            currentPage == item.path.toLowerCase() ? "contained" : "text"
+          }
+          href={item.path}
+          LinkComponent={Link}
+          sx={buttonSx}
+          size="large"
+          color={currentPage == item.path.toLowerCase() ? "secondary" : "light"}
+          fullWidth
+        >
+          {item.icon}
+          {item.name}
+        </Button>
+      </ListItem>
+    </Fade>
   );
   const drawer = (
     <div>
@@ -140,9 +148,9 @@ const DashboardLayout = (props: Props) => {
         </Typography>
       </Toolbar>
       <List>
-        {menuItems.map((item: MenuItem) => {
+        {menuItems.map((item: MenuItem, index: number) => {
           return item.roles.includes(session?.user.role)
-            ? NavBarItem(item)
+            ? NavBarItem(item, index)
             : "";
         })}
         <ListItem disablePadding>

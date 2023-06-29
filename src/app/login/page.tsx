@@ -46,7 +46,6 @@ export default function SignInSide(props: Props) {
     });
     setLoading(false);
     if (results?.error) {
-      console.log(results);
       setError(results.error);
     }
   };

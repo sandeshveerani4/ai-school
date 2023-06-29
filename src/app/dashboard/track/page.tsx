@@ -47,6 +47,7 @@ const Track = () => {
           <Tab label="Test analysis" {...a11yProps(1)} />
           <Tab label="Assignment analysis" {...a11yProps(2)} />
           <Tab label="Student analysis" {...a11yProps(3)} />
+          <Tab label="Class wise analysis" {...a11yProps(4)} />
         </Tabs>
       </Box>
       <TabPanel value={value} index={0}>
@@ -60,6 +61,9 @@ const Track = () => {
       </TabPanel>
       <TabPanel value={value} index={3}>
         Item Four
+      </TabPanel>
+      <TabPanel value={value} index={4}>
+        Item Five
       </TabPanel>
     </>
   );

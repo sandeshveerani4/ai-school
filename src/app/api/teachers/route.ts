@@ -3,6 +3,7 @@ import * as bcrypt from "bcrypt";
 import { NextRequest, NextResponse } from "next/server";
 import { verifyJwt } from "@/lib/jwt";
 import { authorize, unAuthorized } from "@/lib/authorize";
+import { Prisma } from "@prisma/client";
 interface RequestBody {
   username: string;
   password: string;
@@ -37,19 +38,31 @@ export async function POST(req: NextRequest, res: NextResponse) {
   if (typeof auth === "object") return auth;
   if (auth !== "ADMIN") return unAuthorized;
   const body: RequestBody = await req.json();
-  const result = await prisma.user.create({
-    data: {
-      username: body.username,
-      password: await bcrypt.hash(body.password, 10),
-      role: "TEACHER",
-      profile: {
-        create: {
-          first_name: body.first_name,
-          last_name: body.last_name,
+  try {
+    const result = await prisma.user.create({
+      data: {
+        username: body.username,
+        password: await bcrypt.hash(body.password, 10),
+        role: "TEACHER",
+        profile: {
+          create: {
+            first_name: body.first_name,
+            last_name: body.last_name,
+          },
         },
       },
-    },
-  });
-  const { password, ...data } = result;
-  return NextResponse.json({ ...data });
+    });
+    const { password, ...data } = result;
+    return NextResponse.json({ ...data });
+  } catch (e) {
+    if (e instanceof Prisma.PrismaClientKnownRequestError) {
+      // The .code property can be accessed in a type-safe manner
+      if (e.code === "P2002") {
+        return NextResponse.json(
+          { error: "Username already exists!" },
+          { status: 400 }
+        );
+      }
+    }
+  }
 }
