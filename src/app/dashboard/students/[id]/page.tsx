@@ -4,6 +4,7 @@ import { getSession } from "next-auth/react";
 import React, { useEffect, useState } from "react";
 import Loading from "../../loading";
 import Image from "next/image";
+import { Typography } from "@mui/material";
 
 const ParticularStudent = ({ params }: { params: { id: string } }) => {
   const [student, setStudent] = useState<Student>();
@@ -16,10 +17,7 @@ const ParticularStudent = ({ params }: { params: { id: string } }) => {
       },
       cache: "no-store",
     };
-    const res = await fetch(
-      `/api/students/${params.id}`,
-      options
-    );
+    const res = await fetch(`/api/students/${params.id}`, options);
     return await res.json();
   };
   useEffect(() => {
@@ -35,6 +33,9 @@ const ParticularStudent = ({ params }: { params: { id: string } }) => {
     <Loading />
   ) : (
     <>
+      <Typography variant="h4" className="mb-3">
+        {student?.profile?.first_name + " " + student?.profile?.last_name}
+      </Typography>
       {/* <Image src={student?.profile?.pictureURL ?? ""} width={100} height={100} /> */}
       <StudentFields data={student} />
     </>

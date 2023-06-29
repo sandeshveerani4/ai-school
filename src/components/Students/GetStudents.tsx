@@ -38,13 +38,8 @@ export const deleteStudent = async (token: string, id: string) => {
   return await res.json();
 };
 
-const GetStudents = ({
-  data,
-  setData,
-}: {
-  data: Student[];
-  setData: React.Dispatch<React.SetStateAction<Student[]>>;
-}) => {
+const GetStudents = ({ reload }: { reload: boolean }) => {
+  const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const deleteStd = async (id: number) => {
     const session = await getSession();
@@ -62,7 +57,10 @@ const GetStudents = ({
   };
   useEffect(() => {
     loadData();
-  }, []);
+  });
+  useEffect(() => {
+    if (reload) loadData();
+  }, [reload]);
   return (
     <Box className="w-100 overflow-x-auto">
       <TableContainer component={Paper}>

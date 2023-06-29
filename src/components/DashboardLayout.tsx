@@ -22,11 +22,11 @@ import Typography from "@mui/material/Typography";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { Metadata } from "next";
-import { signOut } from "next-auth/react";
+import { getSession, signOut, useSession } from "next-auth/react";
 import { config } from "@/consts";
 import Loading from "@/app/dashboard/loading";
 import { CircularProgress } from "@mui/material";
-
+import InsightsIcon from "@mui/icons-material/Insights";
 export const metadata: Metadata = {
   title: "Dashboard",
 };
@@ -63,7 +63,7 @@ const menuItems: MenuItem[] = [
     name: "Assignments",
     path: "/dashboard/assignments",
     icon: <AssignmentIcon />,
-    roles: ["ADMIN", "TEACHER", "STUDENTS"],
+    roles: ["ADMIN", "TEACHER", "STUDENT"],
   },
   {
     id: 4,
@@ -81,6 +81,13 @@ const menuItems: MenuItem[] = [
   },
   {
     id: 6,
+    name: "Track",
+    path: "/dashboard/track",
+    icon: <InsightsIcon />,
+    roles: ["ADMIN", "TEACHER"],
+  },
+  {
+    id: 7,
     name: "Questions",
     path: "/dashboard/questions",
     icon: <Question />,
@@ -93,9 +100,9 @@ const getValueFromPath = (path: string) => {
 };
 const DashboardLayout = (props: Props) => {
   const [loading, setLoading] = React.useState(false);
-
+  const { data: session } = useSession();
   const currentPage = usePathname();
-
+  console.log(session);
   const { window, children } = props;
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const buttonSx = {
@@ -133,7 +140,11 @@ const DashboardLayout = (props: Props) => {
         </Typography>
       </Toolbar>
       <List>
-        {menuItems.map((item: MenuItem) => NavBarItem(item))}
+        {menuItems.map((item: MenuItem) => {
+          return item.roles.includes(session?.user.role)
+            ? NavBarItem(item)
+            : "";
+        })}
         <ListItem disablePadding>
           <Button
             variant="text"
@@ -156,7 +167,6 @@ const DashboardLayout = (props: Props) => {
       </List>
     </div>
   );
-
   const container =
     window !== undefined ? () => window().document.body : undefined;
 
@@ -164,12 +174,13 @@ const DashboardLayout = (props: Props) => {
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
       <AppBar
-        color="transparent"
         position="fixed"
+        color="transparent"
+        className="bg-slate-50"
         sx={{
           width: { sm: `calc(100% - ${drawerWidth}px)` },
           ml: { sm: `${drawerWidth}px` },
-          boxShadow: 'unset!important',
+          boxShadow: "unset!important",
         }}
       >
         <Toolbar className="py-5">

@@ -25,19 +25,22 @@ export const getTeachers = async (token: string) => {
   const res = await fetch(`/api/teachers/`, options);
   return await res.json();
 };
-const GetTeachers = () => {
+const GetTeachers = ({ reload }: { reload: boolean }) => {
   const [fetchedData, setData] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  const loadData = async () => {
+    const session = await getSession();
+    if (session) {
+      setData(await getTeachers(session.user.accessToken));
+      setLoading(false);
+    }
+  };
   useEffect(() => {
-    (async () => {
-      const session = await getSession();
-      if (session) {
-        setData(await getTeachers(session.user.accessToken));
-        setLoading(false);
-      }
-    })();
+    loadData();
   }, []);
+  useEffect(() => {
+    if (reload) loadData();
+  }, [reload]);
   return (
     <Box className="w-100 overflow-x-auto">
       <TableContainer component={Paper}>
@@ -48,7 +51,6 @@ const GetTeachers = () => {
               <TableCell>Username</TableCell>
               <TableCell>First Name</TableCell>
               <TableCell>Last Name</TableCell>
-              <TableCell>Class</TableCell>
               <TableCell>Actions</TableCell>
             </TableRow>
           </TableHead>

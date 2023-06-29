@@ -35,18 +35,22 @@ export const getSections = async (token: string, classId: number) => {
   const res = await fetch(`/api/classes/sections?classId=${classId}`, options);
   return await res.json();
 };
-const GetClasses = () => {
+const GetClasses = ({ reload }: { reload: boolean }) => {
   const [fetchedData, setData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const loadData = async () => {
+    const session = await getSession();
+    if (session) {
+      setData(await getClasses(session.user.accessToken));
+      setLoading(false);
+    }
+  };
   useEffect(() => {
-    (async () => {
-      const session = await getSession();
-      if (session) {
-        setData(await getClasses(session.user.accessToken));
-        setLoading(false);
-      }
-    })();
-  }, []);
+    loadData();
+  });
+  useEffect(() => {
+    if (reload) loadData();
+  }, [reload]);
   return (
     <Box className="w-100 overflow-x-auto">
       <TableContainer component={Paper}>
@@ -56,6 +60,7 @@ const GetClasses = () => {
               <TableCell>ID</TableCell>
               <TableCell>Name</TableCell>
               <TableCell>Rank</TableCell>
+              <TableCell>Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>

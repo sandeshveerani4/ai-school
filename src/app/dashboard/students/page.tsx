@@ -2,13 +2,18 @@
 import CreateStudent from "@/components/Students/CreateStudent";
 import { Box, Button } from "@mui/material";
 import Add from "@mui/icons-material/Add";
-import React from "react";
+import React, { useEffect } from "react";
 import GetStudents from "@/components/Students/GetStudents";
-import { Student } from "@/components/Students/StudentFields";
 
 const Students = () => {
   const [show, setShow] = React.useState(false);
-  const [data, setData] = React.useState<Student[]>([]);
+  const [reload, reloadData] = React.useState(false);
+  useEffect(() => {
+    if (reload) {
+      setShow(!show);
+      reloadData(false);
+    }
+  }, [reload]);
   return (
     <Box>
       <Box overflow={"hidden"}>
@@ -18,7 +23,7 @@ const Students = () => {
           color="primary"
           className="float-right my-2 ml-2"
         >
-          <Add /> Bulk Import Students
+          Bulk Import Students
         </Button>
         <Button
           variant="contained"
@@ -29,8 +34,8 @@ const Students = () => {
           <Add /> Add Student
         </Button>
       </Box>
-      {show && <CreateStudent data={data} setData={setData} />}
-      <GetStudents data={data} setData={setData}/>
+      {show && <CreateStudent reloadData={reloadData} />}
+      <GetStudents reload={reload} />
     </Box>
   );
 };

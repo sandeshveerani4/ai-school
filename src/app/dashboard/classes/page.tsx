@@ -3,10 +3,17 @@ import { Box, Button } from "@mui/material";
 import Add from "@mui/icons-material/Add";
 import CreateClass from "@/components/Classes/CreateClass";
 import GetClasses from "@/components/Classes/GetClasses";
-import React from "react";
+import React, { useEffect } from "react";
 
 const Classes = () => {
   const [show, setShow] = React.useState(false);
+  const [reload, reloadData] = React.useState(false);
+  useEffect(() => {
+    if (reload) {
+      setShow(!show);
+      reloadData(false);
+    }
+  }, [reload]);
   return (
     <Box>
       <Box overflow={"hidden"}>
@@ -19,8 +26,8 @@ const Classes = () => {
           <Add /> Create Class
         </Button>
       </Box>
-      {show && <CreateClass />}
-      <GetClasses />
+      {show && <CreateClass reloadData={reloadData} />}
+      <GetClasses reload={reload} />
     </Box>
   );
 };

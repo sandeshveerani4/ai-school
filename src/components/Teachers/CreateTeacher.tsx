@@ -9,6 +9,7 @@ import { DatePicker } from "@mui/x-date-pickers";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { Class } from "@prisma/client";
+import FormWithLoading from "../FormWithLoading";
 
 const fields = [
   { label: "First Name", name: "first_name", required: true },
@@ -17,28 +18,17 @@ const fields = [
   { label: "Password", name: "password", required: true },
   { label: "Date of Birth", name: "date_of_birth" },
 ];
-const CreateTeacher = () => {
-  const handleSubmit = async (e: any) => {
-    e.preventDefault();
-    const session = await getSession();
-    const formData = new FormData(e.target);
-    const value = Object.fromEntries(formData.entries());
-    const JSONdata = JSON.stringify(value);
-    const endpoint = `/api/teachers`;
-    const options: RequestInit = {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        authorization: session?.user.accessToken ?? "",
-      },
-      body: JSONdata,
-      cache: "no-store",
-    };
-    const response = await fetch(endpoint, options);
-    const result = await response.json();
-  };
+const CreateTeacher = ({
+  reloadData,
+}: {
+  reloadData: React.Dispatch<React.SetStateAction<boolean>>;
+}) => {
   return (
-    <Box component={"form"} onSubmit={handleSubmit}>
+    <FormWithLoading
+      endpoint="/api/teachers"
+      submitName="Create Teacher"
+      setDone={reloadData}
+    >
       <Grid container rowSpacing={1} columnSpacing={1}>
         {fields.map((item, index) =>
           item.name === "date_of_birth" ? (
@@ -69,7 +59,7 @@ const CreateTeacher = () => {
       <Button type="submit" className="my-2" variant="contained">
         Create Teacher
       </Button>
-    </Box>
+    </FormWithLoading>
   );
 };
 

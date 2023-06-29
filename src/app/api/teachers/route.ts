@@ -2,6 +2,7 @@ import prisma from "@/lib/prisma";
 import * as bcrypt from "bcrypt";
 import { NextRequest, NextResponse } from "next/server";
 import { verifyJwt } from "@/lib/jwt";
+import { authorize, unAuthorized } from "@/lib/authorize";
 interface RequestBody {
   username: string;
   password: string;
@@ -10,6 +11,9 @@ interface RequestBody {
   date_of_birth?: object;
 }
 export async function GET(req: NextRequest, res: NextResponse) {
+  const auth = authorize(req);
+  if (typeof auth === "object") return auth;
+  if (auth !== "ADMIN") return unAuthorized;
   const accessToken = req.headers.get("authorization");
   if (!accessToken || !verifyJwt(accessToken)) {
     return new Response(
@@ -29,17 +33,9 @@ export async function GET(req: NextRequest, res: NextResponse) {
   return NextResponse.json(teachers);
 }
 export async function POST(req: NextRequest, res: NextResponse) {
-  const accessToken = req.headers.get("authorization");
-  if (!accessToken || !verifyJwt(accessToken)) {
-    return new Response(
-      JSON.stringify({
-        error: "unauthorized",
-      }),
-      {
-        status: 401,
-      }
-    );
-  }
+  const auth = authorize(req);
+  if (typeof auth === "object") return auth;
+  if (auth !== "ADMIN") return unAuthorized;
   const body: RequestBody = await req.json();
   const result = await prisma.user.create({
     data: {

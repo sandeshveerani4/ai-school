@@ -32,7 +32,7 @@ export const inputProps = {
   },
 };
 export const inputWhite = { background: "white" };
-const StudentFields = ({ data, ...props }: { data: any  }) => {
+const StudentFields = ({ data, ...props }: { data: any }) => {
   const [classes, setClasses] = React.useState([]);
   const [selectedClass, setSelectedClass] = React.useState(0);
   const [sections, setSections] = React.useState([]);
@@ -79,8 +79,9 @@ const StudentFields = ({ data, ...props }: { data: any  }) => {
         <FieldComp label="First Name" value={data.profile?.first_name} />
         <FieldComp label="Last Name" value={data.profile?.first_name} />
         <Grid item md={6}>
-          <Select
-            placeholder="Class"
+          <TextField
+            select
+            label="Class"
             defaultValue={data.student?.classId}
             sx={inputWhite}
             fullWidth
@@ -92,7 +93,7 @@ const StudentFields = ({ data, ...props }: { data: any  }) => {
                 {item.name}
               </MenuItem>
             ))}
-          </Select>
+          </TextField>
         </Grid>
       </Grid>
       <Button className="my-2" color="secondary" variant="contained">
