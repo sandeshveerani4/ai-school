@@ -11,7 +11,7 @@ export async function DELETE(
   if (auth !== "ADMIN") return unAuthorized;
   const students = await prisma.user.delete({
     where: { id: Number(params.id) },
-    include: { profile: true, student: { include: { class: true } } },
+    include: { student: { include: { class: true } } },
   });
   return NextResponse.json(students);
 }
@@ -24,7 +24,7 @@ export async function GET(
   if (auth === "TEACHER") return unAuthorized;
   const students = await prisma.user.findFirst({
     where: { role: "STUDENT", id: Number(params.id) },
-    include: { profile: true, student: { include: { class: true } } },
+    include: { student: { include: { class: true } } },
     orderBy: { id: "desc" },
   });
   return NextResponse.json(students);

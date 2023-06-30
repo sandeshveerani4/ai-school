@@ -28,7 +28,7 @@ export async function GET(req: NextRequest, res: NextResponse) {
   }
   const teachers = await prisma.user.findMany({
     where: { role: "TEACHER" },
-    include: { profile: true, teacher: true },
+    include: { teacher: true },
     orderBy: { id: "desc" },
   });
   return NextResponse.json(teachers);
@@ -44,12 +44,8 @@ export async function POST(req: NextRequest, res: NextResponse) {
         username: body.username,
         password: await bcrypt.hash(body.password, 10),
         role: "TEACHER",
-        profile: {
-          create: {
-            first_name: body.first_name,
-            last_name: body.last_name,
-          },
-        },
+        first_name: body.first_name,
+        last_name: body.last_name,
       },
     });
     const { password, ...data } = result;

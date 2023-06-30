@@ -8,7 +8,6 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 export type Teacher = Prisma.UserGetPayload<{
   include: {
     teacher: true;
-    profile: true;
   };
 }>;
 
@@ -43,13 +42,13 @@ const TeacherFields = ({ data, ...props }: { data: any }) => {
       label: "First Name",
       name: "first_name",
       required: true,
-      defaultValue: data.profile.first_name,
+      defaultValue: data.first_name,
     },
     {
       label: "Last Name",
       name: "last_name",
       required: true,
-      defaultValue: data.profile.last_name,
+      defaultValue: data.last_name,
     },
     {
       label: "Username",
@@ -61,7 +60,7 @@ const TeacherFields = ({ data, ...props }: { data: any }) => {
     {
       label: "Date of Birth",
       name: "date_of_birth",
-      defaultValue: data.profile["data_of_birth"],
+      defaultValue: data["data_of_birth"],
     },
   ];
   return (

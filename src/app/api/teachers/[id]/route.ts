@@ -16,13 +16,9 @@ export const PUT = async (
     data: {
       username: body.username,
       password: body.password,
-      profile: {
-        update: {
-          first_name: body.first_name,
-          last_name: body.last_name,
-          date_of_birth: body.date_of_birth,
-        },
-      },
+      first_name: body.first_name,
+      last_name: body.last_name,
+      date_of_birth: body.date_of_birth,
     },
   });
   return NextResponse.json(result);
@@ -36,7 +32,6 @@ export async function GET(
   if (auth === "STUDENT") return unAuthorized;
   const teachers = await prisma.user.findFirst({
     where: { role: "TEACHER", id: Number(params.id) },
-    include: { profile: true },
     orderBy: { id: "desc" },
   });
   return NextResponse.json(teachers);

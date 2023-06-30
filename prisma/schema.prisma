@@ -11,15 +11,18 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  username  String   @unique
-  password  String
-  role      Role     @default(STUDENT)
-  profile   Profile?
-  student   Student?
-  teacher   Teacher?
-  admin     Admin?
-  createdAt DateTime @default(now())
+  id            Int       @id @default(autoincrement())
+  username      String    @unique
+  password      String
+  role          Role      @default(STUDENT)
+  first_name    String?
+  last_name     String?
+  date_of_birth DateTime? @default(now()) @db.Date
+  pictureURL    String?
+  student       Student?
+  teacher       Teacher?
+  admin         Admin?
+  createdAt     DateTime  @default(now())
 }
 
 model Admin {
@@ -59,15 +62,6 @@ model Section {
   class    Class     @relation(fields: [classId], references: [id])
   classId  Int
   Students Student[]
-}
-
-model Profile {
-  userId        Int       @id @default(autoincrement())
-  first_name    String?
-  last_name     String?
-  date_of_birth DateTime? @default(now()) @db.Date
-  pictureURL    String?
-  user          User      @relation(fields: [userId], references: [id])
 }
 
 enum Role {

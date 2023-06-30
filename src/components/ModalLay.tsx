@@ -1,0 +1,62 @@
+import React, { useState } from "react";
+import { Modal, Box, Typography, Button, ButtonProps } from "@mui/material";
+import ArrowBack from "@mui/icons-material/ArrowBack";
+const ModalLay = ({
+  children,
+  buttonTitle,
+  buttonProps,
+}: {
+  children: React.ReactNode;
+  buttonTitle: string;
+  buttonProps?: ButtonProps;
+}) => {
+  const [open, setOpen] = useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+  const style = {
+    position: "absolute" as "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: 400,
+    bgcolor: "background.paper",
+    boxShadow: 24,
+    p: 3,
+  };
+  return (
+    <>
+      <Button
+        variant="outlined"
+        color="error"
+        onClick={handleOpen}
+        {...buttonProps}
+      >
+        {buttonTitle}
+      </Button>
+      {open && (
+        <Modal
+          open={open}
+          onClose={handleClose}
+          aria-labelledby="modal-modal-title"
+          aria-describedby="modal-modal-description"
+        >
+          <Box sx={style} className="rounded-2xl">
+            <Button onClick={handleClose} size="small">
+              <ArrowBack fontSize="small"/>
+              Back
+            </Button>
+            {children}
+            {/* <Typography id="modal-modal-title" variant="h6" component="h2">
+              Are you sure you want to delete this entity?
+            </Typography>
+            <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+              Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
+            </Typography> */}
+          </Box>
+        </Modal>
+      )}
+    </>
+  );
+};
+
+export default ModalLay;

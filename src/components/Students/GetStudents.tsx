@@ -15,27 +15,35 @@ import Link from "next/link";
 import { Student } from "./StudentFields";
 
 export const getStudents = async (token: string) => {
-  const options: RequestInit = {
-    headers: {
-      "Content-Type": "application/json",
-      authorization: token,
-    },
-    cache: "no-store",
-  };
-  const res = await fetch(`/api/students/`, options);
-  return await res.json();
+  try {
+    const options: RequestInit = {
+      headers: {
+        "Content-Type": "application/json",
+        authorization: token,
+      },
+      cache: "no-store",
+    };
+    const res = await fetch(`/api/students/`, options);
+    return await res.json();
+  } catch (e) {
+    console.error(e);
+  }
 };
 export const deleteStudent = async (token: string, id: string) => {
-  const options: RequestInit = {
-    headers: {
-      "Content-Type": "application/json",
-      authorization: token,
-    },
-    method: "DELETE",
-    cache: "no-store",
-  };
-  const res = await fetch(`/api/students/${id}`, options);
-  return await res.json();
+  try {
+    const options: RequestInit = {
+      headers: {
+        "Content-Type": "application/json",
+        authorization: token,
+      },
+      method: "DELETE",
+      cache: "no-store",
+    };
+    const res = await fetch(`/api/students/${id}`, options);
+    return await res.json();
+  } catch (e) {
+    console.error(e);
+  }
 };
 
 const GetStudents = ({ reload }: { reload: boolean }) => {
@@ -86,8 +94,8 @@ const GetStudents = ({ reload }: { reload: boolean }) => {
                 >
                   <TableCell>{data["id"]}</TableCell>
                   <TableCell>{data["username"]}</TableCell>
-                  <TableCell>{data.profile?.first_name}</TableCell>
-                  <TableCell>{data.profile?.last_name}</TableCell>
+                  <TableCell>{data.first_name}</TableCell>
+                  <TableCell>{data.last_name}</TableCell>
                   <TableCell>{data.student?.class?.name}</TableCell>
                   <TableCell>
                     <Button

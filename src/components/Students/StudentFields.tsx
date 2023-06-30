@@ -15,7 +15,6 @@ import { getSession } from "next-auth/react";
 export type Student = Prisma.UserGetPayload<{
   include: {
     student: { include: { class: true } };
-    profile: true;
   };
 }>;
 function IsJson(str: any) {
@@ -76,8 +75,8 @@ const StudentFields = ({ data, ...props }: { data: any }) => {
       <Grid container rowSpacing={1} columnSpacing={1}>
         <FieldComp label="ID" disabled value={data["id"]} />
         <FieldComp label="Username" value={data["username"]} />
-        <FieldComp label="First Name" value={data.profile?.first_name} />
-        <FieldComp label="Last Name" value={data.profile?.first_name} />
+        <FieldComp label="First Name" value={data.first_name} />
+        <FieldComp label="Last Name" value={data.last_name} />
         <Grid item md={6}>
           <TextField
             select

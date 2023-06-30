@@ -16,7 +16,6 @@ import PersonIcon from "@mui/icons-material/Person";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import GroupsIcon from "@mui/icons-material/Groups";
 import ClassIcon from "@mui/icons-material/School";
-import LogoutIcon from "@mui/icons-material/Logout";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import { usePathname } from "next/navigation";
@@ -25,9 +24,17 @@ import { Metadata } from "next";
 import { getSession, signOut, useSession } from "next-auth/react";
 import { config } from "@/consts";
 import Loading from "@/app/dashboard/loading";
-import { CircularProgress, Fade, Grow, Slide } from "@mui/material";
+import {
+  CircularProgress,
+  Fade,
+  Grow,
+  Menu,
+  MenuItem,
+  Slide,
+} from "@mui/material";
 import InsightsIcon from "@mui/icons-material/Insights";
-import { TransitionGroup } from "react-transition-group";
+import AccountCircle from "@mui/icons-material/AccountCircle";
+
 export const metadata: Metadata = {
   title: "Dashboard",
 };
@@ -102,6 +109,14 @@ const getValueFromPath = (path: string) => {
 const DashboardLayout = (props: Props) => {
   const [loading, setLoading] = React.useState(false);
   const { data: session } = useSession();
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
   const currentPage = usePathname();
   const { window, children } = props;
   const [mobileOpen, setMobileOpen] = React.useState(false);
@@ -153,25 +168,6 @@ const DashboardLayout = (props: Props) => {
             ? NavBarItem(item, index)
             : "";
         })}
-        <ListItem disablePadding>
-          <Button
-            variant="text"
-            size="large"
-            color="light"
-            sx={buttonSx}
-            onClick={() => {
-              setLoading(true);
-              signOut().finally(() => setLoading(false));
-            }}
-            {...(loading && {
-              disabled: true,
-            })}
-            fullWidth
-          >
-            {loading ? <CircularProgress size={20} /> : <LogoutIcon />}
-            Log Out
-          </Button>
-        </ListItem>
       </List>
     </div>
   );
@@ -204,12 +200,58 @@ const DashboardLayout = (props: Props) => {
           <Typography
             variant="h4"
             component="h4"
+            className="flex-grow"
             noWrap
             fontWeight={700}
             textTransform={"capitalize"}
           >
             {getValueFromPath(currentPage)}
           </Typography>
+          {session && (
+            <Box>
+              <IconButton
+                size="medium"
+                aria-label="account of current user"
+                aria-controls="menu-appbar"
+                aria-haspopup="true"
+                onClick={handleMenu}
+                color="inherit"
+              >
+                <AccountCircle />
+              </IconButton>
+              <Menu
+                id="menu-appbar"
+                anchorEl={anchorEl}
+                anchorOrigin={{
+                  vertical: "top",
+                  horizontal: "right",
+                }}
+                keepMounted
+                transformOrigin={{
+                  vertical: "top",
+                  horizontal: "right",
+                }}
+                elevation={2}
+                open={Boolean(anchorEl)}
+                onClose={handleClose}
+              >
+                <MenuItem onClick={handleClose}>
+                  Account: {session.user.first_name}
+                </MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    setLoading(true);
+                    signOut().finally(() => setLoading(false));
+                  }}
+                  {...(loading && {
+                    disabled: true,
+                  })}
+                >
+                  {loading ? <CircularProgress size={20} /> : "Logout"}
+                </MenuItem>
+              </Menu>
+            </Box>
+          )}
         </Toolbar>
       </AppBar>
       <Box

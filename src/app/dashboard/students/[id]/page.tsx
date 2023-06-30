@@ -34,7 +34,7 @@ const ParticularStudent = ({ params }: { params: { id: string } }) => {
   ) : (
     <>
       <Typography variant="h4" className="mb-3">
-        {student?.profile?.first_name + " " + student?.profile?.last_name}
+        {student?.first_name + " " + student?.last_name}
       </Typography>
       {/* <Image src={student?.profile?.pictureURL ?? ""} width={100} height={100} /> */}
       <StudentFields data={student} />

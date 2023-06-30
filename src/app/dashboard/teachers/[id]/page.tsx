@@ -27,13 +27,7 @@ const ParticularTeacher = ({ params }: { params: { id: string } }) => {
       }
     })();
   }, []);
-  return loading && !teacher ? (
-    <Loading />
-  ) : (
-    <>
-      <TeacherFields data={teacher} />
-    </>
-  );
+  return loading && !teacher ? <Loading /> : <TeacherFields data={teacher} />;
 };
 
 export default ParticularTeacher;

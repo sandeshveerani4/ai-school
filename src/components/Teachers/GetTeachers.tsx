@@ -1,6 +1,8 @@
 "use client";
 import { Box, Grid, Skeleton, TextField } from "@mui/material";
 import React, { useEffect, useState } from "react";
+import Modal from "@mui/material/Modal";
+import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -13,6 +15,7 @@ import { getSession } from "next-auth/react";
 import Loading from "@/app/dashboard/loading";
 import Link from "next/link";
 import { Teacher } from "./TeacherFields";
+import ModalLay from "../ModalLay";
 
 export const getTeachers = async (token: string) => {
   const options: RequestInit = {
@@ -28,6 +31,7 @@ export const getTeachers = async (token: string) => {
 const GetTeachers = ({ reload }: { reload: boolean }) => {
   const [fetchedData, setData] = useState([]);
   const [loading, setLoading] = useState(true);
+
   const loadData = async () => {
     const session = await getSession();
     if (session) {
@@ -65,8 +69,8 @@ const GetTeachers = ({ reload }: { reload: boolean }) => {
                 >
                   <TableCell>{data["id"]}</TableCell>
                   <TableCell>{data["username"]}</TableCell>
-                  <TableCell>{data.profile?.first_name}</TableCell>
-                  <TableCell>{data.profile?.last_name}</TableCell>
+                  <TableCell>{data.first_name}</TableCell>
+                  <TableCell>{data.last_name}</TableCell>
                   <TableCell>
                     <Button
                       variant="outlined"
@@ -76,9 +80,15 @@ const GetTeachers = ({ reload }: { reload: boolean }) => {
                     >
                       View Details
                     </Button>
-                    <Button variant="outlined" color="error">
-                      Delete
-                    </Button>
+                    <ModalLay buttonTitle="Delete Teacher">
+                      <Typography variant="h6" component="h2">
+                        Confirm Deletion
+                      </Typography>
+                      <Typography>
+                        Are you sure you want to delete this entity?
+                      </Typography>
+                      <Button variant='contained' color='error' className='mt-2'>Confirm</Button>
+                    </ModalLay>
                   </TableCell>
                 </TableRow>
               ))
