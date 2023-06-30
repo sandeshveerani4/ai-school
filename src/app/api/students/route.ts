@@ -14,12 +14,10 @@ interface RequestBody {
   many?: boolean;
   data?: any;
 }
-export async function GET(req: NextRequest, ...params) {
+export async function GET(req: NextRequest) {
   const auth = authorize(req);
   if (typeof auth === "object") return auth;
   if (auth !== "ADMIN") return unAuthorized;
-  console.log(new URL(req.url).searchParams);
-  return NextResponse.json(params);
   const students = await prisma.user.findMany({
     where: { role: "STUDENT" },
     include: { student: { include: { class: true } } },
