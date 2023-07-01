@@ -20,7 +20,7 @@ const FormWithLoading = ({
   method = "POST",
 }: {
   data?: any;
-  children: React.ReactNode;
+  children?: React.ReactNode;
   setDone?: React.Dispatch<React.SetStateAction<boolean>>;
   submitName: string;
   endpoint: string;

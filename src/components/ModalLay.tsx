@@ -8,7 +8,7 @@ const ModalLay = ({
   opener,
   setOpener,
 }: {
-  children: React.ReactNode;
+  children?: React.ReactNode;
   buttonTitle: string;
   buttonProps?: ButtonProps;
   opener?: boolean;

@@ -12,6 +12,8 @@ import Paper from "@mui/material/Paper";
 import { getSession } from "next-auth/react";
 import Loading from "@/app/dashboard/loading";
 import { Class } from "@prisma/client";
+import ModalLay from "../ModalLay";
+import FormWithLoading from "../FormWithLoading";
 
 export const getClasses = async (token: string) => {
   const options: RequestInit = {
@@ -60,7 +62,7 @@ const GetClasses = ({ reload }: { reload: boolean }) => {
               <TableCell>ID</TableCell>
               <TableCell>Name</TableCell>
               <TableCell>Rank</TableCell>
-              <TableCell>Actions</TableCell>
+              <TableCell>Sections</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -75,6 +77,19 @@ const GetClasses = ({ reload }: { reload: boolean }) => {
                   <TableCell>{data["id"]}</TableCell>
                   <TableCell>{data["name"]}</TableCell>
                   <TableCell>{data["rank"]}</TableCell>
+                  <TableCell>
+                    <ModalLay
+                      buttonTitle="Create Section"
+                      buttonProps={{ color: "primary", variant: "contained" }}
+                    >
+                      <FormWithLoading
+                        submitName="Create Section"
+                        endpoint={`/classes/${data.id}/sections/`}
+                      >
+                        
+                      </FormWithLoading>
+                    </ModalLay>
+                  </TableCell>
                 </TableRow>
               ))
             )}

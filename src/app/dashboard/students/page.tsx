@@ -21,7 +21,7 @@ const Students = () => {
   const [loading, setLoading] = React.useState(false);
   const [reload, reloadData] = React.useState(false);
   const [array, setArray] = React.useState([]);
-  const inputFile = useRef(null);
+  const inputFile = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (reload) {
