@@ -1,6 +1,6 @@
 import { CircularProgress } from "@mui/material";
 import React from "react";
-import Stats from "./Admin/Stats";
+import Stats from "./Stats";
 const AdminDashboard = () => {
   return <Stats />;
 };

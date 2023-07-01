@@ -1,6 +1,12 @@
 "use client";
 import CreateStudent from "@/components/Students/CreateStudent";
-import { Box, Button, Input, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  CircularProgress,
+  Input,
+  Typography,
+} from "@mui/material";
 import Add from "@mui/icons-material/Add";
 import React, { useEffect, useRef } from "react";
 import GetStudents from "@/components/Students/GetStudents";
@@ -11,6 +17,8 @@ import FormWithLoading from "@/components/FormWithLoading";
 
 const Students = () => {
   const [show, setShow] = React.useState(false);
+  const [opener, setOpener] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
   const [reload, reloadData] = React.useState(false);
   const [array, setArray] = React.useState([]);
   const inputFile = useRef(null);
@@ -23,6 +31,7 @@ const Students = () => {
   }, [reload]);
 
   const handleOnChange = (e: any) => {
+    setLoading(true);
     const file = e.target.files[0];
     if (file) {
       const reader = new FileReader();
@@ -57,15 +66,21 @@ const Students = () => {
           })
           .filter((row: any) => row !== null);
         const session = await getSession();
-        fetch("/api/students?id=5", {
-          method: "POST",
-          body: JSON.stringify({ many: true, data: result }),
-          headers: {
-            "Content-Type": "application/json",
-            authorization: session?.user.accessToken ?? "",
-          },
-          cache: "no-store",
-        });
+        try {
+          await fetch("/api/students/bulkimport", {
+            method: "POST",
+            body: JSON.stringify({ data: result }),
+            headers: {
+              "Content-Type": "application/json",
+              authorization: session?.user.accessToken ?? "",
+            },
+            cache: "no-store",
+          });
+          setOpener(false);
+        } catch (e) {
+          console.error(e);
+        }
+        setLoading(false);
       };
       reader.readAsArrayBuffer(file);
     }
@@ -73,12 +88,6 @@ const Students = () => {
   return (
     <Box>
       <Box overflow={"hidden"}>
-        <input
-          type="file"
-          className="hidden"
-          ref={inputFile}
-          onChange={handleOnChange}
-        />
         <ModalLay
           buttonTitle="Bulk Import Students"
           buttonProps={{
@@ -86,21 +95,32 @@ const Students = () => {
             variant: "contained",
             color: "primary",
           }}
+          opener={opener}
+          setOpener={setOpener}
         >
           <Typography variant="h6" component="h2">
             Bulk Import Students
           </Typography>
-          <Typography>
-            Headings should be like: First Name, Last Name, Class, Username,
-            Password
+          <Typography className="my-2">
+            Headings should be like this: First Name, Last Name, Class,
+            Username, Password
           </Typography>
-          <FormWithLoading
-            endpoint="/api/students"
-            submitName="Bulk Import"
-            setDone={reloadData}
+          <input
+            type="file"
+            className="hidden"
+            ref={inputFile}
+            onChange={handleOnChange}
+          />
+          <Button
+            variant="contained"
+            {...(loading && {
+              disabled: true,
+              startIcon: <CircularProgress size={20} />,
+            })}
+            onClick={() => inputFile.current?.click()}
           >
-            <Input type="file" />
-          </FormWithLoading>
+            Choose File
+          </Button>
         </ModalLay>
         <Button
           variant="contained"

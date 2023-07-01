@@ -1,16 +1,23 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Modal, Box, Typography, Button, ButtonProps } from "@mui/material";
 import ArrowBack from "@mui/icons-material/ArrowBack";
 const ModalLay = ({
   children,
   buttonTitle,
   buttonProps,
+  opener,
+  setOpener,
 }: {
   children: React.ReactNode;
   buttonTitle: string;
   buttonProps?: ButtonProps;
+  opener?: boolean;
+  setOpener?: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
-  const [open, setOpen] = useState(false);
+  var [open, setOpen] =
+    opener !== undefined && setOpener !== undefined
+      ? [opener, setOpener]
+      : useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const style = {
@@ -42,7 +49,7 @@ const ModalLay = ({
         >
           <Box sx={style} className="rounded-2xl">
             <Button onClick={handleClose} size="small">
-              <ArrowBack fontSize="small"/>
+              <ArrowBack fontSize="small" />
               Back
             </Button>
             {children}

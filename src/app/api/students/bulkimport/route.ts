@@ -12,43 +12,42 @@ interface RequestBody {
   section?: number;
   date_of_birth?: object;
 }
-export async function GET(req: NextRequest) {
-  const auth = authorize(req);
-  if (typeof auth === "object") return auth;
-  if (auth !== "ADMIN") return unAuthorized;
-  const students = await prisma.user.findMany({
-    where: { role: "STUDENT" },
-    include: { student: { include: { class: true } } },
-    orderBy: { id: "desc" },
-  });
-  return NextResponse.json(students);
-}
 export async function POST(req: NextRequest) {
   const auth = authorize(req);
   if (typeof auth === "object") return auth;
   if (auth !== "ADMIN") return unAuthorized;
-  const body: RequestBody = await req.json();
+  const { data }: { data: RequestBody[] } = await req.json();
   try {
-    const result = await prisma.user.create({
-      data: {
-        username: body.username,
-        password: await bcrypt.hash(body.password, 10),
-        role: "STUDENT",
-        first_name: body.first_name,
-        last_name: body.last_name,
-        student: {
-          create: {
-            class: {
-              connect: {
-                id: Number(body.class),
+    for (let index = 0; index < data.length; index++) {
+      const element = data[index];
+      const classId = (
+        await prisma.class.findFirst({
+          where: { name: String(element.class) },
+        })
+      )?.id;
+      try {
+        await prisma.user.create({
+          data: {
+            username: element.username,
+            password: await bcrypt.hash(element.password, 10),
+            role: "STUDENT",
+            first_name: element.first_name,
+            last_name: element.last_name,
+            student: {
+              create: {
+                class: {
+                  connect: {
+                    id: classId,
+                  },
+                },
               },
             },
           },
-        },
-      },
-    });
-    const { password, ...data } = result;
-    return NextResponse.json({ ...data });
+        });
+      } catch {}
+    }
+    // const { password, ...data } = result;
+    return NextResponse.json({ success: true });
   } catch (e) {
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
       // The .code property can be accessed in a type-safe manner

@@ -12,7 +12,10 @@ import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import MenuIcon from "@mui/icons-material/Menu";
 import Question from "@mui/icons-material/QuestionMark";
+import LibraryBooks from "@mui/icons-material/LibraryBooks";
+import Topic from "@mui/icons-material/Topic";
 import PersonIcon from "@mui/icons-material/Person";
+import Forum from "@mui/icons-material/Forum";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import GroupsIcon from "@mui/icons-material/Groups";
 import ClassIcon from "@mui/icons-material/School";
@@ -85,17 +88,38 @@ const menuItems: MenuItem[] = [
     name: "Classes",
     path: "/dashboard/classes",
     icon: <ClassIcon />,
-    roles: ["ADMIN", "TEACHER"],
+    roles: ["ADMIN"],
   },
   {
     id: 6,
+    name: "Subjects",
+    path: "/dashboard/subjects",
+    icon: <LibraryBooks />,
+    roles: ["ADMIN"],
+  },
+  {
+    id: 6,
+    name: "Topics",
+    path: "/dashboard/topics",
+    icon: <Topic />,
+    roles: ["ADMIN", "TEACHER"],
+  },
+  {
+    id: 7,
+    name: "Discussions",
+    path: "/dashboard/discussions",
+    icon: <Forum />,
+    roles: ["ADMIN", "TEACHER", "STUDENT"],
+  },
+  {
+    id: 8,
     name: "Track",
     path: "/dashboard/track",
     icon: <InsightsIcon />,
     roles: ["ADMIN", "TEACHER"],
   },
   {
-    id: 7,
+    id: 9,
     name: "Questions",
     path: "/dashboard/questions",
     icon: <Question />,
