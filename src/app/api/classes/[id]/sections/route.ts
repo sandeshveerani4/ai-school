@@ -5,25 +5,35 @@ interface RequestBody {
   name: string;
   classId: number;
 }
-export async function GET(req: NextRequest, res: NextResponse) {
+export async function GET(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
   const auth = authorize(req);
   if (typeof auth === "object") return auth;
-  const body = await req.json();
   const classes = await prisma.section.findMany({
-    where: { classId: body.classId },
+    where: { classId: Number(params.id) },
     orderBy: { name: "asc" },
   });
   return NextResponse.json(classes);
 }
-export async function POST(req: NextRequest, res: NextResponse) {
+export async function POST(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
   const auth = authorize(req);
   if (typeof auth === "object") return auth;
   if (auth !== "ADMIN") return unAuthorized;
   const body: RequestBody = await req.json();
+  console.log(body);
   const sclass = await prisma.section.create({
     data: {
       name: body.name,
-      classId: body.classId,
+      class: {
+        connect: {
+          id: Number(params.id),
+        },
+      },
     },
   });
   return NextResponse.json(sclass);

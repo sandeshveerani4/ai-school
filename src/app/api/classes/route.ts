@@ -5,7 +5,10 @@ import { authorize, unAuthorized } from "@/lib/authorize";
 export async function GET(req: NextRequest) {
   const auth = authorize(req);
   if (typeof auth === "object") return auth;
-  const classes = await prisma.class.findMany({ orderBy: { rank: "desc" } });
+  const classes = await prisma.class.findMany({
+    orderBy: { rank: "desc" },
+    include: { classTeacher: { include: { user: true } }, sections: true },
+  });
   return NextResponse.json(classes);
 }
 export async function POST(req: NextRequest) {
@@ -17,7 +20,9 @@ export async function POST(req: NextRequest) {
     data: {
       name: body.name,
       rank: Number(body.rank),
+      teacherId: Number(body.teacher),
     },
+    include: { classTeacher: true },
   });
   return NextResponse.json(sclass);
 }

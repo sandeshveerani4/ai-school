@@ -25,6 +25,11 @@ export async function POST(req: NextRequest) {
           where: { name: String(element.class) },
         })
       )?.id;
+      const section = (
+        await prisma.section.findFirst({
+          where: { classId: classId, name: String(element.section) },
+        })
+      )?.id;
       try {
         await prisma.user.create({
           data: {
@@ -38,6 +43,11 @@ export async function POST(req: NextRequest) {
                 class: {
                   connect: {
                     id: classId,
+                  },
+                },
+                section: {
+                  connect: {
+                    id: section,
                   },
                 },
               },

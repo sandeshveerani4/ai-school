@@ -11,47 +11,31 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import { getSession } from "next-auth/react";
 import Loading from "@/app/dashboard/loading";
-import { Class } from "@prisma/client";
 import ModalLay from "../ModalLay";
 import FormWithLoading from "../FormWithLoading";
+import ClassRow, { Class } from "./ClassRow";
+import { reqParams } from "@/consts";
 
-export const getClasses = async (token: string) => {
-  const options: RequestInit = {
-    headers: {
-      "Content-Type": "application/json",
-      authorization: token,
-    },
-    cache: "no-store",
-  };
+export const getClasses = async () => {
+  const options: RequestInit = await reqParams();
   const res = await fetch(`/api/classes/`, options);
   return await res.json();
 };
-export const getSections = async (token: string, classId: number) => {
-  const options: RequestInit = {
-    headers: {
-      "Content-Type": "application/json",
-      authorization: token,
-    },
-    cache: "no-store",
-  };
-  const res = await fetch(`/api/classes/sections?classId=${classId}`, options);
-  return await res.json();
-};
+
 const GetClasses = ({ reload }: { reload: boolean }) => {
   const [fetchedData, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const loadData = async () => {
-    const session = await getSession();
-    if (session) {
-      setData(await getClasses(session.user.accessToken));
-      setLoading(false);
-    }
+    setData(await getClasses());
+    setLoading(false);
   };
   useEffect(() => {
     loadData();
-  });
+  }, []);
   useEffect(() => {
-    if (reload) loadData();
+    if (reload) {
+      loadData();
+    }
   }, [reload]);
   return (
     <Box className="w-100 overflow-x-auto">
@@ -62,6 +46,7 @@ const GetClasses = ({ reload }: { reload: boolean }) => {
               <TableCell>ID</TableCell>
               <TableCell>Name</TableCell>
               <TableCell>Rank</TableCell>
+              <TableCell>Class Teacher</TableCell>
               <TableCell>Sections</TableCell>
             </TableRow>
           </TableHead>
@@ -70,27 +55,7 @@ const GetClasses = ({ reload }: { reload: boolean }) => {
               <Box>No Data Found</Box>
             ) : (
               fetchedData.map((data: Class, index: number) => (
-                <TableRow
-                  key={data.id}
-                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                >
-                  <TableCell>{data["id"]}</TableCell>
-                  <TableCell>{data["name"]}</TableCell>
-                  <TableCell>{data["rank"]}</TableCell>
-                  <TableCell>
-                    <ModalLay
-                      buttonTitle="Create Section"
-                      buttonProps={{ color: "primary", variant: "contained" }}
-                    >
-                      <FormWithLoading
-                        submitName="Create Section"
-                        endpoint={`/classes/${data.id}/sections/`}
-                      >
-                        
-                      </FormWithLoading>
-                    </ModalLay>
-                  </TableCell>
-                </TableRow>
+                <ClassRow data={data} key={data.id} />
               ))
             )}
           </TableBody>

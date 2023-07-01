@@ -47,6 +47,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
         first_name: body.first_name,
         last_name: body.last_name,
       },
+      include: { teacher: true },
     });
     const { password, ...data } = result;
     return NextResponse.json({ ...data });

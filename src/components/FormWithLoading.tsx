@@ -1,4 +1,5 @@
 "use client";
+import { reqParams } from "@/consts";
 import {
   Alert,
   Box,
@@ -6,7 +7,6 @@ import {
   ButtonProps,
   CircularProgress,
 } from "@mui/material";
-import { getSession } from "next-auth/react";
 import React from "react";
 
 const FormWithLoading = ({
@@ -34,7 +34,6 @@ const FormWithLoading = ({
     e.preventDefault();
     setError("");
     setLoading(true);
-    const session = await getSession();
     if (data) {
       var JSONdata = JSON.stringify(data);
     } else {
@@ -43,13 +42,9 @@ const FormWithLoading = ({
       var JSONdata = JSON.stringify(value);
     }
     const options: RequestInit = {
+      ...(await reqParams()),
       method: method,
-      headers: {
-        "Content-Type": "application/json",
-        authorization: session?.user.accessToken ?? "",
-      },
       body: JSONdata,
-      cache: "no-store",
     };
     const response = await fetch(endpoint, options);
     try {

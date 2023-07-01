@@ -11,7 +11,8 @@ const Stats = () => {
     children?: React.ReactNode;
   }) => (
     <Grid
-      direction={"row"}
+      container
+      direction={"column"}
       md={3}
       xs={12}
       sx={{

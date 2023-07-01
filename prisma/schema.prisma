@@ -26,24 +26,24 @@ model User {
 }
 
 model Admin {
-  id     Int  @id @default(autoincrement())
-  user   User @relation(fields: [userId], references: [id])
   userId Int  @unique
+  user   User @relation(fields: [userId], references: [id])
 }
 
 model Student {
-  userId    Int      @id @default(autoincrement())
-  user      User     @relation(fields: [userId], references: [id])
-  class     Class?   @relation(fields: [classId], references: [id])
+  userId    Int     @id @default(autoincrement())
+  user      User    @relation(fields: [userId], references: [id])
+  class     Class   @relation(fields: [classId], references: [id])
   classId   Int
-  section   Section? @relation(fields: [sectionId], references: [id])
-  sectionId Int?
+  section   Section @relation(fields: [sectionId], references: [id])
+  sectionId Int
 }
 
 model Teacher {
-  userId Int     @id @default(autoincrement())
-  user   User    @relation(fields: [userId], references: [id])
-  class  Class[]
+  userId   Int       @id @default(autoincrement())
+  user     User      @relation(fields: [userId], references: [id])
+  class    Class[]
+  subjects Subject[]
 }
 
 model Class {
@@ -52,8 +52,9 @@ model Class {
   rank         Int
   students     Student[]
   sections     Section[]
-  classTeacher Teacher?  @relation(fields: [teacherId], references: [userId])
-  teacherId    Int?
+  subjects     Subject[]
+  classTeacher Teacher   @relation(fields: [teacherId], references: [userId])
+  teacherId    Int
 }
 
 model Section {
@@ -61,8 +62,41 @@ model Section {
   name     String
   class    Class     @relation(fields: [classId], references: [id])
   classId  Int
-  Students Student[]
+  students Student[]
+  subjects Subject[]
 }
+
+model Subject {
+  id        Int     @id @default(autoincrement())
+  name      String
+  class     Class   @relation(fields: [classId], references: [id])
+  classId   Int
+  section   Section @relation(fields: [sectionId], references: [id])
+  sectionId Int
+  teacher   Teacher @relation(fields: [teacherId], references: [userId])
+  teacherId Int
+  topics    Topic[]
+}
+
+model Topic {
+  id          Int          @id @default(autoincrement())
+  title       String
+  description String
+  subject     Subject      @relation(fields: [subjectId], references: [id])
+  subjectId   Int
+  assignments Assignment[]
+}
+
+model Assignment {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String?
+  topic       Topic    @relation(fields: [topicId], references: [id])
+  topicId     Int
+  deadline    DateTime
+  createdAt   DateTime @default(now())
+}
+
 
 enum Role {
   STUDENT

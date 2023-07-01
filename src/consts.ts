@@ -1,3 +1,13 @@
+import { getSession } from "next-auth/react";
+export const reqParams = async (): Promise<RequestInit> => {
+  return <RequestInit>{
+    headers: {
+      "Content-Type": "application/json",
+      authorization: (await getSession())?.user.accessToken ?? "",
+    },
+    cache: "no-store",
+  };
+};
 export const config = {
   site: {
     name: "Ai School",

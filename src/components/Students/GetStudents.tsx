@@ -9,35 +9,25 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import { getSession } from "next-auth/react";
 import Loading from "@/app/dashboard/loading";
 import Link from "next/link";
 import { Student } from "./StudentFields";
+import { reqParams } from "@/consts";
 
-export const getStudents = async (token: string) => {
+export const getStudents = async () => {
   try {
-    const options: RequestInit = {
-      headers: {
-        "Content-Type": "application/json",
-        authorization: token,
-      },
-      cache: "no-store",
-    };
+    const options: RequestInit = await reqParams();
     const res = await fetch(`/api/students/`, options);
     return await res.json();
   } catch (e) {
     console.error(e);
   }
 };
-export const deleteStudent = async (token: string, id: string) => {
+export const deleteStudent = async (id: string) => {
   try {
     const options: RequestInit = {
-      headers: {
-        "Content-Type": "application/json",
-        authorization: token,
-      },
+      ...(await reqParams()),
       method: "DELETE",
-      cache: "no-store",
     };
     const res = await fetch(`/api/students/${id}`, options);
     return await res.json();
@@ -50,22 +40,16 @@ const GetStudents = ({ reload }: { reload: boolean }) => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const deleteStd = async (id: number) => {
-    const session = await getSession();
-    if (session) {
-      await deleteStudent(session?.user.accessToken, String(id));
-      loadData();
-    }
+    await deleteStudent(String(id));
+    loadData();
   };
   const loadData = async () => {
-    const session = await getSession();
-    if (session) {
-      setData(await getStudents(session.user.accessToken));
-      setLoading(false);
-    }
+    setData(await getStudents());
+    setLoading(false);
   };
   useEffect(() => {
     loadData();
-  });
+  }, []);
   useEffect(() => {
     if (reload) loadData();
   }, [reload]);
@@ -96,7 +80,9 @@ const GetStudents = ({ reload }: { reload: boolean }) => {
                   <TableCell>{data["username"]}</TableCell>
                   <TableCell>{data.first_name}</TableCell>
                   <TableCell>{data.last_name}</TableCell>
-                  <TableCell>{data.student?.class?.name}</TableCell>
+                  <TableCell>
+                    {data.student?.class?.name} {data.student?.section.name}
+                  </TableCell>
                   <TableCell>
                     <Button
                       variant="outlined"

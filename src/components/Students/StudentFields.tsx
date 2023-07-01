@@ -10,11 +10,12 @@ import {
   MenuItem,
 } from "@mui/material";
 import { Class, Prisma } from "@prisma/client";
-import { getClasses, getSections } from "../Classes/GetClasses";
+import { getClasses } from "../Classes/GetClasses";
 import { getSession } from "next-auth/react";
+import { getSections } from "../Classes/ClassRow";
 export type Student = Prisma.UserGetPayload<{
   include: {
-    student: { include: { class: true } };
+    student: { include: { class: true; section: true } };
   };
 }>;
 function IsJson(str: any) {
@@ -40,21 +41,13 @@ const StudentFields = ({ data, ...props }: { data: any }) => {
   };
   React.useEffect(() => {
     (async () => {
-      const session = await getSession();
-      if (session) {
-        setClasses(await getClasses(session.user.accessToken));
-      }
+      setClasses(await getClasses());
     })();
   }, []);
   React.useEffect(() => {
     if (selectedClass !== 0) {
       (async () => {
-        const session = await getSession();
-        if (session) {
-          setSections(
-            await getSections(session.user.accessToken, selectedClass)
-          );
-        }
+        setSections(await getSections(selectedClass));
       })();
     }
   }, [classes]);

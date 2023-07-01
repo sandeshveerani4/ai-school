@@ -11,20 +11,14 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import { getSession } from "next-auth/react";
 import Loading from "@/app/dashboard/loading";
 import Link from "next/link";
 import { Teacher } from "./TeacherFields";
 import ModalLay from "../ModalLay";
+import { reqParams } from "@/consts";
 
-export const getTeachers = async (token: string) => {
-  const options: RequestInit = {
-    headers: {
-      "Content-Type": "application/json",
-      authorization: token,
-    },
-    cache: "no-store",
-  };
+export const getTeachers = async () => {
+  const options: RequestInit = await reqParams();
   const res = await fetch(`/api/teachers/`, options);
   return await res.json();
 };
@@ -33,11 +27,8 @@ const GetTeachers = ({ reload }: { reload: boolean }) => {
   const [loading, setLoading] = useState(true);
 
   const loadData = async () => {
-    const session = await getSession();
-    if (session) {
-      setData(await getTeachers(session.user.accessToken));
-      setLoading(false);
-    }
+    setData(await getTeachers());
+    setLoading(false);
   };
   useEffect(() => {
     loadData();
@@ -87,7 +78,13 @@ const GetTeachers = ({ reload }: { reload: boolean }) => {
                       <Typography>
                         Are you sure you want to delete this entity?
                       </Typography>
-                      <Button variant='contained' color='error' className='mt-2'>Confirm</Button>
+                      <Button
+                        variant="contained"
+                        color="error"
+                        className="mt-2"
+                      >
+                        Confirm
+                      </Button>
                     </ModalLay>
                   </TableCell>
                 </TableRow>

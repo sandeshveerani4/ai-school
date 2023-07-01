@@ -1,27 +1,29 @@
 "use client";
 import { Box, Grid, MenuItem, Select, TextField } from "@mui/material";
 import { SelectChangeEvent } from "@mui/material/Select";
-import React from "react";
+import React, { use } from "react";
 import { getClasses } from "../Classes/GetClasses";
 import { DatePicker } from "@mui/x-date-pickers";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import FormWithLoading from "../FormWithLoading";
 import { getSections } from "../Classes/ClassRow";
+import { getTeachers } from "../Teachers/GetTeachers";
 
 const getOptions = (array: any) => {
   return array.map((item: any, index: any) => (
     <MenuItem key={index} value={item.id}>
-      {item.name}
+      {item.name ?? `${item.first_name} ${item.last_name}`}
     </MenuItem>
   ));
 };
-const CreateStudent = ({
+const CreateSubject = ({
   reloadData,
 }: {
   reloadData: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
   const [classes, setClasses] = React.useState([]);
+  const [teachers, setTeachers] = React.useState([]);
   const [selectedClass, setSelectedClass] = React.useState(0);
   const [sections, setSections] = React.useState([]);
   const classChange = (event: SelectChangeEvent) => {
@@ -29,10 +31,8 @@ const CreateStudent = ({
     setSelectedClass(event.target.value as unknown as number);
   };
   const fields = [
-    { label: "First Name", name: "first_name", required: true },
-    { label: "Last Name", name: "last_name", required: true },
-    { label: "Username", name: "username", required: true },
-    { label: "Password", name: "password", required: true, type: "password" },
+    { label: "Subject Name", name: "name", required: true },
+    { label: "Subject Teacher", name: "teacher", select: true, required: true },
     {
       label: "Class",
       name: "class",
@@ -41,10 +41,10 @@ const CreateStudent = ({
       onChange: (e: any) => classChange(e),
     },
     { label: "Section", name: "section", select: true, required: true },
-    { label: "Date of Birth", name: "date_of_birth" },
   ];
   React.useEffect(() => {
     (async () => {
+      setTeachers(await getTeachers());
       setClasses(await getClasses());
     })();
   }, []);
@@ -57,8 +57,8 @@ const CreateStudent = ({
   }, [selectedClass]);
   return (
     <FormWithLoading
-      submitName="Create Student"
-      endpoint="/api/students"
+      submitName="Create Subject"
+      endpoint="/api/subjects"
       setDone={reloadData}
     >
       <Grid container rowSpacing={1} columnSpacing={1}>
@@ -89,6 +89,8 @@ const CreateStudent = ({
                     ? getOptions(classes)
                     : item.name == "section"
                     ? getOptions(sections)
+                    : item.name == "teacher"
+                    ? getOptions(teachers)
                     : "")}
               </TextField>
             </Grid>
@@ -99,4 +101,4 @@ const CreateStudent = ({
   );
 };
 
-export default CreateStudent;
+export default CreateSubject;

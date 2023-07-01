@@ -9,7 +9,7 @@ interface RequestBody {
   first_name: string;
   last_name: string;
   class: number;
-  section?: number;
+  section: number;
   date_of_birth?: object;
 }
 export async function GET(req: NextRequest) {
@@ -18,7 +18,7 @@ export async function GET(req: NextRequest) {
   if (auth !== "ADMIN") return unAuthorized;
   const students = await prisma.user.findMany({
     where: { role: "STUDENT" },
-    include: { student: { include: { class: true } } },
+    include: { student: { include: { class: true, section: true } } },
     orderBy: { id: "desc" },
   });
   return NextResponse.json(students);
@@ -41,6 +41,11 @@ export async function POST(req: NextRequest) {
             class: {
               connect: {
                 id: Number(body.class),
+              },
+            },
+            section: {
+              connect: {
+                id: Number(body.section),
               },
             },
           },

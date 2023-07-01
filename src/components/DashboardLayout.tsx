@@ -98,13 +98,6 @@ const menuItems: MenuItem[] = [
     roles: ["ADMIN"],
   },
   {
-    id: 6,
-    name: "Topics",
-    path: "/dashboard/topics",
-    icon: <Topic />,
-    roles: ["ADMIN", "TEACHER"],
-  },
-  {
     id: 7,
     name: "Discussions",
     path: "/dashboard/discussions",

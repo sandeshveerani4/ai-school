@@ -5,18 +5,13 @@ import { Prisma } from "@prisma/client";
 import FormWithLoading from "../FormWithLoading";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { inputProps, inputWhite } from "../Students/StudentFields";
 export type Teacher = Prisma.UserGetPayload<{
   include: {
     teacher: true;
   };
 }>;
 
-export const inputProps = {
-  sx: {
-    textTransform: "capitalize",
-  },
-};
-export const inputWhite = { background: "white" };
 const TeacherFields = ({ data, ...props }: { data: any }) => {
   const FieldComp = (props: TextFieldProps) => {
     return (

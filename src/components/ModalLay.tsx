@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, {  useState } from "react";
 import { Modal, Box, Typography, Button, ButtonProps } from "@mui/material";
 import ArrowBack from "@mui/icons-material/ArrowBack";
 const ModalLay = ({

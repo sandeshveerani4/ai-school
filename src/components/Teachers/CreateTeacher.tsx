@@ -1,21 +1,16 @@
 "use client";
-import { Box, Grid, MenuItem, Select, TextField } from "@mui/material";
-import { SelectChangeEvent } from "@mui/material/Select";
+import { Grid, TextField } from "@mui/material";
 import React from "react";
-import Button from "@mui/material/Button";
-import { getSession } from "next-auth/react";
-import { getClasses, getSections } from "../Classes/GetClasses";
 import { DatePicker } from "@mui/x-date-pickers";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { Class } from "@prisma/client";
 import FormWithLoading from "../FormWithLoading";
 
 const fields = [
   { label: "First Name", name: "first_name", required: true },
   { label: "Last Name", name: "last_name", required: true },
   { label: "Username", name: "username", required: true },
-  { label: "Password", name: "password", required: true,type:'password' },
+  { label: "Password", name: "password", required: true, type: "password" },
   { label: "Date of Birth", name: "date_of_birth" },
 ];
 const CreateTeacher = ({
