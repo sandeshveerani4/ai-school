@@ -1,5 +1,13 @@
 "use client";
-import { Box, Grid, MenuItem, Select, TextField } from "@mui/material";
+import {
+  Box,
+  CardMedia,
+  Grid,
+  MenuItem,
+  Select,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { SelectChangeEvent } from "@mui/material/Select";
 import React from "react";
 import { getClasses } from "../Classes/GetClasses";
@@ -8,6 +16,9 @@ import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import FormWithLoading from "../FormWithLoading";
 import { getSections } from "../Classes/ClassRow";
+import { useDropzone } from "react-dropzone";
+import ImageIcon from "@mui/icons-material/Image";
+import { fileUpload } from "@/lib/file_upload";
 
 const getOptions = (array: any) => {
   return array.map((item: any, index: any) => (
@@ -24,6 +35,8 @@ const CreateStudent = ({
   const [classes, setClasses] = React.useState([]);
   const [selectedClass, setSelectedClass] = React.useState(0);
   const [sections, setSections] = React.useState([]);
+  const [image, setImage] = React.useState<any>(undefined);
+
   const classChange = (event: SelectChangeEvent) => {
     console.log("called");
     setSelectedClass(event.target.value as unknown as number);
@@ -55,47 +68,84 @@ const CreateStudent = ({
       })();
     }
   }, [selectedClass]);
+  const { getRootProps, getInputProps } = useDropzone({
+    accept: { "image/*": [] },
+    multiple: false,
+    onDrop: (acceptedFiles) => {
+      setImage(acceptedFiles[0]);
+    },
+  });
+  const middleware = async () => {
+    return await fileUpload(image);
+  };
   return (
-    <FormWithLoading
-      submitName="Create Student"
-      endpoint="/api/students"
-      setDone={reloadData}
-    >
-      <Grid container rowSpacing={1} columnSpacing={1}>
-        {fields.map((item, index) =>
-          item.name === "date_of_birth" ? (
-            <Grid key={index} item md={6} xs={12}>
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DatePicker
-                  sx={{ background: "white", width: "100%" }}
-                  {...item}
-                />
-              </LocalizationProvider>
-            </Grid>
-          ) : (
-            <Grid key={index} item md={6} xs={12}>
-              <TextField
-                sx={{ background: "white" }}
-                InputLabelProps={{
-                  sx: {
-                    textTransform: "capitalize",
-                  },
-                }}
-                {...item}
-                fullWidth
-              >
-                {item.select &&
-                  (item.name == "class"
-                    ? getOptions(classes)
-                    : item.name == "section"
-                    ? getOptions(sections)
-                    : "")}
-              </TextField>
-            </Grid>
-          )
+    <>
+      <Box
+        width={"150px"}
+        {...(image === undefined && { height: "150px" })}
+        className="p-2 flex flex-col items-center justify-center bg-white rounded-lg"
+        {...getRootProps()}
+      >
+        <input {...getInputProps()} />
+        {image === undefined ? (
+          <>
+            <ImageIcon fontSize={"large"} />
+            <Typography textAlign={"center"} sx={{ userSelect: "none" }}>
+              Choose Image
+            </Typography>
+          </>
+        ) : (
+          <CardMedia
+            component="img"
+            sx={{
+              width: "100%",
+            }}
+            src={URL.createObjectURL(image)}
+          />
         )}
-      </Grid>
-    </FormWithLoading>
+      </Box>
+      <FormWithLoading
+        submitName="Create Student"
+        endpoint="/api/students"
+        setDone={reloadData}
+        middleware={middleware}
+      >
+        <Grid container rowSpacing={1} columnSpacing={1}>
+          {fields.map((item, index) =>
+            item.name === "date_of_birth" ? (
+              <Grid key={index} item md={6} xs={12}>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DatePicker
+                    sx={{ background: "white", width: "100%" }}
+                    {...item}
+                  />
+                </LocalizationProvider>
+              </Grid>
+            ) : (
+              <Grid key={index} item md={6} xs={12}>
+                <TextField
+                  sx={{ background: "white" }}
+                  InputLabelProps={{
+                    sx: {
+                      textTransform: "capitalize",
+                    },
+                  }}
+                  {...item}
+                  fullWidth
+                >
+                  {item.select &&
+                    (item.name == "class"
+                      ? getOptions(classes)
+                      : item.name == "section"
+                      ? getOptions(sections)
+                      : "")}
+                </TextField>
+              </Grid>
+            )
+          )}
+        </Grid>
+      </FormWithLoading>
+    </>
   );
 };
 

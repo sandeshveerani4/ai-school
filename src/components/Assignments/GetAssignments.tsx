@@ -11,40 +11,39 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import Loading from "@/app/dashboard/loading";
 import Link from "next/link";
-import { Student } from "./StudentFields";
 import { reqParams } from "@/consts";
-
-export const getStudents = async () => {
+import { Prisma } from "@prisma/client";
+export type Assignment = Prisma.AssignmentGetPayload<{
+  include: {
+    _count: { select: { submissions: true } };
+    topic: {
+      include: {
+        subject: {
+          include: {
+            class: true;
+            section: true;
+            teacher: { include: { user: true } };
+          };
+        };
+      };
+    };
+  };
+}>;
+export const getAssignments = async () => {
   try {
     const options: RequestInit = await reqParams();
-    const res = await fetch(`/api/students/`, options);
-    return await res.json();
-  } catch (e) {
-    console.error(e);
-  }
-};
-export const deleteStudent = async (id: string) => {
-  try {
-    const options: RequestInit = {
-      ...(await reqParams()),
-      method: "DELETE",
-    };
-    const res = await fetch(`/api/students/${id}`, options);
+    const res = await fetch(`/api/assignments/`, options);
     return await res.json();
   } catch (e) {
     console.error(e);
   }
 };
 
-const GetStudents = ({ reload }: { reload: boolean }) => {
+const GetAssignments = ({ reload }: { reload: boolean }) => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const deleteStd = async (id: number) => {
-    await deleteStudent(String(id));
-    loadData();
-  };
   const loadData = async () => {
-    setData((await getStudents()) ?? data);
+    setData((await getAssignments()) ?? []);
     setLoading(false);
   };
   useEffect(() => {
@@ -60,10 +59,13 @@ const GetStudents = ({ reload }: { reload: boolean }) => {
           <TableHead>
             <TableRow>
               <TableCell>Id</TableCell>
-              <TableCell>Username</TableCell>
-              <TableCell>First Name</TableCell>
-              <TableCell>Last Name</TableCell>
+              <TableCell>Title</TableCell>
+              <TableCell>Submissions</TableCell>
+              <TableCell>Topic</TableCell>
+              <TableCell>Given By</TableCell>
+              <TableCell>Subject</TableCell>
               <TableCell>Class</TableCell>
+              <TableCell>Section</TableCell>
               <TableCell>Actions</TableCell>
             </TableRow>
           </TableHead>
@@ -71,33 +73,30 @@ const GetStudents = ({ reload }: { reload: boolean }) => {
             {!loading && data.length == 0 ? (
               <Box>No Data Found</Box>
             ) : (
-              data.map((data: Student, index: number) => (
+              data.map((data: Assignment, index: number) => (
                 <TableRow
                   key={data.id}
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                 >
-                  <TableCell>{data["id"]}</TableCell>
-                  <TableCell>{data["username"]}</TableCell>
-                  <TableCell>{data.first_name}</TableCell>
-                  <TableCell>{data.last_name}</TableCell>
+                  <TableCell>{data.id}</TableCell>
+                  <TableCell>{data.title}</TableCell>
+                  <TableCell>{data._count.submissions}</TableCell>
+                  <TableCell>{data.topic.title}</TableCell>
                   <TableCell>
-                    {data.student?.class?.name} {data.student?.section.name}
+                    {data.topic.subject.teacher.user.first_name}{" "}
+                    {data.topic.subject.teacher.user.last_name}
                   </TableCell>
+                  <TableCell>{data.topic.subject.name}</TableCell>
+                  <TableCell>{data.topic.subject.class.name}</TableCell>
+                  <TableCell>{data.topic.subject.section.name}</TableCell>
                   <TableCell>
                     <Button
                       variant="outlined"
                       LinkComponent={Link}
-                      href={`/dashboard/students/${data["id"]}`}
+                      href={`/dashboard/assignments/${data["id"]}`}
                       className="mr-2"
                     >
                       View Details
-                    </Button>
-                    <Button
-                      variant="outlined"
-                      onClick={() => deleteStd(data.id)}
-                      color="error"
-                    >
-                      Delete
                     </Button>
                   </TableCell>
                 </TableRow>
@@ -110,4 +109,4 @@ const GetStudents = ({ reload }: { reload: boolean }) => {
     </Box>
   );
 };
-export default GetStudents;
+export default GetAssignments;

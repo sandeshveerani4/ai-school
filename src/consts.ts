@@ -15,5 +15,6 @@ export const config = {
     url: process.env.VERCEL
       ? "https://ai-school-git-master-sandeshveerani4.vercel.app"
       : "http://localhost:3000",
+    imageDomain: "https://labs.barathkumaar.com",
   },
 };

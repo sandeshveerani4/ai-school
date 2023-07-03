@@ -11,6 +11,7 @@ interface RequestBody {
   class: number;
   section: number;
   date_of_birth?: object;
+  filename?: string;
 }
 export async function GET(req: NextRequest) {
   const auth = authorize(req);
@@ -28,6 +29,7 @@ export async function POST(req: NextRequest) {
   if (typeof auth === "object") return auth;
   if (auth !== "ADMIN") return unAuthorized;
   const body: RequestBody = await req.json();
+  console.log(body);
   try {
     const result = await prisma.user.create({
       data: {
@@ -36,6 +38,7 @@ export async function POST(req: NextRequest) {
         role: "STUDENT",
         first_name: body.first_name,
         last_name: body.last_name,
+        pictureURL: body.filename,
         student: {
           create: {
             class: {

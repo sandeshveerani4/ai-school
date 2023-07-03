@@ -18,33 +18,52 @@ const FormWithLoading = ({
   setData,
   buttonProps,
   method = "POST",
+  button = true,
+  loadingA = false,
+  setLoadingA,
+  middleware,
 }: {
   data?: any;
   children?: React.ReactNode;
   setDone?: React.Dispatch<React.SetStateAction<boolean>>;
-  submitName: string;
+  submitName?: string;
   endpoint: string;
   setData?: React.Dispatch<React.SetStateAction<any>>;
   buttonProps?: ButtonProps;
   method?: string;
+  button?: boolean;
+  loadingA?: boolean;
+  setLoadingA?: React.Dispatch<React.SetStateAction<boolean>>;
+  middleware?: any;
 }) => {
-  const [loading, setLoading] = React.useState(false);
+  const [loading, setLoading] =
+    loadingA !== undefined && setLoadingA !== undefined
+      ? [loadingA, setLoadingA]
+      : React.useState(false);
   const [error, setError] = React.useState("");
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     setError("");
     setLoading(true);
+    var finalData = {};
+    if (middleware) {
+      const runned = await middleware();
+      if (runned) {
+        finalData = { ...runned };
+      }
+    }
     if (data) {
-      var JSONdata = JSON.stringify(data);
+      finalData = { ...finalData, ...data };
     } else {
       const formData = new FormData(e.target);
       const value = Object.fromEntries(formData.entries());
-      var JSONdata = JSON.stringify(value);
+      finalData = { ...finalData, ...value };
     }
+    finalData = JSON.stringify(finalData);
     const options: RequestInit = {
       ...(await reqParams()),
       method: method,
-      body: JSONdata,
+      body: finalData,
     };
     const response = await fetch(endpoint, options);
     try {
@@ -68,18 +87,20 @@ const FormWithLoading = ({
           {error}
         </Alert>
       )}
-      <Button
-        type="submit"
-        className="my-2"
-        {...(loading && {
-          disabled: true,
-          startIcon: <CircularProgress size={20} />,
-        })}
-        variant="contained"
-        {...buttonProps}
-      >
-        {submitName}
-      </Button>
+      {button && (
+        <Button
+          type="submit"
+          className="my-2"
+          {...(loading && {
+            disabled: true,
+            startIcon: <CircularProgress size={20} />,
+          })}
+          variant="contained"
+          {...buttonProps}
+        >
+          {submitName}
+        </Button>
+      )}
     </Box>
   );
 };

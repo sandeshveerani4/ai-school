@@ -6,19 +6,18 @@ import CssBaseline from "@mui/material/CssBaseline";
 import Divider from "@mui/material/Divider";
 import Drawer from "@mui/material/Drawer";
 import Button from "@mui/material/Button";
-import IconButton from "@mui/material/IconButton";
-import Dashboard from "@mui/icons-material/Dashboard";
+import Dashboard from "@mui/icons-material/SpaceDashboardOutlined";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import MenuIcon from "@mui/icons-material/Menu";
-import Question from "@mui/icons-material/QuestionMark";
-import LibraryBooks from "@mui/icons-material/LibraryBooks";
+import Question from "@mui/icons-material/TextSnippetOutlined";
+import LibraryBooks from "@mui/icons-material/ImportContactsOutlined";
 import Topic from "@mui/icons-material/Topic";
-import PersonIcon from "@mui/icons-material/Person";
-import Forum from "@mui/icons-material/Forum";
-import AssignmentIcon from "@mui/icons-material/Assignment";
+import PersonIcon from "@mui/icons-material/PeopleOutlined";
+import Forum from "@mui/icons-material/ChatOutlined";
+import AssignmentIcon from "@mui/icons-material/AssignmentOutlined";
 import GroupsIcon from "@mui/icons-material/Groups";
-import ClassIcon from "@mui/icons-material/School";
+import ClassIcon from "@mui/icons-material/ClassOutlined";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import { usePathname } from "next/navigation";
@@ -27,16 +26,21 @@ import { Metadata } from "next";
 import { getSession, signOut, useSession } from "next-auth/react";
 import { config } from "@/consts";
 import Loading from "@/app/dashboard/loading";
+import MoreHorizOutlinedIcon from "@mui/icons-material/MoreHorizOutlined";
 import {
   CircularProgress,
   Fade,
   Grow,
+  Stack,
   Menu,
   MenuItem,
+  IconButton,
   Slide,
+  Zoom,
+  Grid,
 } from "@mui/material";
-import InsightsIcon from "@mui/icons-material/Insights";
-import AccountCircle from "@mui/icons-material/AccountCircle";
+import InsightsIcon from "@mui/icons-material/AnalyticsOutlined";
+import AccountCircle from "@mui/icons-material/PersonOutlineOutlined";
 
 export const metadata: Metadata = {
   title: "Dashboard",
@@ -124,16 +128,7 @@ const getValueFromPath = (path: string) => {
   return match.length > 2 ? match[2] : match[1];
 };
 const DashboardLayout = (props: Props) => {
-  const [loading, setLoading] = React.useState(false);
   const { data: session } = useSession();
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
   const currentPage = usePathname();
   const { window, children } = props;
   const [mobileOpen, setMobileOpen] = React.useState(false);
@@ -154,11 +149,17 @@ const DashboardLayout = (props: Props) => {
       style={{ transitionDelay: `${index * 100}ms` }}
     >
       <ListItem disablePadding>
+        {currentPage === item.path.toLowerCase() && (
+          <Zoom in={true} style={{ transitionDelay: `0.5s` }}>
+            <Box
+              className="bg-green-500 rounded-r-2xl"
+              sx={{ width: "4px", height: "30px" }}
+            ></Box>
+          </Zoom>
+        )}
         <Button
           key={item.id}
-          variant={
-            currentPage == item.path.toLowerCase() ? "contained" : "text"
-          }
+          variant="text"
           href={item.path}
           LinkComponent={Link}
           sx={buttonSx}
@@ -173,20 +174,52 @@ const DashboardLayout = (props: Props) => {
     </Fade>
   );
   const drawer = (
-    <div>
+    <Stack direction="column" justifyContent={"center"} height={"100%"}>
       <Toolbar className="py-5 items-center justify-center">
         <Typography variant="h5" textAlign={"center"}>
           {config.site.name}
         </Typography>
       </Toolbar>
-      <List>
-        {menuItems.map((item: MenuItem, index: number) => {
-          return item.roles.includes(session?.user.role)
-            ? NavBarItem(item, index)
-            : "";
-        })}
-      </List>
-    </div>
+      <Box overflow={"auto"} flexGrow={1}>
+        <List>
+          {menuItems.map((item: MenuItem, index: number) => {
+            return item.roles.includes(session?.user.role)
+              ? NavBarItem(item, index)
+              : "";
+          })}
+        </List>
+      </Box>
+      {session && (
+        <List>
+          <ListItem>
+            <Grid
+              container
+              alignItems={"center"}
+              justifyContent={"center"}
+              direction={"row"}
+            >
+              <Grid container alignItems={"center"} item xs={2}>
+                <AccountCircle />
+              </Grid>
+              <Grid container alignItems={"center"} item xs={8}>
+                <Typography>
+                  {session.user.first_name} {session.user.last_name}
+                </Typography>
+              </Grid>
+              <Grid container alignItems={"center"} item xs={2}>
+                <IconButton
+                  edge="end"
+                  color="primary"
+                  onClick={() => signOut()}
+                >
+                  <MoreHorizOutlinedIcon />
+                </IconButton>
+              </Grid>
+            </Grid>
+          </ListItem>
+        </List>
+      )}
+    </Stack>
   );
   const container =
     window !== undefined ? () => window().document.body : undefined;
@@ -224,51 +257,6 @@ const DashboardLayout = (props: Props) => {
           >
             {getValueFromPath(currentPage)}
           </Typography>
-          {session && (
-            <Box>
-              <IconButton
-                size="medium"
-                aria-label="account of current user"
-                aria-controls="menu-appbar"
-                aria-haspopup="true"
-                onClick={handleMenu}
-                color="inherit"
-              >
-                <AccountCircle />
-              </IconButton>
-              <Menu
-                id="menu-appbar"
-                anchorEl={anchorEl}
-                anchorOrigin={{
-                  vertical: "top",
-                  horizontal: "right",
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: "top",
-                  horizontal: "right",
-                }}
-                elevation={2}
-                open={Boolean(anchorEl)}
-                onClose={handleClose}
-              >
-                <MenuItem onClick={handleClose}>
-                  Account: {session.user.first_name}
-                </MenuItem>
-                <MenuItem
-                  onClick={() => {
-                    setLoading(true);
-                    signOut().finally(() => setLoading(false));
-                  }}
-                  {...(loading && {
-                    disabled: true,
-                  })}
-                >
-                  {loading ? <CircularProgress size={20} /> : "Logout"}
-                </MenuItem>
-              </Menu>
-            </Box>
-          )}
         </Toolbar>
       </AppBar>
       <Box
@@ -289,6 +277,8 @@ const DashboardLayout = (props: Props) => {
             "& .MuiDrawer-paper": {
               boxSizing: "border-box",
               width: drawerWidth,
+              border: "none",
+              boxShadow: "1px 0 25px -30px black",
             },
           }}
         >
@@ -301,6 +291,8 @@ const DashboardLayout = (props: Props) => {
             "& .MuiDrawer-paper": {
               boxSizing: "border-box",
               width: drawerWidth,
+              border: "none",
+              boxShadow: "1px 0 25px -30px black",
             },
           }}
           open

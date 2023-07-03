@@ -4,6 +4,7 @@ import Add from "@mui/icons-material/Add";
 import React, { useEffect } from "react";
 import GetStudents from "@/components/Students/GetStudents";
 import CreateAssignment from "@/components/Assignments/CreateAssignment";
+import GetAssignments from "@/components/Assignments/GetAssignments";
 const Assignments = () => {
   const [show, setShow] = React.useState(false);
 
@@ -29,7 +30,7 @@ const Assignments = () => {
         </Button>
       </Box>
       {show && <CreateAssignment reloadData={reloadData} />}
-      <GetStudents reload={reload} />
+      <GetAssignments reload={reload} />
     </Box>
   );
 };

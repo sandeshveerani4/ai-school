@@ -1,4 +1,4 @@
-import React, {  useState } from "react";
+import React, { useState } from "react";
 import { Modal, Box, Typography, Button, ButtonProps } from "@mui/material";
 import ArrowBack from "@mui/icons-material/ArrowBack";
 const ModalLay = ({
@@ -7,12 +7,14 @@ const ModalLay = ({
   buttonProps,
   opener,
   setOpener,
+  width = 400,
 }: {
   children?: React.ReactNode;
   buttonTitle: string;
   buttonProps?: ButtonProps;
   opener?: boolean;
   setOpener?: React.Dispatch<React.SetStateAction<boolean>>;
+  width?: number;
 }) => {
   var [open, setOpen] =
     opener !== undefined && setOpener !== undefined
@@ -25,7 +27,7 @@ const ModalLay = ({
     top: "50%",
     left: "50%",
     transform: "translate(-50%, -50%)",
-    width: 400,
+    width: width,
     bgcolor: "background.paper",
     boxShadow: 24,
     p: 3,
