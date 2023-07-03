@@ -63,7 +63,7 @@ const FormWithLoading = ({
     const options: RequestInit = {
       ...(await reqParams()),
       method: method,
-      body: finalData,
+      body: finalData as string,
     };
     const response = await fetch(endpoint, options);
     try {
