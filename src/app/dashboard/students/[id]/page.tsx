@@ -7,7 +7,7 @@ import Image from "next/image";
 import { Typography } from "@mui/material";
 
 const ParticularStudent = ({ params }: { params: { id: string } }) => {
-  const [student, setStudent] = useState<Student>();
+  const [student, setStudent] = useState<Student>({} as Student);
   const [loading, setLoading] = useState(true);
   const getStudent = async (token: string) => {
     const options: RequestInit = {
