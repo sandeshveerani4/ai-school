@@ -26,7 +26,7 @@ import { Metadata } from "next";
 import { getSession, signOut, useSession } from "next-auth/react";
 import { config } from "@/consts";
 import Loading from "@/app/dashboard/loading";
-import MoreHorizOutlinedIcon from "@mui/icons-material/MoreHorizOutlined";
+import ExitToApp from "@mui/icons-material/ExitToApp";
 import {
   CircularProgress,
   Fade,
@@ -38,6 +38,7 @@ import {
   Slide,
   Zoom,
   Grid,
+  Tooltip,
 } from "@mui/material";
 import InsightsIcon from "@mui/icons-material/AnalyticsOutlined";
 import AccountCircle from "@mui/icons-material/PersonOutlineOutlined";
@@ -164,7 +165,9 @@ const DashboardLayout = (props: Props) => {
           LinkComponent={Link}
           sx={buttonSx}
           size="large"
-          color={currentPage == item.path.toLowerCase() ? "secondary" : "light"}
+          color={
+            currentPage === item.path.toLowerCase() ? "secondary" : "light"
+          }
           fullWidth
         >
           {item.icon}
@@ -198,22 +201,27 @@ const DashboardLayout = (props: Props) => {
               justifyContent={"center"}
               direction={"row"}
             >
-              <Grid container alignItems={"center"} item xs={2}>
-                <AccountCircle />
+              <Grid container alignItems={"center"} item xs={10}>
+                <Tooltip title="View Profile">
+                  <Button
+                    startIcon={<AccountCircle />}
+                    sx={{ justifyContent: "left" }}
+                    fullWidth
+                  >
+                    {session.user.first_name} {session.user.last_name}
+                  </Button>
+                </Tooltip>
               </Grid>
-              <Grid container alignItems={"center"} item xs={8}>
-                <Typography>
-                  {session.user.first_name} {session.user.last_name}
-                </Typography>
-              </Grid>
               <Grid container alignItems={"center"} item xs={2}>
-                <IconButton
-                  edge="end"
-                  color="primary"
-                  onClick={() => signOut()}
-                >
-                  <MoreHorizOutlinedIcon />
-                </IconButton>
+                <Tooltip title="Logout">
+                  <IconButton
+                    edge="end"
+                    color="primary"
+                    onClick={() => signOut()}
+                  >
+                    <ExitToApp />
+                  </IconButton>
+                </Tooltip>
               </Grid>
             </Grid>
           </ListItem>

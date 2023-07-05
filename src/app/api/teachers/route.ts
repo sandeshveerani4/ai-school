@@ -2,7 +2,7 @@ import prisma from "@/lib/prisma";
 import * as bcrypt from "bcrypt";
 import { NextRequest, NextResponse } from "next/server";
 import { verifyJwt } from "@/lib/jwt";
-import { authorize, unAuthorized } from "@/lib/authorize";
+import { User, authorize, unAuthorized } from "@/lib/authorize";
 import { Prisma } from "@prisma/client";
 interface RequestBody {
   username: string;
@@ -12,9 +12,9 @@ interface RequestBody {
   date_of_birth?: object;
 }
 export async function GET(req: NextRequest, res: NextResponse) {
-  const auth = authorize(req);
-  if (typeof auth === "object") return auth;
-  if (auth !== "ADMIN") return unAuthorized;
+  const auth = authorize(req) as User;
+  if (auth === unAuthorized) return auth;
+  if (auth.role !== "ADMIN") return unAuthorized;
   const accessToken = req.headers.get("authorization");
   if (!accessToken || !verifyJwt(accessToken)) {
     return new Response(

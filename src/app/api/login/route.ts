@@ -13,6 +13,11 @@ export async function POST(request: Request) {
     where: {
       username: body.username,
     },
+    include: {
+      student: true,
+      teacher: true,
+      admin: true,
+    },
   });
 
   if (user && (await bcrypt.compare(body.password, user.password))) {

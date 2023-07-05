@@ -2,10 +2,10 @@
 import { Box, Grid, Skeleton, TextField } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import Button from "@mui/material/Button";
-import Typography from "@mui/material/Typography";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
+import Typography from "@mui/material/Typography";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
@@ -15,38 +15,33 @@ import Link from "next/link";
 import { reqParams } from "@/consts";
 import { Prisma } from "@prisma/client";
 import { useSession } from "next-auth/react";
-export type Assignment = Prisma.AssignmentGetPayload<{
+export type Submission = Prisma.SubmissionGetPayload<{
   include: {
-    _count: { select: { submissions: true } };
-    topic: {
-      include: {
-        subject: {
-          include: {
-            class: true;
-            section: true;
-            teacher: { include: { user: true } };
-          };
-        };
-      };
-    };
+    student: { include: { user: true } };
   };
 }>;
-export const getAssignments = async () => {
+export const getSubmissions = async (id: string) => {
   try {
     const options: RequestInit = await reqParams();
-    const res = await fetch(`/api/assignments/`, options);
+    const res = await fetch(`/api/assignments/${id}/submissions`, options);
     return await res.json();
   } catch (e) {
     console.error(e);
   }
 };
 
-const GetAssignments = ({ reload }: { reload: boolean }) => {
+const GetAssignments = ({
+  reload,
+  assignmentId,
+}: {
+  reload: boolean;
+  assignmentId: string;
+}) => {
   const { data: session } = useSession();
-  const [data, setData] = useState<Assignment[]>([]);
+  const [data, setData] = useState<Submission[]>([]);
   const [loading, setLoading] = useState(true);
   const loadData = async () => {
-    setData((await getAssignments()) ?? data);
+    setData((await getSubmissions(assignmentId)) ?? data);
     setLoading(false);
   };
   useEffect(() => {
@@ -62,27 +57,19 @@ const GetAssignments = ({ reload }: { reload: boolean }) => {
           <TableHead>
             <TableRow>
               <TableCell>Id</TableCell>
-              <TableCell>Title</TableCell>
-              {session?.user.role !== "STUDENT" && (
-                <TableCell>Submissions</TableCell>
-              )}
-              <TableCell>Topic</TableCell>
-              <TableCell>Given By</TableCell>
-              <TableCell>Subject</TableCell>
-              <TableCell>Class</TableCell>
-              <TableCell>Section</TableCell>
+              <TableCell>By</TableCell>
               <TableCell>Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {!loading && data.length == 0 ? (
               <TableRow>
-              <TableCell colSpan={5}>
-                <Typography component={"div"} textAlign={"center"}>
-                  No Data Found
-                </Typography>
-              </TableCell>
-            </TableRow>
+                <TableCell colSpan={5}>
+                  <Typography component={"div"} textAlign={"center"}>
+                    No Data Found
+                  </Typography>
+                </TableCell>
+              </TableRow>
             ) : (
               data.map((data, index: number) => (
                 <TableRow
@@ -90,18 +77,9 @@ const GetAssignments = ({ reload }: { reload: boolean }) => {
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                 >
                   <TableCell>{data.id}</TableCell>
-                  <TableCell>{data.title}</TableCell>
-                  {session?.user.role !== "STUDENT" && (
-                    <TableCell>{data._count.submissions}</TableCell>
-                  )}
-                  <TableCell>{data.topic.title}</TableCell>
                   <TableCell>
-                    {data.topic.subject.teacher.user.first_name}{" "}
-                    {data.topic.subject.teacher.user.last_name}
+                    {data.student.user.first_name} {data.student.user.last_name}
                   </TableCell>
-                  <TableCell>{data.topic.subject.name}</TableCell>
-                  <TableCell>{data.topic.subject.class.name}</TableCell>
-                  <TableCell>{data.topic.subject.section.name}</TableCell>
                   <TableCell>
                     <Button
                       variant="outlined"

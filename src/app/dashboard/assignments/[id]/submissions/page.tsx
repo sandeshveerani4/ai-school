@@ -2,11 +2,11 @@
 import { Box, Button } from "@mui/material";
 import Add from "@mui/icons-material/Add";
 import React, { useEffect } from "react";
-import GetStudents from "@/components/Students/GetStudents";
 import CreateAssignment from "@/components/Assignments/CreateAssignment";
 import GetAssignments from "@/components/Assignments/GetAssignments";
 import { useSession } from "next-auth/react";
-const Assignments = () => {
+import GetSubmissions from "@/components/Assignments/GetSubmissions";
+const Submissions = ({ params }: { params: { id: string } }) => {
   const { data: session } = useSession();
   const [show, setShow] = React.useState(false);
 
@@ -21,24 +21,22 @@ const Assignments = () => {
 
   return (
     <Box>
-      {session?.user.role !== "STUDENT" && (
-        <>
-          <Box overflow={"hidden"}>
-            <Button
-              variant="contained"
-              onClick={() => setShow(!show)}
-              color="secondary"
-              className="float-right my-2"
-            >
-              <Add /> Add Assignment
-            </Button>
-          </Box>
-          {show && <CreateAssignment reloadData={reloadData} />}
-        </>
+      {session?.user.role === "STUDENT" && show && (
+        <Box>
+          <Button
+            variant="contained"
+            onClick={() => setShow(!show)}
+            color="secondary"
+            className="float-right my-2"
+          >
+            <Add /> Add Submission
+          </Button>
+          <CreateAssignment reloadData={reloadData} />
+        </Box>
       )}
-      <GetAssignments reload={reload} />
+      <GetSubmissions reload={reload} assignmentId={params.id} />
     </Box>
   );
 };
 
-export default Assignments;
+export default Submissions;

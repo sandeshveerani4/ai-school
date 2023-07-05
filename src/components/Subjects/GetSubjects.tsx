@@ -39,11 +39,11 @@ const GetSubjects = ({
   classId: number;
   sectionId: number;
 }) => {
-  const [data, setData] = useState([]);
+  const [data, setData] = useState<Subject[]>([]);
   const [loading, setLoading] = useState(true);
   const loadData = async () => {
     setLoading(true);
-    setData(await getSubjects(classId, sectionId));
+    setData((await getSubjects(classId, sectionId)) ?? data);
     setLoading(false);
   };
   useEffect(() => {
@@ -73,10 +73,16 @@ const GetSubjects = ({
               </TableRow>
             </TableHead>
             <TableBody>
-              {!loading && data.length == 0 ? (
-                <Typography>No Data Found</Typography>
+              {data.length == 0 ? (
+                <TableRow>
+                  <TableCell colSpan={5}>
+                    <Typography component={"div"} textAlign={"center"}>
+                      No Data Found
+                    </Typography>
+                  </TableCell>
+                </TableRow>
               ) : (
-                data.map((data: Subject, index: number) => (
+                data.map((data, index: number) => (
                   <TableRow
                     key={data.id}
                     sx={{ "&:last-child td, &:last-child th": { border: 0 } }}

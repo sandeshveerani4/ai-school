@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import Button from "@mui/material/Button";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
+import Typography from "@mui/material/Typography";
 import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
@@ -23,10 +24,10 @@ export const getClasses = async () => {
 };
 
 const GetClasses = ({ reload }: { reload: boolean }) => {
-  const [fetchedData, setData] = useState([]);
+  const [fetchedData, setData] = useState<Class[]>([]);
   const [loading, setLoading] = useState(true);
   const loadData = async () => {
-    setData(await getClasses());
+    setData((await getClasses()) ?? fetchedData);
     setLoading(false);
   };
   useEffect(() => {
@@ -52,9 +53,15 @@ const GetClasses = ({ reload }: { reload: boolean }) => {
           </TableHead>
           <TableBody>
             {!loading && fetchedData.length == 0 ? (
-              <Box>No Data Found</Box>
+              <TableRow>
+                <TableCell colSpan={5}>
+                  <Typography component={"div"} textAlign={"center"}>
+                    No Data Found
+                  </Typography>
+                </TableCell>
+              </TableRow>
             ) : (
-              fetchedData.map((data: Class, index: number) => (
+              fetchedData.map((data, index: number) => (
                 <ClassRow data={data} key={data.id} />
               ))
             )}

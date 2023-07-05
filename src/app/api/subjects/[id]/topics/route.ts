@@ -1,6 +1,6 @@
 import prisma from "@/lib/prisma";
 import { NextResponse } from "next/server";
-import { authorize, unAuthorized } from "@/lib/authorize";
+import { User, authorize, unAuthorized } from "@/lib/authorize";
 
 export async function GET(
   req: Request,
@@ -20,9 +20,9 @@ export async function POST(
   req: Request,
   { params }: { params: { id: string } }
 ) {
-  const auth = authorize(req);
-  if (typeof auth === "object") return auth;
-  if (auth === "STUDENT") return unAuthorized;
+  const auth = authorize(req) as User;
+  if (auth === unAuthorized) return auth;
+  if (auth.role === "STUDENT") return unAuthorized;
   const body = await req.json();
   const topics = await prisma.topic.create({
     data: {

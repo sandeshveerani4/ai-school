@@ -5,6 +5,7 @@ import Button from "@mui/material/Button";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
+import Typography from "@mui/material/Typography";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
@@ -37,7 +38,7 @@ export const deleteStudent = async (id: string) => {
 };
 
 const GetStudents = ({ reload }: { reload: boolean }) => {
-  const [data, setData] = useState([]);
+  const [data, setData] = useState<Student[]>([]);
   const [loading, setLoading] = useState(true);
   const deleteStd = async (id: number) => {
     await deleteStudent(String(id));
@@ -69,9 +70,15 @@ const GetStudents = ({ reload }: { reload: boolean }) => {
           </TableHead>
           <TableBody>
             {!loading && data.length == 0 ? (
-              <Box>No Data Found</Box>
+              <TableRow>
+                <TableCell colSpan={5}>
+                  <Typography component={"div"} textAlign={"center"}>
+                    No Data Found
+                  </Typography>
+                </TableCell>
+              </TableRow>
             ) : (
-              data.map((data: Student, index: number) => (
+              data.map((data, index: number) => (
                 <TableRow
                   key={data.id}
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}

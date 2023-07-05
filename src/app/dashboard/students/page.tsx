@@ -20,7 +20,12 @@ const Students = () => {
   return (
     <Box>
       <Box overflow={"hidden"}>
-        <BulkImport reloadData={reloadData} />
+        <BulkImport
+          reloadData={reloadData}
+          endpoint="/api/students/bulkimport"
+          subText="Headings should be named: First Name, Last Name, Class, Section,
+          Username, Password"
+        />
         <Button
           variant="contained"
           onClick={() => setShow(!show)}

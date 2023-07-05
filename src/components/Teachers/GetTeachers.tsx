@@ -23,11 +23,11 @@ export const getTeachers = async () => {
   return await res.json();
 };
 const GetTeachers = ({ reload }: { reload: boolean }) => {
-  const [fetchedData, setData] = useState([]);
+  const [fetchedData, setData] = useState<Teacher[]>([]);
   const [loading, setLoading] = useState(true);
 
   const loadData = async () => {
-    setData(await getTeachers());
+    setData((await getTeachers()) ?? fetchedData);
     setLoading(false);
   };
   useEffect(() => {
@@ -51,9 +51,15 @@ const GetTeachers = ({ reload }: { reload: boolean }) => {
           </TableHead>
           <TableBody>
             {!loading && fetchedData.length == 0 ? (
-              <Box>No Data Found</Box>
+              <TableRow>
+                <TableCell colSpan={5}>
+                  <Typography component={"div"} textAlign={"center"}>
+                    No Data Found
+                  </Typography>
+                </TableCell>
+              </TableRow>
             ) : (
-              fetchedData.map((data: Teacher, index: number) => (
+              fetchedData.map((data, index: number) => (
                 <TableRow
                   key={data.id}
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}

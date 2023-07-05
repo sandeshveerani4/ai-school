@@ -1,9 +1,7 @@
 "use client";
-import CreateTeacher from "@/components/Teachers/CreateTeacher";
 import { Box, Button, Typography } from "@mui/material";
 import Add from "@mui/icons-material/Add";
 import React, { useEffect } from "react";
-import GetTeachers from "@/components/Teachers/GetTeachers";
 import GetTopics from "@/components/Topics/GetTopics";
 import CreateTopics from "@/components/Topics/CreateTopics";
 

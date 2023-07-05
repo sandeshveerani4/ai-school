@@ -1,10 +1,10 @@
 import prisma from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
-import { authorize, unAuthorized } from "@/lib/authorize";
+import { User, authorize, unAuthorized } from "@/lib/authorize";
 
 export async function GET(req: NextRequest) {
-  const auth = authorize(req);
-  if (typeof auth === "object") return auth;
+  const auth = authorize(req) as User;
+  if (auth === unAuthorized) return auth;
   const classes = await prisma.class.findMany({
     orderBy: { rank: "desc" },
     include: { classTeacher: { include: { user: true } }, sections: true },
@@ -12,9 +12,9 @@ export async function GET(req: NextRequest) {
   return NextResponse.json(classes);
 }
 export async function POST(req: NextRequest) {
-  const auth = authorize(req);
-  if (typeof auth === "object") return auth;
-  if (auth !== "ADMIN") return unAuthorized;
+  const auth = authorize(req) as User;
+  if (auth === unAuthorized) return auth;
+  if (auth.role !== "ADMIN") return unAuthorized;
   const body = await req.json();
   const sclass = await prisma.class.create({
     data: {

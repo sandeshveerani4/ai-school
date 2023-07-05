@@ -2,7 +2,7 @@ import prisma from "@/lib/prisma";
 import * as bcrypt from "bcrypt";
 import { NextRequest, NextResponse } from "next/server";
 import { Prisma } from "@prisma/client";
-import { authorize, unAuthorized } from "@/lib/authorize";
+import { User, authorize, unAuthorized } from "@/lib/authorize";
 interface RequestBody {
   name: string;
   class: number;
@@ -10,9 +10,9 @@ interface RequestBody {
   teacher: number;
 }
 export async function GET(req: NextRequest) {
-  const auth = authorize(req);
-  if (typeof auth === "object") return auth;
-  if (auth !== "ADMIN") return unAuthorized;
+  const auth = authorize(req) as User;
+  if (auth === unAuthorized) return auth;
+  if (auth.role !== "ADMIN") return unAuthorized;
   const students = await prisma.subject.findMany({
     include: {
       class: true,

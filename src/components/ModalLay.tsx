@@ -8,6 +8,7 @@ const ModalLay = ({
   opener,
   setOpener,
   width = 400,
+  isButton = true,
 }: {
   children?: React.ReactNode;
   buttonTitle: string;
@@ -15,6 +16,7 @@ const ModalLay = ({
   opener?: boolean;
   setOpener?: React.Dispatch<React.SetStateAction<boolean>>;
   width?: number;
+  isButton?: boolean;
 }) => {
   var [open, setOpen] =
     opener !== undefined && setOpener !== undefined
@@ -34,14 +36,16 @@ const ModalLay = ({
   };
   return (
     <>
-      <Button
-        variant="outlined"
-        color="error"
-        onClick={handleOpen}
-        {...buttonProps}
-      >
-        {buttonTitle}
-      </Button>
+      {isButton && (
+        <Button
+          variant="outlined"
+          color="error"
+          onClick={handleOpen}
+          {...buttonProps}
+        >
+          {buttonTitle}
+        </Button>
+      )}
       {open && (
         <Modal
           open={open}

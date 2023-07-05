@@ -6,8 +6,12 @@ import { reqParams } from "@/consts";
 
 const BulkImport = ({
   reloadData,
+  endpoint,
+  subText,
 }: {
   reloadData: React.Dispatch<React.SetStateAction<boolean>>;
+  endpoint: string;
+  subText: string;
 }) => {
   const [opener, setOpener] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -48,7 +52,7 @@ const BulkImport = ({
           })
           .filter((row: any) => row !== null);
         try {
-          await fetch("/api/students/bulkimport", {
+          await fetch(endpoint, {
             method: "POST",
             body: JSON.stringify({ data: result }),
             ...(await reqParams()),
@@ -65,7 +69,7 @@ const BulkImport = ({
   };
   return (
     <ModalLay
-      buttonTitle="Bulk Import Students"
+      buttonTitle="Bulk Import"
       buttonProps={{
         className: "float-right my-2 ml-2",
         variant: "contained",
@@ -75,12 +79,9 @@ const BulkImport = ({
       setOpener={setOpener}
     >
       <Typography variant="h6" component="h2">
-        Bulk Import Students
+        Bulk Import
       </Typography>
-      <Typography className="my-2">
-        Headings should be like this: First Name, Last Name, Class, Section,
-        Username, Password
-      </Typography>
+      <Typography className="my-2">{subText}</Typography>
       <input
         type="file"
         className="hidden"

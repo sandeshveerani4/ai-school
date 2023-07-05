@@ -90,14 +90,19 @@ model Topic {
 }
 
 model Assignment {
-  id          Int          @id @default(autoincrement())
+  id          Int                     @id @default(autoincrement())
   title       String
   description String?
-  topic       Topic        @relation(fields: [topicId], references: [id])
+  topic       Topic                   @relation(fields: [topicId], references: [id])
   topicId     Int
   files       Json[]
   deadline    DateTime
-  createdAt   DateTime     @default(now())
+  type        AssignmentType          @default(HOMEWORK)
+  questions   QuestionForAssignment[]
+  enabled     Boolean                 @default(true)
+  visible     Boolean                 @default(true)
+  willStartAt DateTime                @default(now())
+  createdAt   DateTime                @default(now())
   submissions Submission[]
 }
 
@@ -111,6 +116,43 @@ model Submission {
   studentId    Int
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @default(now()) @updatedAt
+}
+
+model QuestionForAssignment {
+  assignment   Assignment @relation(fields: [assignmentId], references: [id])
+  assignmentId Int
+  question     Question   @relation(fields: [questionId], references: [id])
+  questionId   Int
+  createdAt    DateTime   @default(now())
+
+  @@id([assignmentId, questionId])
+}
+
+model Question {
+  id          Int                     @id @default(autoincrement())
+  question    String?
+  image       String?
+  score       Int
+  options     Option[]
+  assignments QuestionForAssignment[]
+  createdAt   DateTime                @default(now())
+  updatedAt   DateTime                @default(now()) @updatedAt
+}
+
+model Option {
+  id         Int      @id @default(autoincrement())
+  option     String?
+  image      String?
+  question   Question @relation(fields: [questionId], references: [id])
+  questionId Int
+  correct    Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now()) @updatedAt
+}
+
+enum AssignmentType {
+  HOMEWORK
+  QUIZ
 }
 
 enum Role {

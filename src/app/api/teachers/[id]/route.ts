@@ -1,13 +1,13 @@
 import prisma from "@/lib/prisma";
 import { NextResponse } from "next/server";
-import { authorize, unAuthorized } from "@/lib/authorize";
+import { User, authorize, unAuthorized } from "@/lib/authorize";
 export const PUT = async (
   req: Request,
   { params }: { params: { id: string } }
 ) => {
-  const auth = authorize(req);
-  if (typeof auth === "object") return auth;
-  if (auth === "STUDENT") return unAuthorized;
+  const auth = authorize(req) as User;
+  if (auth === unAuthorized) return auth;
+  if (auth.role === "STUDENT") return unAuthorized;
   const { id, ...body } = await req.json();
   if (body["date_of_birth"] === "") body["date_of_birth"] = null;
   if (body["password"] === "") body["password"] = undefined;
@@ -27,9 +27,9 @@ export async function GET(
   req: Request,
   { params }: { params: { id: string } }
 ) {
-  const auth = authorize(req);
-  if (typeof auth === "object") return auth;
-  if (auth === "STUDENT") return unAuthorized;
+  const auth = authorize(req) as User;
+  if (auth === unAuthorized) return auth;
+  if (auth.role === "STUDENT") return unAuthorized;
   const teachers = await prisma.user.findFirst({
     where: { role: "TEACHER", id: Number(params.id) },
     orderBy: { id: "desc" },

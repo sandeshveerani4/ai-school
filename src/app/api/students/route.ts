@@ -2,7 +2,7 @@ import prisma from "@/lib/prisma";
 import * as bcrypt from "bcrypt";
 import { NextRequest, NextResponse } from "next/server";
 import { Prisma } from "@prisma/client";
-import { authorize, unAuthorized } from "@/lib/authorize";
+import { User, authorize, unAuthorized } from "@/lib/authorize";
 interface RequestBody {
   username: string;
   password: string;
@@ -14,9 +14,9 @@ interface RequestBody {
   filename?: string;
 }
 export async function GET(req: NextRequest) {
-  const auth = authorize(req);
-  if (typeof auth === "object") return auth;
-  if (auth !== "ADMIN") return unAuthorized;
+  const auth = authorize(req) as User;
+  if (auth === unAuthorized) return auth;
+  if (auth.role !== "ADMIN") return unAuthorized;
   const students = await prisma.user.findMany({
     where: { role: "STUDENT" },
     include: { student: { include: { class: true, section: true } } },
@@ -25,11 +25,10 @@ export async function GET(req: NextRequest) {
   return NextResponse.json(students);
 }
 export async function POST(req: NextRequest) {
-  const auth = authorize(req);
-  if (typeof auth === "object") return auth;
-  if (auth !== "ADMIN") return unAuthorized;
+  const auth = authorize(req) as User;
+  if (auth === unAuthorized) return auth;
+  if (auth.role !== "ADMIN") return unAuthorized;
   const body: RequestBody = await req.json();
-  console.log(body);
   try {
     const result = await prisma.user.create({
       data: {

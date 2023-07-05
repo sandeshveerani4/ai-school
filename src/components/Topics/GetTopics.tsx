@@ -28,7 +28,7 @@ export const getTopics = async (subjectId: string) => {
   }
 };
 
-const GetSubjects = ({
+const GetTopics = ({
   reload,
   subjectId,
 }: {
@@ -39,7 +39,7 @@ const GetSubjects = ({
   const [loading, setLoading] = useState(true);
   const loadData = async () => {
     setLoading(true);
-    setData(await getTopics(subjectId));
+    setData((await getTopics(subjectId)) ?? data);
     setLoading(false);
   };
   useEffect(() => {
@@ -64,8 +64,14 @@ const GetSubjects = ({
               </TableRow>
             </TableHead>
             <TableBody>
-              {!loading && data.length == 0 ? (
-                <Typography component={"div"}>No Data Found</Typography>
+              {data.length == 0 ? (
+                <TableRow>
+                  <TableCell colSpan={5}>
+                    <Typography component={"div"} textAlign={"center"}>
+                      No Data Found
+                    </Typography>
+                  </TableCell>
+                </TableRow>
               ) : (
                 data.map((data, index: number) => (
                   <TableRow
@@ -95,4 +101,4 @@ const GetSubjects = ({
     </Box>
   );
 };
-export default GetSubjects;
+export default GetTopics;

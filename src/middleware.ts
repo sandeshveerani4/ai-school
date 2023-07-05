@@ -18,7 +18,8 @@ export async function middleware(request: NextRequest, _next: NextFetchEvent) {
     return NextResponse.redirect(url);
   }
   const url = new URL(`/403`, request.url);
-  if (matchesAdminPaths && token.role !== "ADMIN") NextResponse.rewrite(url);
+  if (matchesAdminPaths && token.role !== "ADMIN")
+    return NextResponse.rewrite(url);
   return NextResponse.next();
 }
 export const config = {
