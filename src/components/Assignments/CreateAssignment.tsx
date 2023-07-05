@@ -20,17 +20,9 @@ import Dropzone, { useDropzone } from "react-dropzone";
 import SearchTopics from "../Topics/SearchTopics";
 import { Topic } from "../Topics/GetTopics";
 import AttachmentIcon from "@mui/icons-material/Attachment";
-import Delete from "@mui/icons-material/Delete";
 import SearchQuestions from "../Questions/SearchQuestions";
-import { Question } from "../Questions/GetQuestions";
 import { fileUpload } from "@/lib/file_upload";
-const getOptions = (array: any) => {
-  return array.map((item: any, index: any) => (
-    <MenuItem key={index} value={item.id}>
-      {item.name}
-    </MenuItem>
-  ));
-};
+
 const CreateAssignment = ({
   reloadData,
 }: {
@@ -60,36 +52,9 @@ const CreateAssignment = ({
     <>
       <Box gap={1} className="mb-2">
         <SearchTopics changeTopic={setSelectedTopic} />
-        {selectedTopic.title && (
-          <Box className="mt-2">
-            <Typography>
-              Topic:{" "}
-              <Typography component={"span"} fontWeight={"medium"}>
-                {selectedTopic.title}
-              </Typography>
-            </Typography>
-            <Typography>
-              Subject:{" "}
-              <Typography component={"span"} fontWeight={"medium"}>
-                {selectedTopic.subject.name}
-              </Typography>
-            </Typography>
-            <Typography>
-              Class:{" "}
-              <Typography component={"span"} fontWeight={"medium"}>
-                {selectedTopic.subject.class.name}
-              </Typography>
-            </Typography>
-            <Typography>
-              Section:{" "}
-              <Typography component={"span"} fontWeight={"medium"}>
-                {selectedTopic.subject.section.name}
-              </Typography>
-            </Typography>
-          </Box>
-        )}
       </Box>
       <SearchQuestions
+        topicId={selectedTopic.id}
         selectedQuestions={selectedQuestions}
         changeQuestions={setSelectedQuestions}
         opener={opener}
@@ -110,11 +75,11 @@ const CreateAssignment = ({
         />
         <Grid container rowSpacing={1} columnSpacing={1}>
           <Grid item lg={6} md={12} width={"100%"}>
-            <FormLabel id="visibility">Visibility</FormLabel>
+            <FormLabel id="visible">Visibility</FormLabel>
             <RadioGroup
               row
-              aria-labelledby="visibility"
-              name="Visibility"
+              aria-labelledby="visible"
+              name="visible"
               defaultValue={"1"}
             >
               <FormControlLabel value="1" control={<Radio />} label="Visible" />

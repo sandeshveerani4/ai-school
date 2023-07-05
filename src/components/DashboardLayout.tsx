@@ -42,7 +42,8 @@ import {
 } from "@mui/material";
 import InsightsIcon from "@mui/icons-material/AnalyticsOutlined";
 import AccountCircle from "@mui/icons-material/PersonOutlineOutlined";
-
+import FlashOnOutlinedIcon from "@mui/icons-material/FlashOnOutlined";
+import NotificationsOutlinedIcon from "@mui/icons-material/NotificationsOutlined";
 export const metadata: Metadata = {
   title: "Dashboard",
 };
@@ -80,6 +81,13 @@ const menuItems: MenuItem[] = [
     path: "/dashboard/assignments",
     icon: <AssignmentIcon />,
     roles: ["ADMIN", "TEACHER", "STUDENT"],
+  },
+  {
+    id: 10,
+    name: "Practice",
+    path: "/dashboard/practice",
+    roles: ["STUDENT"],
+    icon: <FlashOnOutlinedIcon />,
   },
   {
     id: 4,
@@ -122,6 +130,13 @@ const menuItems: MenuItem[] = [
     path: "/dashboard/questions",
     icon: <Question />,
     roles: ["ADMIN", "TEACHER"],
+  },
+  {
+    id: 11,
+    name: "Notice Board",
+    path: "/dashboard/notice_board",
+    icon: <NotificationsOutlinedIcon />,
+    roles: ["ADMIN", "TEACHER", "STUDENT"],
   },
 ];
 const getValueFromPath = (path: string) => {

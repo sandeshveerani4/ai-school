@@ -16,7 +16,6 @@ export async function GET(req: NextRequest) {
             sectionId: auth.student?.sectionId,
           },
         },
-        type: "HOMEWORK",
         visible: true,
       },
     }),
@@ -53,7 +52,6 @@ export async function POST(req: NextRequest) {
   if (auth === unAuthorized) return auth;
   if (auth.role === "STUDENT") return unAuthorized;
   const body = await req.json();
-  console.log(body);
   try {
     const result = await prisma.assignment.create({
       data: {

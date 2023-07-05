@@ -28,11 +28,13 @@ const SearchQuestions = ({
   changeQuestions,
   opener,
   setOpener,
+  topicId,
 }: {
   selectedQuestions: number[];
   changeQuestions: React.Dispatch<React.SetStateAction<number[]>>;
   opener?: boolean;
   setOpener?: React.Dispatch<React.SetStateAction<boolean>>;
+  topicId: number;
 }) => {
   const [open, setOpen] =
     opener !== undefined && setOpener !== undefined
@@ -59,6 +61,7 @@ const SearchQuestions = ({
         <Typography variant="h6" component="h2">
           Select Questions
         </Typography>
+        <input name="topicId" value={topicId} style={{ display: "none" }} />
         <TextField
           size={"small"}
           name="query"

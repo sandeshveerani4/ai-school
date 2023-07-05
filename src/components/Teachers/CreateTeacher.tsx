@@ -1,7 +1,7 @@
 "use client";
 import { Grid, TextField } from "@mui/material";
 import React from "react";
-import { DatePicker } from "@mui/x-date-pickers";
+import { DateField } from "@mui/x-date-pickers";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import FormWithLoading from "../FormWithLoading";
@@ -29,7 +29,7 @@ const CreateTeacher = ({
           item.name === "date_of_birth" ? (
             <Grid key={index} item md={6}>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DatePicker
+                <DateField
                   sx={{ background: "white", width: "100%" }}
                   {...item}
                 />

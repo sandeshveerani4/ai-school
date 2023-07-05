@@ -8,10 +8,14 @@ const BulkImport = ({
   reloadData,
   endpoint,
   subText,
+  middleware,
+  children,
 }: {
   reloadData: React.Dispatch<React.SetStateAction<boolean>>;
   endpoint: string;
   subText: string;
+  children?: React.ReactNode;
+  middleware?: any;
 }) => {
   const [opener, setOpener] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -52,9 +56,17 @@ const BulkImport = ({
           })
           .filter((row: any) => row !== null);
         try {
+          var finalData = {};
+          if (middleware) {
+            const runned = await middleware();
+            if (runned) {
+              finalData = { ...runned };
+            }
+          }
+          finalData = { ...finalData, data: result };
           await fetch(endpoint, {
             method: "POST",
-            body: JSON.stringify({ data: result }),
+            body: JSON.stringify(finalData),
             ...(await reqParams()),
           });
           setOpener(false);
@@ -82,6 +94,7 @@ const BulkImport = ({
       <Typography variant="h6" component="h2">
         Bulk Import
       </Typography>
+      {children}
       <Typography className="my-2">{subText}</Typography>
       <input
         type="file"

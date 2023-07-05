@@ -38,7 +38,6 @@ export async function POST(
   const auth = authorize(req) as User;
   if (auth === unAuthorized) return auth;
   const body = await req.json();
-  console.log(body);
   try {
     const result = await prisma.submission.create({
       data: {

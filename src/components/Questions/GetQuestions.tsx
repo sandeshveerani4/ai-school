@@ -17,7 +17,7 @@ import { config, reqParams } from "@/consts";
 import { Prisma } from "@prisma/client";
 import ModalLay from "../ModalLay";
 export type Question = Prisma.QuestionGetPayload<{
-  include: { options: true };
+  include: { options: true; topic: true };
 }>;
 export const getQuestions = async () => {
   try {
@@ -54,6 +54,7 @@ const GetQuestions = ({ reload }: { reload: boolean }) => {
               <TableRow>
                 <TableCell>Id</TableCell>
                 <TableCell>Question</TableCell>
+                <TableCell>Topic</TableCell>
                 <TableCell>Image</TableCell>
                 <TableCell>Score</TableCell>
                 <TableCell>Actions</TableCell>
@@ -76,6 +77,7 @@ const GetQuestions = ({ reload }: { reload: boolean }) => {
                   >
                     <TableCell>{data.id}</TableCell>
                     <TableCell>{data.question}</TableCell>
+                    <TableCell>{data.topic.title}</TableCell>
                     <TableCell>
                       {data.image && (
                         <Box width={"200px"}>
@@ -98,32 +100,36 @@ const GetQuestions = ({ reload }: { reload: boolean }) => {
                         <Typography variant="h6" component="h2">
                           Options
                         </Typography>
-                        {data.options.map((option) => (
-                          <Grid
-                            container
-                            justifyContent={"center"}
-                            alignItems={"flex-start"}
-                            className="my-2 bg-neutral-200 rounded-2xl"
-                          >
-                            <Grid item>
-                              <Checkbox checked={option.correct} />
-                            </Grid>
-                            <Grid item flexGrow={1}>
-                              {option.option}
-                              {option.image && (
-                                <Box width={"200px"}>
-                                  <CardMedia
-                                    component="img"
-                                    sx={{
-                                      width: "100%",
-                                    }}
-                                    src={config.site.imageDomain + option.image}
-                                  />
-                                </Box>
-                              )}
-                            </Grid>
-                          </Grid>
-                        ))}
+                        {data.type === "FILL"
+                          ? `Correct answer: ${data.fill}`
+                          : data.options.map((option) => (
+                              <Grid
+                                container
+                                justifyContent={"center"}
+                                alignItems={"flex-start"}
+                                className="my-2 bg-neutral-200 rounded-2xl"
+                              >
+                                <Grid item>
+                                  <Checkbox checked={option.correct} />
+                                </Grid>
+                                <Grid item flexGrow={1}>
+                                  {option.option}
+                                  {option.image && (
+                                    <Box width={"200px"}>
+                                      <CardMedia
+                                        component="img"
+                                        sx={{
+                                          width: "100%",
+                                        }}
+                                        src={
+                                          config.site.imageDomain + option.image
+                                        }
+                                      />
+                                    </Box>
+                                  )}
+                                </Grid>
+                              </Grid>
+                            ))}
                       </ModalLay>
                     </TableCell>
                   </TableRow>

@@ -7,7 +7,7 @@ import { User, authorize, unAuthorized } from "@/lib/authorize";
 export async function POST(req: NextRequest) {
   const auth = authorize(req) as User;
   if (auth === unAuthorized) return auth;
-  if (auth.role !== "ADMIN") return unAuthorized;
+  if (auth.role === "STUDENT") return unAuthorized;
   const body = await req.json();
   const result = await prisma.question.findMany({
     where: {
@@ -15,6 +15,7 @@ export async function POST(req: NextRequest) {
         contains: body.query,
         mode: "insensitive",
       },
+      topicId: Number(body.topicId),
     },
   });
   return NextResponse.json(result);

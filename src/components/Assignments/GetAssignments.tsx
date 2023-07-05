@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Table from "@mui/material/Table";
+import Chip from "@mui/material/Chip";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
@@ -68,21 +69,21 @@ const GetAssignments = ({ reload }: { reload: boolean }) => {
               )}
               <TableCell>Topic</TableCell>
               <TableCell>Given By</TableCell>
-              <TableCell>Subject</TableCell>
-              <TableCell>Class</TableCell>
-              <TableCell>Section</TableCell>
+              {session && session.user.role !== "STUDENT" && (
+                <TableCell>Class</TableCell>
+              )}
               <TableCell>Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {!loading && data.length == 0 ? (
               <TableRow>
-              <TableCell colSpan={9}>
-                <Typography component={"div"} textAlign={"center"}>
-                  No Data Found
-                </Typography>
-              </TableCell>
-            </TableRow>
+                <TableCell colSpan={9}>
+                  <Typography component={"div"} textAlign={"center"}>
+                    No Data Found
+                  </Typography>
+                </TableCell>
+              </TableRow>
             ) : (
               data.map((data, index: number) => (
                 <TableRow
@@ -90,8 +91,35 @@ const GetAssignments = ({ reload }: { reload: boolean }) => {
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                 >
                   <TableCell>{data.id}</TableCell>
-                  <TableCell>{data.title}</TableCell>
-                  {session?.user.role !== "STUDENT" && (
+                  <TableCell>
+                    {data.title}{" "}
+                    <Box>
+                      <Chip
+                        label={data.type}
+                        variant="filled"
+                        size="small"
+                        color={data.type === "QUIZ" ? "warning" : "info"}
+                      />
+                      {session && session?.user.role !== "STUDENT" && (
+                        <>
+                          {" "}
+                          <Chip
+                            label={data.visible ? "Visible" : "Not visible"}
+                            variant="filled"
+                            size="small"
+                            color={data.visible ? "success" : "default"}
+                          />{" "}
+                          <Chip
+                            label={data.enabled ? "Enabled" : "Disabled"}
+                            variant="filled"
+                            size="small"
+                            color={data.enabled ? "success" : "default"}
+                          />
+                        </>
+                      )}
+                    </Box>
+                  </TableCell>
+                  {session && session?.user.role !== "STUDENT" && (
                     <TableCell>{data._count.submissions}</TableCell>
                   )}
                   <TableCell>{data.topic.title}</TableCell>
@@ -99,9 +127,12 @@ const GetAssignments = ({ reload }: { reload: boolean }) => {
                     {data.topic.subject.teacher.user.first_name}{" "}
                     {data.topic.subject.teacher.user.last_name}
                   </TableCell>
-                  <TableCell>{data.topic.subject.name}</TableCell>
-                  <TableCell>{data.topic.subject.class.name}</TableCell>
-                  <TableCell>{data.topic.subject.section.name}</TableCell>
+                  {session && session.user.role !== "STUDENT" && (
+                    <TableCell>
+                      {data.topic.subject.class.name}{" "}
+                      {data.topic.subject.section.name}
+                    </TableCell>
+                  )}
                   <TableCell>
                     <Button
                       variant="outlined"

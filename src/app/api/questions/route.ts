@@ -9,7 +9,7 @@ export async function GET(req: NextRequest) {
   if (auth === unAuthorized) return auth;
   if (auth.role === "STUDENT") return unAuthorized;
   const questions = await prisma.question.findMany({
-    include: { options: true },
+    include: { options: true, topic: true },
     orderBy: { id: "desc" },
   });
   return NextResponse.json(questions);
@@ -30,20 +30,15 @@ export async function POST(req: NextRequest) {
             id: Number(body.topicId),
           },
         },
-        options: { createMany: { data: body.options } },
+        type: body.type,
+        fill: body.fill,
+        ...(body.type === "MCQ" && {
+          options: { createMany: { data: body.options } },
+        }),
       },
     });
     return NextResponse.json({ success: true });
   } catch (e) {
     console.log(e);
-    if (e instanceof Prisma.PrismaClientKnownRequestError) {
-      // The .code property can be accessed in a type-safe manner
-      if (e.code === "P2002") {
-        return NextResponse.json(
-          { error: "Username already exists!" },
-          { status: 400 }
-        );
-      }
-    }
   }
 }

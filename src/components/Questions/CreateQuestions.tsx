@@ -10,6 +10,10 @@ import {
   Checkbox,
   IconButton,
   Tooltip,
+  FormLabel,
+  FormControlLabel,
+  Radio,
+  RadioGroup,
 } from "@mui/material";
 import React, { useCallback, useState, useRef } from "react";
 import FormWithLoading from "../FormWithLoading";
@@ -130,19 +134,24 @@ const CreateQuestions = ({
   const [options, setOptions] = useState<Option[]>([defaultOption]);
   const inputFile = useRef<HTMLInputElement>(null);
 
+  const [selectedTopic, setSelectedTopic] = useState<Topic>({} as Topic);
+  const [selectedType, setSelectedType] = useState("MCQ");
   const middleware = async () => {
-    const optionsC = options.slice();
-    for (let index = 0; index < optionsC.length; index++) {
-      const element = optionsC[index];
-      if (element.image) {
-        try {
-          element.image = (await fileUpload(element.image))?.filename;
-        } catch {
-          element.image = "";
+    const payload = { options: [] as Option[], image: "" };
+    if (selectedType === "MCQ") {
+      const optionsC = options.slice();
+      for (let index = 0; index < optionsC.length; index++) {
+        const element = optionsC[index];
+        if (element.image) {
+          try {
+            element.image = (await fileUpload(element.image))?.filename;
+          } catch {
+            element.image = "";
+          }
         }
       }
+      payload.options = optionsC;
     }
-    const payload = { options: optionsC, image: "" };
     if (image) {
       try {
         payload.image = (await fileUpload(image))?.filename;
@@ -150,7 +159,6 @@ const CreateQuestions = ({
     }
     return payload;
   };
-  const [selectedTopic, setSelectedTopic] = useState<Topic>({} as Topic);
   return (
     <>
       <input
@@ -161,34 +169,6 @@ const CreateQuestions = ({
       />
       <Box gap={1} className="mb-2">
         <SearchTopics changeTopic={setSelectedTopic} />
-        {selectedTopic.title && (
-          <Box className="mt-2">
-            <Typography>
-              Topic:{" "}
-              <Typography component={"span"} fontWeight={"medium"}>
-                {selectedTopic.title}
-              </Typography>
-            </Typography>
-            <Typography>
-              Subject:{" "}
-              <Typography component={"span"} fontWeight={"medium"}>
-                {selectedTopic.subject.name}
-              </Typography>
-            </Typography>
-            <Typography>
-              Class:{" "}
-              <Typography component={"span"} fontWeight={"medium"}>
-                {selectedTopic.subject.class.name}
-              </Typography>
-            </Typography>
-            <Typography>
-              Section:{" "}
-              <Typography component={"span"} fontWeight={"medium"}>
-                {selectedTopic.subject.section.name}
-              </Typography>
-            </Typography>
-          </Box>
-        )}
       </Box>
       <FormWithLoading
         submitName="Create Question"
@@ -200,6 +180,7 @@ const CreateQuestions = ({
           type="number"
           value={selectedTopic.id ?? ""}
           name="topicId"
+          required
           style={{ display: "none" }}
         />
         <Grid container rowSpacing={1} columnSpacing={1}>
@@ -235,6 +216,23 @@ const CreateQuestions = ({
               fullWidth
             ></TextField>
           </Grid>
+          <Grid item lg={6} md={12}>
+            <FormLabel id="type">Type</FormLabel>
+            <RadioGroup
+              row
+              aria-labelledby="type"
+              name="type"
+              defaultValue={selectedType}
+              onChange={(e) => setSelectedType(e.target.value)}
+            >
+              <FormControlLabel value="MCQ" control={<Radio />} label="MCQ" />
+              <FormControlLabel
+                value="FILL"
+                control={<Radio />}
+                label="Fill in the blank"
+              />
+            </RadioGroup>
+          </Grid>
           {image && (
             <Box width="100%">
               <Box height={"200px"}>
@@ -255,16 +253,33 @@ const CreateQuestions = ({
           >
             {image ? "Change" : "Attach"} Image
           </Button>
-          <Typography width={"100%"}>Correct</Typography>
-          {options.map((value, index) => (
-            <OptionItem
-              key={index}
-              index={index}
-              value={value}
-              options={options}
-              setOptions={setOptions}
-            />
-          ))}
+          <Grid item xs={12}>
+            <Typography width={"100%"}>Correct</Typography>
+            {selectedType === "MCQ" ? (
+              options.map((value, index) => (
+                <OptionItem
+                  key={index}
+                  index={index}
+                  value={value}
+                  options={options}
+                  setOptions={setOptions}
+                />
+              ))
+            ) : (
+              <TextField
+                label="Correct Answer"
+                sx={{ background: "white" }}
+                name="fill"
+                required
+                fullWidth
+                InputLabelProps={{
+                  sx: {
+                    textTransform: "capitalize",
+                  },
+                }}
+              />
+            )}
+          </Grid>
         </Grid>
       </FormWithLoading>
     </>

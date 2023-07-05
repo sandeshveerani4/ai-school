@@ -1,11 +1,12 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ModalLay from "../ModalLay";
 import FormWithLoading from "../FormWithLoading";
 import {
   Typography,
   TextField,
   InputAdornment,
+  Box,
   IconButton,
   TableContainer,
   Table,
@@ -27,6 +28,10 @@ const SearchTopics = ({
   const [open, setOpen] = useState(false);
   const [topics, setTopics] = useState<Topic[]>([]);
   const [loading, setLoading] = useState(false);
+  const [selectedTopic, setSelectedTopic] = useState<Topic>({} as Topic);
+  useEffect(() => {
+    changeTopic(selectedTopic);
+  }, [selectedTopic]);
   return (
     <ModalLay
       buttonTitle="Select Topic *"
@@ -34,6 +39,36 @@ const SearchTopics = ({
       width={600}
       opener={open}
       setOpener={setOpen}
+      extras={
+        selectedTopic.title && (
+          <Box className="mt-2">
+            <Typography>
+              Topic:{" "}
+              <Typography component={"span"} fontWeight={"medium"}>
+                {selectedTopic.title}
+              </Typography>
+            </Typography>
+            <Typography>
+              Subject:{" "}
+              <Typography component={"span"} fontWeight={"medium"}>
+                {selectedTopic.subject.name}
+              </Typography>
+            </Typography>
+            <Typography>
+              Class:{" "}
+              <Typography component={"span"} fontWeight={"medium"}>
+                {selectedTopic.subject.class.name}
+              </Typography>
+            </Typography>
+            <Typography>
+              Section:{" "}
+              <Typography component={"span"} fontWeight={"medium"}>
+                {selectedTopic.subject.section.name}
+              </Typography>
+            </Typography>
+          </Box>
+        )
+      }
     >
       <FormWithLoading
         endpoint="/api/topics/search/"
@@ -90,7 +125,7 @@ const SearchTopics = ({
                     variant="contained"
                     color="success"
                     onClick={() => {
-                      changeTopic(topic);
+                      setSelectedTopic(topic);
                       setOpen(false);
                     }}
                   >
