@@ -10,7 +10,7 @@ interface RequestBody {
   last_name: string;
   class: number;
   section: number;
-  date_of_birth?: object;
+  date_of_birth: string;
   filename?: string;
 }
 export async function GET(req: NextRequest) {
@@ -38,6 +38,7 @@ export async function POST(req: NextRequest) {
         first_name: body.first_name,
         last_name: body.last_name,
         pictureURL: body.filename,
+        date_of_birth: new Date(body.date_of_birth),
         student: {
           create: {
             class: {

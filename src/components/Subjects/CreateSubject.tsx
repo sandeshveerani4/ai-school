@@ -3,9 +3,6 @@ import { Box, Grid, MenuItem, Select, TextField } from "@mui/material";
 import { SelectChangeEvent } from "@mui/material/Select";
 import React, { use } from "react";
 import { getClasses } from "../Classes/GetClasses";
-import { DatePicker } from "@mui/x-date-pickers";
-import { LocalizationProvider } from "@mui/x-date-pickers";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import FormWithLoading from "../FormWithLoading";
 import { getSections } from "../Classes/ClassRow";
 import { getTeachers } from "../Teachers/GetTeachers";
@@ -62,40 +59,29 @@ const CreateSubject = ({
       setDone={reloadData}
     >
       <Grid container rowSpacing={1} columnSpacing={1}>
-        {fields.map((item, index) =>
-          item.name === "date_of_birth" ? (
-            <Grid key={index} item md={6} xs={12}>
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DatePicker
-                  sx={{ background: "white", width: "100%" }}
-                  {...item}
-                />
-              </LocalizationProvider>
-            </Grid>
-          ) : (
-            <Grid key={index} item md={6} xs={12}>
-              <TextField
-                sx={{ background: "white" }}
-                InputLabelProps={{
-                  sx: {
-                    textTransform: "capitalize",
-                  },
-                }}
-                {...item}
-                fullWidth
-              >
-                {item.select &&
-                  (item.name == "class"
-                    ? getOptions(classes)
-                    : item.name == "section"
-                    ? getOptions(sections)
-                    : item.name == "teacher"
-                    ? getOptions(teachers)
-                    : "")}
-              </TextField>
-            </Grid>
-          )
-        )}
+        {fields.map((item, index) => (
+          <Grid key={index} item md={6} xs={12}>
+            <TextField
+              sx={{ background: "white" }}
+              InputLabelProps={{
+                sx: {
+                  textTransform: "capitalize",
+                },
+              }}
+              {...item}
+              fullWidth
+            >
+              {item.select &&
+                (item.name == "class"
+                  ? getOptions(classes)
+                  : item.name == "section"
+                  ? getOptions(sections)
+                  : item.name == "teacher"
+                  ? getOptions(teachers)
+                  : "")}
+            </TextField>
+          </Grid>
+        ))}
       </Grid>
     </FormWithLoading>
   );

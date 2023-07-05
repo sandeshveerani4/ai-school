@@ -48,7 +48,6 @@ const SearchTopics = ({
         <TextField
           size={"small"}
           name="query"
-          required
           label="Search Topic"
           InputProps={{
             endAdornment: (

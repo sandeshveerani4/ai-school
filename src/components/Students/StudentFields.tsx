@@ -67,16 +67,16 @@ const StudentFields = ({ data, ...props }: { data: Student }) => {
   };
   return (
     <>
-        {data.pictureURL && (
-          <CardMedia
-            component="img"
-            className="rounded-lg my-3"
-            sx={{
-              width: "170px",
-            }}
-            src={config.site.imageDomain + data.pictureURL}
-          />
-        )}
+      {data.pictureURL && (
+        <CardMedia
+          component="img"
+          className="rounded-lg my-3"
+          sx={{
+            width: "170px",
+          }}
+          src={config.site.imageDomain + data.pictureURL}
+        />
+      )}
       <Grid container rowSpacing={1} columnSpacing={1}>
         <FieldComp label="ID" disabled value={data["id"]} />
         <FieldComp label="Username" value={data["username"]} />

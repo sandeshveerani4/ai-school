@@ -5,9 +5,9 @@ import { Prisma } from "@prisma/client";
 import { User, authorize, unAuthorized } from "@/lib/authorize";
 interface RequestBody {
   name: string;
-  class: number;
-  section: number;
-  teacher: number;
+  class: string;
+  section: string;
+  teacher: string;
 }
 export async function GET(req: NextRequest) {
   const auth = authorize(req) as User;
@@ -24,9 +24,9 @@ export async function GET(req: NextRequest) {
   return NextResponse.json(students);
 }
 export async function POST(req: NextRequest) {
-  const auth = authorize(req);
-  if (typeof auth === "object") return auth;
-  if (auth !== "ADMIN") return unAuthorized;
+  const auth = authorize(req) as User;
+  if (auth === unAuthorized) return auth;
+  if (auth.role !== "ADMIN") return unAuthorized;
   const body: RequestBody = await req.json();
   try {
     const result = await prisma.subject.create({
@@ -51,7 +51,6 @@ export async function POST(req: NextRequest) {
     });
     return NextResponse.json(result);
   } catch (e) {
-    console.error(e);
     return NextResponse.json({ error: "Some error Occured!" }, { status: 400 });
   }
 }

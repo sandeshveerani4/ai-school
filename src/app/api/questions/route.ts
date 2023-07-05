@@ -7,7 +7,7 @@ import { User, authorize, unAuthorized } from "@/lib/authorize";
 export async function GET(req: NextRequest) {
   const auth = authorize(req) as User;
   if (auth === unAuthorized) return auth;
-  if (auth.role !== "ADMIN") return unAuthorized;
+  if (auth.role === "STUDENT") return unAuthorized;
   const questions = await prisma.question.findMany({
     include: { options: true },
     orderBy: { id: "desc" },
@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   const auth = authorize(req) as User;
   if (auth === unAuthorized) return auth;
-  if (auth.role !== "ADMIN") return unAuthorized;
+  if (auth.role === "STUDENT") return unAuthorized;
   const body = await req.json();
   try {
     await prisma.question.create({
@@ -25,11 +25,17 @@ export async function POST(req: NextRequest) {
         score: Number(body.score),
         question: body.question,
         image: body.image,
+        topic: {
+          connect: {
+            id: Number(body.topicId),
+          },
+        },
         options: { createMany: { data: body.options } },
       },
     });
     return NextResponse.json({ success: true });
   } catch (e) {
+    console.log(e);
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
       // The .code property can be accessed in a type-safe manner
       if (e.code === "P2002") {

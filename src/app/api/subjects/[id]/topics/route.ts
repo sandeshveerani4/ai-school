@@ -6,9 +6,9 @@ export async function GET(
   req: Request,
   { params }: { params: { id: string } }
 ) {
-  const auth = authorize(req);
-  if (typeof auth === "object") return auth;
-  if (auth === "STUDENT") return unAuthorized;
+  const auth = authorize(req) as User;
+  if (auth === unAuthorized) return auth;
+  if (auth.role === "STUDENT") return unAuthorized;
   const teachers = await prisma.topic.findMany({
     where: { subjectId: Number(params.id) },
     orderBy: { id: "desc" },

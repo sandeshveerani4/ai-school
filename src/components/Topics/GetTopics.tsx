@@ -84,8 +84,6 @@ const GetTopics = ({
                     <TableCell>
                       <Button
                         variant="outlined"
-                        LinkComponent={Link}
-                        href={`/dashboard/subjects/${data.id}/topics`}
                         className="mr-2"
                       >
                         View Details

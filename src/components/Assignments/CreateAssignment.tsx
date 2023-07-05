@@ -218,7 +218,7 @@ const CreateAssignment = ({
           {...getRootProps()}
         >
           <input {...getInputProps()} />
-          <Typography
+          <Box
             textAlign={"center"}
             {...(isDragActive && { variant: "h4" })}
             sx={{ userSelect: "none" }}
@@ -241,21 +241,24 @@ const CreateAssignment = ({
                     className="bg-neutral-50 rounded-2xl"
                     item
                   >
-                    <Typography fontWeight={"medium"}>{file.name}</Typography>
+                    <Typography fontWeight={"medium"} component="span">
+                      {file.name}
+                    </Typography>
                   </Grid>
                 ))}
               </Grid>
             ) : (
               <Grid
+                container
                 direction="column"
                 justifyItems={"center"}
                 alignItems={"center"}
               >
-                <Typography>Attach Files</Typography>
+                <Typography component="span">Attach Files</Typography>
                 <AttachmentIcon />
               </Grid>
             )}
-          </Typography>
+          </Box>
         </Box>
       </FormWithLoading>
     </>

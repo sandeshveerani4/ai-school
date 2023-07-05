@@ -1,7 +1,5 @@
 import prisma from "@/lib/prisma";
-import * as bcrypt from "bcrypt";
 import { NextRequest, NextResponse } from "next/server";
-import { Prisma } from "@prisma/client";
 import { User, authorize, unAuthorized } from "@/lib/authorize";
 
 export async function GET(
@@ -13,35 +11,53 @@ export async function GET(
   const students = await prisma.submission.findMany({
     where: {
       assignmentId: Number(params.id),
+      ...(auth.role === "STUDENT" && {
+        student: {
+          userId: auth.id,
+        },
+      }),
     },
-    include: {
-      assignment: true,
-      student: {
-        include: {
-          user: true,
+    ...(auth.role !== "STUDENT" && {
+      include: {
+        assignment: true,
+        student: {
+          include: {
+            user: true,
+          },
         },
       },
-    },
+    }),
     orderBy: { id: "desc" },
   });
   return NextResponse.json(students);
 }
-export async function POST(req: NextRequest) {
-  const auth = authorize(req);
-  if (typeof auth === "object") return auth;
-  if (auth === "STUDENT") return unAuthorized;
+export async function POST(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  const auth = authorize(req) as User;
+  if (auth === unAuthorized) return auth;
   const body = await req.json();
+  console.log(body);
   try {
-    const result = await prisma.assignment.create({
+    const result = await prisma.submission.create({
       data: {
-        title: body.title,
-        deadline: new Date(body.deadline),
         description: body.description,
-        topic: {
+        student: {
           connect: {
-            id: Number(body.topicId),
+            userId: auth.id,
           },
         },
+        assignment: {
+          connect: {
+            id: Number(params.id),
+          },
+        },
+        ...(body.files.length !== 0 && {
+          files: body.files.map((file: any) => {
+            if (file && file?.file) return file;
+          }),
+        }),
       },
     });
     return NextResponse.json(result);

@@ -95,7 +95,7 @@ const FormWithLoading = ({
             disabled: true,
             startIcon: <CircularProgress size={20} />,
           })}
-          variant="contained"
+          variant="outlined"
           {...buttonProps}
         >
           {submitName}

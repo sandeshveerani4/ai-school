@@ -9,7 +9,7 @@ interface RequestBody {
   password: string;
   first_name: string;
   last_name: string;
-  date_of_birth?: object;
+  date_of_birth: string;
 }
 export async function GET(req: NextRequest, res: NextResponse) {
   const auth = authorize(req) as User;
@@ -34,9 +34,9 @@ export async function GET(req: NextRequest, res: NextResponse) {
   return NextResponse.json(teachers);
 }
 export async function POST(req: NextRequest, res: NextResponse) {
-  const auth = authorize(req);
-  if (typeof auth === "object") return auth;
-  if (auth !== "ADMIN") return unAuthorized;
+  const auth = authorize(req) as User;
+  if (auth === unAuthorized) return auth;
+  if (auth.role !== "ADMIN") return unAuthorized;
   const body: RequestBody = await req.json();
   try {
     const result = await prisma.user.create({
@@ -46,8 +46,8 @@ export async function POST(req: NextRequest, res: NextResponse) {
         role: "TEACHER",
         first_name: body.first_name,
         last_name: body.last_name,
+        date_of_birth: new Date(body.date_of_birth),
       },
-      include: { teacher: true },
     });
     const { password, ...data } = result;
     return NextResponse.json({ ...data });
@@ -60,6 +60,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
           { status: 400 }
         );
       }
+      console.log(e);
     }
   }
 }

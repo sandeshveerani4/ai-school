@@ -72,8 +72,9 @@ const BulkImport = ({
       buttonTitle="Bulk Import"
       buttonProps={{
         className: "float-right my-2 ml-2",
-        variant: "contained",
+        variant: "outlined",
         color: "primary",
+        size: "small",
       }}
       opener={opener}
       setOpener={setOpener}

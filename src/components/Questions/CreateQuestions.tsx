@@ -18,6 +18,7 @@ import AttachmentIcon from "@mui/icons-material/Attachment";
 import Add from "@mui/icons-material/Add";
 import Delete from "@mui/icons-material/Delete";
 import { fileUpload } from "@/lib/file_upload";
+import SearchTopics from "../Topics/SearchTopics";
 interface Option {
   option: string;
   correct: boolean;
@@ -149,6 +150,7 @@ const CreateQuestions = ({
     }
     return payload;
   };
+  const [selectedTopic, setSelectedTopic] = useState<Topic>({} as Topic);
   return (
     <>
       <input
@@ -157,12 +159,49 @@ const CreateQuestions = ({
         onChange={(e) => e.target.files && setImage(e.target.files[0])}
         style={{ display: "none" }}
       />
+      <Box gap={1} className="mb-2">
+        <SearchTopics changeTopic={setSelectedTopic} />
+        {selectedTopic.title && (
+          <Box className="mt-2">
+            <Typography>
+              Topic:{" "}
+              <Typography component={"span"} fontWeight={"medium"}>
+                {selectedTopic.title}
+              </Typography>
+            </Typography>
+            <Typography>
+              Subject:{" "}
+              <Typography component={"span"} fontWeight={"medium"}>
+                {selectedTopic.subject.name}
+              </Typography>
+            </Typography>
+            <Typography>
+              Class:{" "}
+              <Typography component={"span"} fontWeight={"medium"}>
+                {selectedTopic.subject.class.name}
+              </Typography>
+            </Typography>
+            <Typography>
+              Section:{" "}
+              <Typography component={"span"} fontWeight={"medium"}>
+                {selectedTopic.subject.section.name}
+              </Typography>
+            </Typography>
+          </Box>
+        )}
+      </Box>
       <FormWithLoading
         submitName="Create Question"
         endpoint="/api/questions"
         middleware={middleware}
         setDone={reloadData}
       >
+        <input
+          type="number"
+          value={selectedTopic.id ?? ""}
+          name="topicId"
+          style={{ display: "none" }}
+        />
         <Grid container rowSpacing={1} columnSpacing={1}>
           <Grid item lg={6} md={12}>
             <TextField
@@ -191,6 +230,7 @@ const CreateQuestions = ({
               name="score"
               type="number"
               inputProps={{ min: "0" }}
+              defaultValue={1}
               required
               fullWidth
             ></TextField>

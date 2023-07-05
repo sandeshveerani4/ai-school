@@ -21,13 +21,14 @@ const Assignments = () => {
 
   return (
     <Box>
-      {session?.user.role !== "STUDENT" && (
+      {session && session.user.role !== "STUDENT" && (
         <>
           <Box overflow={"hidden"}>
             <Button
-              variant="contained"
+              variant="outlined"
               onClick={() => setShow(!show)}
               color="secondary"
+              size="small"
               className="float-right my-2"
             >
               <Add /> Add Assignment

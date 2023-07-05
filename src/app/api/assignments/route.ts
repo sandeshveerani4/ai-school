@@ -16,6 +16,8 @@ export async function GET(req: NextRequest) {
             sectionId: auth.student?.sectionId,
           },
         },
+        type: "HOMEWORK",
+        visible: true,
       },
     }),
     include: {

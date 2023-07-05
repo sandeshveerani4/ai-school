@@ -87,6 +87,7 @@ model Topic {
   subject     Subject      @relation(fields: [subjectId], references: [id])
   subjectId   Int
   assignments Assignment[]
+  questions   Question[]
 }
 
 model Assignment {
@@ -133,6 +134,8 @@ model Question {
   question    String?
   image       String?
   score       Int
+  topic       Topic                   @relation(fields: [topicId], references: [id])
+  topicId     Int
   options     Option[]
   assignments QuestionForAssignment[]
   createdAt   DateTime                @default(now())

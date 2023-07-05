@@ -20,9 +20,13 @@ export async function POST(req: NextRequest) {
     data: {
       name: body.name,
       rank: Number(body.rank),
-      teacherId: Number(body.teacher),
+      classTeacher: {
+        connectOrCreate: {
+          where: { userId: Number(body.teacher) },
+          create: { userId: Number(body.teacher) },
+        },
+      },
     },
-    include: { classTeacher: true },
   });
   return NextResponse.json(sclass);
 }

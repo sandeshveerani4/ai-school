@@ -29,7 +29,8 @@ const Questions = () => {
           option_D, correct,score"
         />
         <Button
-          variant="contained"
+          variant="outlined"
+          size={"small"}
           onClick={() => setShow(!show)}
           color="secondary"
           className="float-right my-2"

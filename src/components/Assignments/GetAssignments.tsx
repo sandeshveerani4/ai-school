@@ -77,7 +77,7 @@ const GetAssignments = ({ reload }: { reload: boolean }) => {
           <TableBody>
             {!loading && data.length == 0 ? (
               <TableRow>
-              <TableCell colSpan={5}>
+              <TableCell colSpan={9}>
                 <Typography component={"div"} textAlign={"center"}>
                   No Data Found
                 </Typography>

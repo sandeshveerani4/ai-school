@@ -11,7 +11,7 @@ import {
 import { SelectChangeEvent } from "@mui/material/Select";
 import React from "react";
 import { getClasses } from "../Classes/GetClasses";
-import { DatePicker } from "@mui/x-date-pickers";
+import { DateField, DatePicker } from "@mui/x-date-pickers";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import FormWithLoading from "../FormWithLoading";
@@ -76,7 +76,9 @@ const CreateStudent = ({
     },
   });
   const middleware = async () => {
-    return await fileUpload(image);
+    try {
+      return await fileUpload(image);
+    } catch {}
   };
   return (
     <>
@@ -115,7 +117,7 @@ const CreateStudent = ({
             item.name === "date_of_birth" ? (
               <Grid key={index} item md={6} xs={12}>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <DatePicker
+                  <DateField
                     sx={{ background: "white", width: "100%" }}
                     {...item}
                   />
