@@ -1,45 +1,16 @@
-"use client";
-import { Box, Button } from "@mui/material";
-import Add from "@mui/icons-material/Add";
-import React, { useEffect } from "react";
-import GetStudents from "@/components/Students/GetStudents";
-import CreateAssignment from "@/components/Assignments/CreateAssignment";
-import GetAssignments from "@/components/Assignments/GetAssignments";
-import { useSession } from "next-auth/react";
-const Assignments = () => {
-  const { data: session } = useSession();
-  const [show, setShow] = React.useState(false);
-
-  const [reload, reloadData] = React.useState(false);
-
-  useEffect(() => {
-    if (reload) {
-      setShow(!show);
-      reloadData(false);
-    }
-  }, [reload]);
-
-  return (
-    <Box>
-      {session && session.user.role !== "STUDENT" && (
-        <>
-          <Box overflow={"hidden"}>
-            <Button
-              variant="outlined"
-              onClick={() => setShow(!show)}
-              color="secondary"
-              size="small"
-              className="float-right my-2"
-            >
-              <Add /> Add Assignment
-            </Button>
-          </Box>
-          {show && <CreateAssignment reloadData={reloadData} />}
-        </>
-      )}
-      <GetAssignments reload={reload} />
-    </Box>
-  );
+import { config, reqParams } from "@/consts";
+import Client from "./client";
+export const getAssignments = async () => {
+  const options: RequestInit = await reqParams(true);
+  const res = await fetch(`${config.site.url}/api/assignments/`, options);
+  if (!res.ok) {
+    throw new Error("Failed to fetch data");
+  }
+  return await res.json();
+};
+const Assignments = async () => {
+  const assignments = await getAssignments();
+  return <Client assignments={assignments} />;
 };
 
 export default Assignments;

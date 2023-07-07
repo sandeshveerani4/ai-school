@@ -1,5 +1,5 @@
 "use client";
-import { Box, Button } from "@mui/material";
+import { Box, IconButton } from "@mui/material";
 import Add from "@mui/icons-material/Add";
 import CreateClass from "@/components/Classes/CreateClass";
 import GetClasses from "@/components/Classes/GetClasses";
@@ -17,14 +17,9 @@ const Classes = () => {
   return (
     <Box>
       <Box overflow={"hidden"}>
-        <Button
-          variant="contained"
-          onClick={() => setShow(!show)}
-          color="secondary"
-          className="float-right my-2"
-        >
-          <Add /> Create Class
-        </Button>
+        <IconButton onClick={() => setShow(!show)} className="float-right my-2">
+          <Add />
+        </IconButton>
       </Box>
       {show && <CreateClass reloadData={reloadData} />}
       <GetClasses reload={reload} />

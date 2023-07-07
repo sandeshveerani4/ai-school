@@ -133,8 +133,8 @@ const menuItems: MenuItem[] = [
   },
   {
     id: 11,
-    name: "Notice Board",
-    path: "/dashboard/notice_board",
+    name: "Notifications",
+    path: "/dashboard/notifications",
     icon: <NotificationsOutlinedIcon />,
     roles: ["ADMIN", "TEACHER", "STUDENT"],
   },
@@ -168,8 +168,8 @@ const DashboardLayout = (props: Props) => {
         {currentPage === item.path.toLowerCase() && (
           <Zoom in={true} style={{ transitionDelay: `0.5s` }}>
             <Box
-              className="bg-green-500 rounded-r-2xl"
-              sx={{ width: "4px", height: "30px" }}
+              className="rounded-2xl ml-2"
+              sx={{ width: "4.3px", height: "30px", bgcolor: "secondary.main" }}
             ></Box>
           </Zoom>
         )}
@@ -193,12 +193,29 @@ const DashboardLayout = (props: Props) => {
   );
   const drawer = (
     <Stack direction="column" justifyContent={"center"} height={"100%"}>
-      <Toolbar className="py-5 items-center justify-center">
-        <Typography variant="h5" textAlign={"center"}>
+      <Toolbar variant="dense" className="py-5 items-center justify-center">
+        <Typography
+          variant="h5"
+          textAlign={"center"}
+          fontWeight={500}
+          className="text-blue-800"
+        >
           {config.site.name}
         </Typography>
       </Toolbar>
-      <Box overflow={"auto"} flexGrow={1}>
+      <Box
+        overflow={"auto"}
+        sx={{
+          "&::-webkit-scrollbar": {
+            width: 6,
+          },
+          "&::-webkit-scrollbar-thumb": {
+            borderRadius: 1,
+            backgroundColor: "rgba(0,0,0,.1)",
+          },
+        }}
+        flexGrow={1}
+      >
         <List>
           {menuItems.map((item: MenuItem, index: number) => {
             return item.roles.includes(session?.user.role)
@@ -219,8 +236,10 @@ const DashboardLayout = (props: Props) => {
               <Grid container alignItems={"center"} item xs={10}>
                 <Tooltip title="View Profile">
                   <Button
+                    LinkComponent={Link}
+                    href="/dashboard/profile"
                     startIcon={<AccountCircle />}
-                    sx={{ justifyContent: "left" }}
+                    sx={{ justifyContent: "left", alignItems: "center" }}
                     fullWidth
                   >
                     {session.user.first_name} {session.user.last_name}
@@ -260,7 +279,7 @@ const DashboardLayout = (props: Props) => {
           boxShadow: "unset!important",
         }}
       >
-        <Toolbar className="py-5">
+        <Toolbar variant="dense" className="py-5">
           <IconButton
             color="inherit"
             aria-label="open drawer"
@@ -271,11 +290,12 @@ const DashboardLayout = (props: Props) => {
             <MenuIcon />
           </IconButton>
           <Typography
-            variant="h4"
-            component="h4"
+            variant="h5"
+            component="h5"
             className="flex-grow"
+            color={"#454344"}
             noWrap
-            fontWeight={700}
+            fontWeight={600}
             textTransform={"capitalize"}
           >
             {getValueFromPath(currentPage)}
@@ -332,7 +352,7 @@ const DashboardLayout = (props: Props) => {
           width: { sm: `calc(100% - ${drawerWidth}px)` },
         }}
       >
-        <Toolbar />
+        <Toolbar variant="dense" className="py-5 mb-1" />
         <React.Suspense fallback={<Loading />}>{children}</React.Suspense>
       </Box>
     </Box>

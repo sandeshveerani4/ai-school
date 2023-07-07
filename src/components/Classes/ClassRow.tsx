@@ -1,7 +1,15 @@
-import { Box, Chip, TableCell, TableRow, TextField } from "@mui/material";
+import {
+  Box,
+  Chip,
+  IconButton,
+  TableCell,
+  TableRow,
+  TextField,
+} from "@mui/material";
 import React, { useEffect, useState } from "react";
 import ModalLay from "../ModalLay";
 import FormWithLoading from "../FormWithLoading";
+import Add from "@mui/icons-material/Add";
 import { Prisma, Section } from "@prisma/client";
 import { getSession } from "next-auth/react";
 import { reqParams } from "@/consts";
@@ -42,24 +50,20 @@ const ClassRow = ({ data }: { data: Class }) => {
         {data.classTeacher.user.first_name} {data.classTeacher.user.last_name}
       </TableCell>
       <TableCell>
-        <Box>
-          {sections.map((item: Section, index: number) => (
-            <Chip
-              key={index}
-              label={item.name}
-              component="a"
-              href="#basic-chip"
-              variant="outlined"
-              clickable
-            />
-          ))}
-        </Box>
-        <ModalLay
-          buttonTitle="Create Section"
-          buttonProps={{ color: "primary", variant: "contained" }}
-          opener={open}
-          setOpener={setOpen}
-        >
+        {sections.map((item: Section, index: number) => (
+          <Chip
+            key={index}
+            label={item.name}
+            component="a"
+            href="#basic-chip"
+            variant="outlined"
+            clickable
+          />
+        ))}
+        <IconButton onClick={() => setOpen(true)}>
+          <Add />
+        </IconButton>
+        <ModalLay isButton={false} opener={open} setOpener={setOpen}>
           <FormWithLoading
             submitName="Create Section"
             endpoint={`/api/classes/${data.id}/sections/`}

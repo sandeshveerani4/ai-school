@@ -5,6 +5,7 @@ import {
   TextField,
   MenuItem,
   SelectChangeEvent,
+  IconButton,
 } from "@mui/material";
 import Add from "@mui/icons-material/Add";
 import React, { ChangeEvent, useEffect, useState } from "react";
@@ -43,14 +44,9 @@ const Subjects = () => {
   return (
     <Box>
       <Box overflow={"hidden"}>
-        <Button
-          variant="contained"
-          onClick={() => setShow(!show)}
-          color="secondary"
-          className="float-right my-2"
-        >
-          <Add /> Add Subject
-        </Button>
+        <IconButton onClick={() => setShow(!show)} className="float-right my-2">
+          <Add />
+        </IconButton>
       </Box>
       {show && <CreateSubject reloadData={reloadData} />}
       <Box className="mb-2">

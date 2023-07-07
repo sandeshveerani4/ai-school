@@ -14,7 +14,7 @@ export async function POST(request: Request) {
       username: body.username,
     },
     include: {
-      student: true,
+      student: { include: { class: true } },
       teacher: true,
       admin: true,
     },

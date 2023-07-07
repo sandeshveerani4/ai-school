@@ -4,7 +4,9 @@ import { JwtPayload } from "jsonwebtoken";
 import { Prisma } from "@prisma/client";
 export type User = Prisma.UserGetPayload<{
   include: {
-    student: true;
+    student: { include: { class: true } };
+    teacher: true;
+    admin: true;
   };
 }>;
 export const unAuthorized: object = NextResponse.json(

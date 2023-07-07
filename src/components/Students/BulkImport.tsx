@@ -1,9 +1,14 @@
 import React, { useRef, useState } from "react";
 import ModalLay from "../ModalLay";
-import { Button, CircularProgress, Typography } from "@mui/material";
+import {
+  Button,
+  CircularProgress,
+  IconButton,
+  Typography,
+} from "@mui/material";
 import { read, utils } from "xlsx";
 import { reqParams } from "@/consts";
-
+import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
 const BulkImport = ({
   reloadData,
   endpoint,
@@ -80,39 +85,34 @@ const BulkImport = ({
     }
   };
   return (
-    <ModalLay
-      buttonTitle="Bulk Import"
-      buttonProps={{
-        className: "float-right my-2 ml-2",
-        variant: "outlined",
-        color: "primary",
-        size: "small",
-      }}
-      opener={opener}
-      setOpener={setOpener}
-    >
-      <Typography variant="h6" component="h2">
-        Bulk Import
-      </Typography>
-      {children}
-      <Typography className="my-2">{subText}</Typography>
-      <input
-        type="file"
-        className="hidden"
-        ref={inputFile}
-        onChange={handleOnChange}
-      />
-      <Button
-        variant="contained"
-        {...(loading && {
-          disabled: true,
-          startIcon: <CircularProgress size={20} />,
-        })}
-        onClick={() => inputFile.current?.click()}
-      >
-        Choose File
-      </Button>
-    </ModalLay>
+    <>
+      <IconButton onClick={() => setOpener(true)} className="float-right my-2">
+        <InsertDriveFileIcon />
+      </IconButton>
+      <ModalLay isButton={false} opener={opener} setOpener={setOpener}>
+        <Typography variant="h6" component="h2">
+          Bulk Import
+        </Typography>
+        {children}
+        <Typography className="my-2">{subText}</Typography>
+        <input
+          type="file"
+          className="hidden"
+          ref={inputFile}
+          onChange={handleOnChange}
+        />
+        <Button
+          variant="contained"
+          {...(loading && {
+            disabled: true,
+            startIcon: <CircularProgress size={20} />,
+          })}
+          onClick={() => inputFile.current?.click()}
+        >
+          Choose File
+        </Button>
+      </ModalLay>
+    </>
   );
 };
 

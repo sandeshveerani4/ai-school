@@ -12,7 +12,7 @@ const ModalLay = ({
   extras,
 }: {
   children?: React.ReactNode;
-  buttonTitle: string;
+  buttonTitle?: string;
   buttonProps?: ButtonProps;
   opener?: boolean;
   setOpener?: React.Dispatch<React.SetStateAction<boolean>>;

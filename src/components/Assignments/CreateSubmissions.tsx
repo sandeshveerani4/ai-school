@@ -6,13 +6,7 @@ import Dropzone, { useDropzone } from "react-dropzone";
 import AttachmentIcon from "@mui/icons-material/Attachment";
 import { fileUpload } from "@/lib/file_upload";
 
-const CreateSubmissions = ({
-  assignmentId,
-  reloadData,
-}: {
-  assignmentId: string;
-  reloadData: React.Dispatch<React.SetStateAction<boolean>>;
-}) => {
+const CreateSubmissions = ({ assignmentId }: { assignmentId: string }) => {
   const [files, setFiles] = useState<File[]>([]);
   const onDrop = useCallback((droppedFiles: File[]) => {
     setFiles(droppedFiles);
@@ -36,7 +30,6 @@ const CreateSubmissions = ({
         buttonProps={{ variant: "outlined" }}
         endpoint={`/api/assignments/${assignmentId}/submissions`}
         middleware={middleware}
-        setDone={reloadData}
       >
         <Grid container rowSpacing={1} columnSpacing={1}>
           <Grid item width={"100%"}>

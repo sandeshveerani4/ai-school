@@ -5,45 +5,33 @@ import { User, authorize, unAuthorized } from "@/lib/authorize";
 export async function GET(req: NextRequest) {
   const auth = authorize(req) as User;
   if (auth === unAuthorized) return unAuthorized;
-  const students = await prisma.assignment.findMany({
-    ...(auth.role === "STUDENT" && {
-      where: {
-        topic: {
-          subject: {
-            classId: auth.student?.classId,
-            sectionId: auth.student?.sectionId,
-          },
-        },
-        visible: true,
-      },
-    }),
-    include: {
-      _count: {
-        select: {
-          submissions:
-            auth.role === "STUDENT" ? { where: { studentId: auth.id } } : true,
-        },
-      },
+  if (auth.role !== "STUDENT") return unAuthorized;
+  const quizzes = await prisma.assignment.findFirst({
+    where: {
       topic: {
+        subject: {
+          classId: auth.student?.classId,
+          sectionId: auth.student?.sectionId,
+        },
+      },
+      visible: true,
+      enabled: true,
+      type: "QUIZ",
+    },
+    include: {
+      questions: {
         include: {
-          subject: {
+          question: {
             include: {
-              class: true,
-              section: true,
-              teacher: { include: { user: true } },
+              options: { select: { id: true, option: true, image: true } },
             },
           },
         },
       },
-      ...(auth.role === "STUDENT" && {
-        submissions: {
-          where: { studentId: auth.id },
-        },
-      }),
     },
     orderBy: { id: "desc" },
   });
-  return NextResponse.json(students);
+  return NextResponse.json(quizzes);
 }
 export async function POST(req: NextRequest) {
   const auth = authorize(req) as User;

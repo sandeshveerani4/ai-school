@@ -1,6 +1,7 @@
 "use client";
-import { createTheme,Shadows,ThemeOptions } from "@mui/material/styles";
+import { createTheme, Shadows, ThemeOptions } from "@mui/material/styles";
 import blueGrey from "@mui/material/colors/blueGrey";
+import blue from "@mui/material/colors/blue";
 import grey from "@mui/material/colors/grey";
 import green from "@mui/material/colors/green";
 // const defaultTheme = createTheme();
@@ -29,12 +30,12 @@ export const darkTheme = createTheme({
   },
   palette: {
     primary: {
-      main: blueGrey[800],
+      main: "#454344", //blueGrey[800],
     },
     secondary: {
-      main: green[500],
+      main: "#4540e1",
       contrastText: "white",
     },
-    light: { main: grey[600] },
+    light: { main: grey[500] },
   },
 });

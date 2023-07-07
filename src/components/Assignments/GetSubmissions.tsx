@@ -7,37 +7,9 @@ import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { Submission } from "@prisma/client";
 import ModalLay from "../ModalLay";
 import Link from "next/link";
-export const getSubmissions = async (id: string) => {
-  try {
-    const options: RequestInit = await reqParams();
-    const res = await fetch(`/api/assignments/${id}/submissions`, options);
-    return await res.json();
-  } catch (e) {
-    console.error(e);
-  }
-};
 
-const GetAssignments = ({
-  reload,
-  assignmentId,
-}: {
-  reload: boolean;
-  assignmentId: string;
-}) => {
+const GetSubmissions = ({ submissions }: { submissions: Submission[] }) => {
   const { data: session } = useSession();
-  const [data, setData] = useState<Submission[]>([]);
-  const [loading, setLoading] = useState(true);
-  const loadData = async () => {
-    setLoading(true);
-    setData((await getSubmissions(assignmentId)) ?? data);
-    setLoading(false);
-  };
-  useEffect(() => {
-    loadData();
-  }, []);
-  useEffect(() => {
-    if (reload) loadData();
-  }, [reload]);
   const getColumns = () => {
     const A = [{ field: "id", headerName: "ID" }];
     const B = [
@@ -86,7 +58,9 @@ const GetAssignments = ({
         renderCell: (params: any) => {
           return (
             <Link href={`/dashboard/students/${params.value.userId}`}>
-              {params.value.user.first_name + " " + params.value.user.last_name}
+              {params.value.user?.first_name +
+                " " +
+                params.value.user?.last_name}
             </Link>
           );
         },
@@ -99,15 +73,14 @@ const GetAssignments = ({
   return (
     <Box className="w-100 overflow-x-auto">
       <DataGrid
-        loading={loading}
         autoHeight
         hideFooter
         className="bg-white"
         columns={getColumns()}
-        rows={data}
+        rows={submissions}
         checkboxSelection
       />
     </Box>
   );
 };
-export default GetAssignments;
+export default GetSubmissions;

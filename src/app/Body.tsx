@@ -6,9 +6,7 @@ export default function Body({ children }: { children: React.ReactNode }) {
   return (
     <ThemeProvider theme={darkTheme}>
       <CssBaseline />
-      <body className="bg-slate-50">
-        {children}
-      </body>
+      <body style={{ backgroundColor: "#f9f8fd" }}>{children}</body>
     </ThemeProvider>
   );
 }

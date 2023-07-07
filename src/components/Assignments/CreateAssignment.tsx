@@ -26,7 +26,7 @@ import { fileUpload } from "@/lib/file_upload";
 const CreateAssignment = ({
   reloadData,
 }: {
-  reloadData: React.Dispatch<React.SetStateAction<boolean>>;
+  reloadData?: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
   const [selectedTopic, setSelectedTopic] = useState<Topic>({} as Topic);
   const [files, setFiles] = useState<File[]>([]);
