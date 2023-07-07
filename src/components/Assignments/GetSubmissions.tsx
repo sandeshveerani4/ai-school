@@ -1,7 +1,7 @@
 "use client";
 import { Box, Button, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import { config, reqParams } from "@/consts";
+import { config, reqParams } from "@/lib/consts";
 import { useSession } from "next-auth/react";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { Submission } from "@prisma/client";

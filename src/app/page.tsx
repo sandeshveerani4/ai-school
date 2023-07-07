@@ -1,5 +1,5 @@
 "use client";
-import { config } from "@/consts";
+import { config } from "@/lib/consts";
 import { Button, Grid, Stack } from "@mui/material";
 import Link from "next/link";
 import { redirect } from "next/navigation";

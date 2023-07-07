@@ -4,7 +4,7 @@ import { Box, Grid, Typography, Chip, IconButton, Button } from "@mui/material";
 import Add from "@mui/icons-material/Add";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
-import { config } from "@/consts";
+import { config } from "@/lib/consts";
 import GetSubmissions from "@/components/Assignments/GetSubmissions";
 import { Assignment } from "@/components/Assignments/GetAssignments";
 import CreateSubmissions from "@/components/Assignments/CreateSubmissions";

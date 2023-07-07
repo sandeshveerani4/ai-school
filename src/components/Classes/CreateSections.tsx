@@ -3,7 +3,7 @@ import { Box, Grid, TextField } from "@mui/material";
 import React from "react";
 import Button from "@mui/material/Button";
 import { getSession } from "next-auth/react";
-import { config } from "@/consts";
+import { config } from "@/lib/consts";
 const fields = [
   { label: "Class Name", name: "name", required: true },
   { label: "Rank", name: "rank", type: "number", required: true },

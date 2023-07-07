@@ -15,7 +15,7 @@ import Loading from "@/app/dashboard/loading";
 import ModalLay from "../ModalLay";
 import FormWithLoading from "../FormWithLoading";
 import ClassRow, { Class } from "./ClassRow";
-import { reqParams } from "@/consts";
+import { reqParams } from "@/lib/consts";
 
 export const getClasses = async () => {
   const options: RequestInit = await reqParams();

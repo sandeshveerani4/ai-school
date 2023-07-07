@@ -7,7 +7,7 @@ import {
   Typography,
 } from "@mui/material";
 import { read, utils } from "xlsx";
-import { reqParams } from "@/consts";
+import { reqParams } from "@/lib/consts";
 import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
 const BulkImport = ({
   reloadData,

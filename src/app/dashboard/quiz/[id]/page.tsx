@@ -1,4 +1,4 @@
-import { config, reqParams } from "@/consts";
+import { config, reqParams } from "@/lib/consts";
 import Client from "./client";
 
 export const getQuiz = async (id: string) => {

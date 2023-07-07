@@ -1,4 +1,4 @@
-import { config } from "@/consts";
+import { config } from "@/lib/consts";
 import Body from "./Body";
 import "./globals.css";
 import { Metadata } from "next";

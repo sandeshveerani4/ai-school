@@ -13,7 +13,7 @@ import Paper from "@mui/material/Paper";
 import Loading from "@/app/dashboard/loading";
 import Link from "next/link";
 import { Student } from "./StudentFields";
-import { reqParams } from "@/consts";
+import { reqParams } from "@/lib/consts";
 
 export const getStudents = async () => {
   try {

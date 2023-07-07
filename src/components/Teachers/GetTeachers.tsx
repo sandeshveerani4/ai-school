@@ -15,7 +15,7 @@ import Loading from "@/app/dashboard/loading";
 import Link from "next/link";
 import { Teacher } from "./TeacherFields";
 import ModalLay from "../ModalLay";
-import { reqParams } from "@/consts";
+import { reqParams } from "@/lib/consts";
 
 export const getTeachers = async () => {
   const options: RequestInit = await reqParams();

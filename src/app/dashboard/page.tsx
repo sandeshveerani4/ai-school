@@ -1,8 +1,8 @@
 import AdminDashboard from "@/components/Dashboard/AdminDashboard";
-import { config, reqParams } from "@/consts";
+import { config, reqParams } from "@/lib/consts";
 import React from "react";
 
-export const getStats = async () => {
+const getStats = async () => {
   const options: RequestInit = await reqParams(true);
   const res = await fetch(`${config.site.url}/api/dashboard/`, options);
   if (!res.ok) {

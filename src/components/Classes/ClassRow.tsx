@@ -12,7 +12,7 @@ import FormWithLoading from "../FormWithLoading";
 import Add from "@mui/icons-material/Add";
 import { Prisma, Section } from "@prisma/client";
 import { getSession } from "next-auth/react";
-import { reqParams } from "@/consts";
+import { reqParams } from "@/lib/consts";
 export type Class = Prisma.ClassGetPayload<{
   include: {
     sections: true;

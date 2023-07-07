@@ -7,7 +7,7 @@ import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
 import { Alert, Container } from "@mui/material";
-import { config } from "@/consts";
+import { config } from "@/lib/consts";
 import { signIn, useSession } from "next-auth/react";
 import { useEffect, useRef, useState } from "react";
 import { redirect } from "next/navigation";
@@ -53,7 +53,13 @@ export default function SignInSide(props: Props) {
           marginTop: 8,
         }}
       >
-        <Typography component="h1" fontWeight={'bold'} className="mb-4" textAlign={"center"} variant="h5">
+        <Typography
+          component="h1"
+          fontWeight={"bold"}
+          className="mb-4"
+          textAlign={"center"}
+          variant="h5"
+        >
           {config.site.name}
         </Typography>
         <Grid container justifyContent={"center"}>

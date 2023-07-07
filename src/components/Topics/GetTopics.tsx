@@ -11,7 +11,7 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import Loading from "@/app/dashboard/loading";
 import Link from "next/link";
-import { reqParams } from "@/consts";
+import { reqParams } from "@/lib/consts";
 import { Prisma } from "@prisma/client";
 export type Topic = Prisma.TopicGetPayload<{
   include: {
@@ -82,10 +82,7 @@ const GetTopics = ({
                     <TableCell>{data.title}</TableCell>
                     <TableCell>{data.description}</TableCell>
                     <TableCell>
-                      <Button
-                        variant="outlined"
-                        className="mr-2"
-                      >
+                      <Button variant="outlined" className="mr-2">
                         View Details
                       </Button>
                     </TableCell>

@@ -24,7 +24,7 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { Metadata } from "next";
 import { getSession, signOut, useSession } from "next-auth/react";
-import { config } from "@/consts";
+import { config } from "@/lib/consts";
 import Loading from "@/app/dashboard/loading";
 import ExitToApp from "@mui/icons-material/ExitToApp";
 import {

@@ -21,7 +21,7 @@ import {
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import { Question } from "./GetQuestions";
-import { config } from "@/consts";
+import { config } from "@/lib/consts";
 import { DataGrid } from "@mui/x-data-grid";
 const SearchQuestions = ({
   selectedQuestions,

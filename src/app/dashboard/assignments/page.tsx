@@ -1,6 +1,6 @@
-import { config, reqParams } from "@/consts";
+import { config, reqParams } from "@/lib/consts";
 import Client from "./client";
-export const getAssignments = async () => {
+const getAssignments = async () => {
   const options: RequestInit = await reqParams(true);
   const res = await fetch(`${config.site.url}/api/assignments/`, options);
   if (!res.ok) {

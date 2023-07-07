@@ -14,7 +14,7 @@ import { Class, Prisma } from "@prisma/client";
 import { getClasses } from "../Classes/GetClasses";
 import { getSession } from "next-auth/react";
 import { getSections } from "../Classes/ClassRow";
-import { config } from "@/consts";
+import { config } from "@/lib/consts";
 export type Student = Prisma.UserGetPayload<{
   include: {
     student: { include: { class: true; section: true } };

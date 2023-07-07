@@ -1,5 +1,5 @@
 "use client";
-import { reqParams } from "@/consts";
+import { reqParams } from "@/lib/consts";
 import {
   Alert,
   Box,

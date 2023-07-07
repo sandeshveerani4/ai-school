@@ -13,7 +13,7 @@ import Paper from "@mui/material/Paper";
 import CardMedia from "@mui/material/CardMedia";
 import Loading from "@/app/dashboard/loading";
 import Link from "next/link";
-import { config, reqParams } from "@/consts";
+import { config, reqParams } from "@/lib/consts";
 import { Prisma } from "@prisma/client";
 import ModalLay from "../ModalLay";
 export type Question = Prisma.QuestionGetPayload<{

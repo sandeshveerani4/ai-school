@@ -11,7 +11,7 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import Loading from "@/app/dashboard/loading";
 import Link from "next/link";
-import { reqParams } from "@/consts";
+import { reqParams } from "@/lib/consts";
 import { Prisma } from "@prisma/client";
 export type Subject = Prisma.SubjectGetPayload<{
   include: {
