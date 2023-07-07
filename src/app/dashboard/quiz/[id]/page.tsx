@@ -1,7 +1,7 @@
 import { config, reqParams } from "@/lib/consts";
 import Client from "./client";
 
-export const getQuiz = async (id: string) => {
+const getQuiz = async (id: string) => {
   const options: RequestInit = await reqParams(true);
   const res = await fetch(
     `${config.site.url}/api/assignments/${id}/quiz`,
