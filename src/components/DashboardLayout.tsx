@@ -39,6 +39,8 @@ import {
   Zoom,
   Grid,
   Tooltip,
+  Chip,
+  CardMedia,
 } from "@mui/material";
 import InsightsIcon from "@mui/icons-material/AnalyticsOutlined";
 import AccountCircle from "@mui/icons-material/PersonOutlineOutlined";
@@ -52,93 +54,101 @@ const drawerWidth = 240;
 interface Props {
   children: React.ReactNode;
   window?: () => Window;
+  unread: number;
 }
 interface MenuItem {
   id: number;
-  name: string;
+  name: string | JSX.Element;
   path: string;
   roles: any;
   icon?: JSX.Element;
 }
-const menuItems: MenuItem[] = [
-  {
-    id: 1,
-    name: "Dashboard",
-    path: "/dashboard",
-    icon: <Dashboard />,
-    roles: ["ADMIN", "TEACHER", "STUDENT"],
-  },
-  {
-    id: 2,
-    name: "Students",
-    path: "/dashboard/students",
-    icon: <PersonIcon />,
-    roles: ["ADMIN"],
-  },
-  {
-    id: 3,
-    name: "Assignments",
-    path: "/dashboard/assignments",
-    icon: <AssignmentIcon />,
-    roles: ["ADMIN", "TEACHER", "STUDENT"],
-  },
-  {
-    id: 10,
-    name: "Practice",
-    path: "/dashboard/practice",
-    roles: ["STUDENT"],
-    icon: <FlashOnOutlinedIcon />,
-  },
-  {
-    id: 4,
-    name: "Teachers",
-    path: "/dashboard/teachers",
-    icon: <GroupsIcon />,
-    roles: ["ADMIN"],
-  },
-  {
-    id: 5,
-    name: "Classes",
-    path: "/dashboard/classes",
-    icon: <ClassIcon />,
-    roles: ["ADMIN"],
-  },
-  {
-    id: 6,
-    name: "Subjects",
-    path: "/dashboard/subjects",
-    icon: <LibraryBooks />,
-    roles: ["ADMIN"],
-  },
-  {
-    id: 7,
-    name: "Discussions",
-    path: "/dashboard/discussions",
-    icon: <Forum />,
-    roles: ["ADMIN", "TEACHER", "STUDENT"],
-  },
-  {
-    id: 8,
-    name: "Track",
-    path: "/dashboard/track",
-    icon: <InsightsIcon />,
-    roles: ["ADMIN", "TEACHER"],
-  },
-  {
-    id: 9,
-    name: "Questions",
-    path: "/dashboard/questions",
-    icon: <Question />,
-    roles: ["ADMIN", "TEACHER"],
-  },
-  {
-    id: 11,
-    name: "Notifications",
-    path: "/dashboard/notifications",
-    icon: <NotificationsOutlinedIcon />,
-    roles: ["ADMIN", "TEACHER", "STUDENT"],
-  },
-];
+const menuItems = (unread: number): MenuItem[] => {
+  return [
+    {
+      id: 1,
+      name: "Dashboard",
+      path: "/dashboard",
+      icon: <Dashboard />,
+      roles: ["ADMIN", "TEACHER", "STUDENT"],
+    },
+    {
+      id: 2,
+      name: "Students",
+      path: "/dashboard/students",
+      icon: <PersonIcon />,
+      roles: ["ADMIN"],
+    },
+    {
+      id: 3,
+      name: "Assignments",
+      path: "/dashboard/assignments",
+      icon: <AssignmentIcon />,
+      roles: ["ADMIN", "TEACHER", "STUDENT"],
+    },
+    {
+      id: 10,
+      name: "Practice",
+      path: "/dashboard/practice",
+      roles: ["STUDENT"],
+      icon: <FlashOnOutlinedIcon />,
+    },
+    {
+      id: 4,
+      name: "Teachers",
+      path: "/dashboard/teachers",
+      icon: <GroupsIcon />,
+      roles: ["ADMIN"],
+    },
+    {
+      id: 5,
+      name: "Classes",
+      path: "/dashboard/classes",
+      icon: <ClassIcon />,
+      roles: ["ADMIN"],
+    },
+    {
+      id: 6,
+      name: "Subjects",
+      path: "/dashboard/subjects",
+      icon: <LibraryBooks />,
+      roles: ["ADMIN"],
+    },
+    {
+      id: 7,
+      name: "Discussions",
+      path: "/dashboard/discussions",
+      icon: <Forum />,
+      roles: ["ADMIN", "TEACHER", "STUDENT"],
+    },
+    {
+      id: 8,
+      name: "Track",
+      path: "/dashboard/track",
+      icon: <InsightsIcon />,
+      roles: ["ADMIN", "TEACHER"],
+    },
+    {
+      id: 9,
+      name: "Questions",
+      path: "/dashboard/questions",
+      icon: <Question />,
+      roles: ["ADMIN", "TEACHER"],
+    },
+    {
+      id: 11,
+      name: (
+        <>
+          Notifications{" "}
+          {unread !== 0 && <Chip label={unread} color="error" size="small" />}
+        </>
+      ),
+      path: "/dashboard/notifications",
+      icon: <NotificationsOutlinedIcon />,
+      roles: ["ADMIN", "TEACHER", "STUDENT"],
+    },
+  ];
+};
 const getValueFromPath = (path: string) => {
   const match = path.split("/");
   return match.length > 2 ? match[2] : match[1];
@@ -146,7 +156,7 @@ const getValueFromPath = (path: string) => {
 const DashboardLayout = (props: Props) => {
   const { data: session } = useSession();
   const currentPage = usePathname();
-  const { window, children } = props;
+  const { window, children, unread } = props;
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const buttonSx = {
     justifyContent: "left",
@@ -217,7 +227,7 @@ const DashboardLayout = (props: Props) => {
         flexGrow={1}
       >
         <List>
-          {menuItems.map((item: MenuItem, index: number) => {
+          {menuItems(unread).map((item: MenuItem, index: number) => {
             return item.roles.includes(session?.user.role)
               ? NavBarItem(item, index)
               : "";
@@ -238,7 +248,20 @@ const DashboardLayout = (props: Props) => {
                   <Button
                     LinkComponent={Link}
                     href="/dashboard/profile"
-                    startIcon={<AccountCircle />}
+                    startIcon={
+                      session.user.pictureURL ? (
+                        <CardMedia
+                          component={"img"}
+                          src={
+                            config.site.imageDomain + session.user.pictureURL
+                          }
+                          className="rounded-full bg-neutral-100"
+                          sx={{ width: "20px", height: "20px" }}
+                        />
+                      ) : (
+                        <AccountCircle />
+                      )
+                    }
                     sx={{ justifyContent: "left", alignItems: "center" }}
                     fullWidth
                   >

@@ -11,19 +11,21 @@ datasource db {
 }
 
 model User {
-  id            Int       @id @default(autoincrement())
-  username      String    @unique
-  password      String
-  role          Role      @default(STUDENT)
-  first_name    String?
-  last_name     String?
-  date_of_birth DateTime? @default(now()) @db.Date
-  pictureURL    String?
-  student       Student?
-  teacher       Teacher?
-  admin         Admin?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @default(now()) @updatedAt
+  id                 Int                   @id @default(autoincrement())
+  username           String                @unique
+  password           String
+  role               Role                  @default(STUDENT)
+  first_name         String?
+  last_name          String?
+  date_of_birth      DateTime?             @default(now()) @db.Date
+  pictureURL         String?
+  student            Student?
+  teacher            Teacher?
+  admin              Admin?
+  createdAt          DateTime              @default(now())
+  updatedAt          DateTime              @default(now()) @updatedAt
+  notifications      Notification[]
+  sent_notifications NotificationMessage[]
 }
 
 model Admin {
@@ -105,18 +107,24 @@ model Assignment {
   willStartAt DateTime                @default(now())
   createdAt   DateTime                @default(now())
   submissions Submission[]
+  video_url   String?
 }
 
 model Submission {
-  id           Int        @id @default(autoincrement())
-  description  String?
-  files        Json[]
-  assignment   Assignment @relation(fields: [assignmentId], references: [id])
-  assignmentId Int
-  student      Student    @relation(fields: [studentId], references: [userId])
-  studentId    Int
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @default(now()) @updatedAt
+  id            Int        @id @default(autoincrement())
+  description   String?
+  files         Json[]
+  assignment    Assignment @relation(fields: [assignmentId], references: [id])
+  assignmentId  Int
+  student       Student    @relation(fields: [studentId], references: [userId])
+  studentId     Int
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @default(now()) @updatedAt
+  chosenOptions Json?
+  score         Int?       @default(1)
+  correct       Int?
+
+  @@index([studentId])
 }
 
 model QuestionForAssignment {
@@ -155,6 +163,29 @@ model Option {
   updatedAt  DateTime @default(now()) @updatedAt
 }
 
+model NotificationMessage {
+  id            Int            @id @default(autoincrement())
+  author        User           @relation(fields: [authorId], references: [id])
+  authorId      Int
+  notifications Notification[]
+  title         String?
+  content       String?
+  link          String?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @default(now()) @updatedAt
+}
+
+model Notification {
+  id              Int                 @id @default(autoincrement())
+  user            User                @relation(fields: [userId], references: [id])
+  userId          Int
+  notification    NotificationMessage @relation(fields: [notification_id], references: [id])
+  notification_id Int
+  read            Boolean             @default(false)
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @default(now()) @updatedAt
+}
+
 enum QuestionType {
   MCQ
   FILL
@@ -163,6 +194,7 @@ enum QuestionType {
 enum AssignmentType {
   HOMEWORK
   QUIZ
+  VIDEO_LESSON
 }
 
 enum Role {

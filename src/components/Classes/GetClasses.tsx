@@ -20,6 +20,9 @@ import { reqParams } from "@/lib/consts";
 export const getClasses = async () => {
   const options: RequestInit = await reqParams();
   const res = await fetch(`/api/classes/`, options);
+  if (!res.ok) {
+    throw new Error("Failed to fetch data");
+  }
   return await res.json();
 };
 

@@ -13,13 +13,17 @@ export async function GET(
   const assignments = await prisma.assignment.findFirst({
     where: {
       id: Number(params.id),
-
       visible: true,
     },
     include: {
       submissions: {
         include: {
           student: { include: { user: true } },
+        },
+      },
+      _count: {
+        select: {
+          questions: true,
         },
       },
     },

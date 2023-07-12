@@ -35,24 +35,21 @@ const OptionItem = ({
   index,
   options,
   setOptions,
+  correct,
+  setCorrect,
 }: {
   value: Option;
   index: number;
   options: Option[];
+  correct: number;
   setOptions: React.Dispatch<React.SetStateAction<Option[]>>;
+  setCorrect: React.Dispatch<React.SetStateAction<number>>;
 }) => {
   const inpFile = useRef<HTMLInputElement>(null);
   return (
     <Grid container>
       <Grid item>
-        <Checkbox
-          {...(value.correct && { selected: true })}
-          onChange={(e) =>
-            updateValue(options, setOptions, index, {
-              correct: e.target.checked,
-            })
-          }
-        />
+        <Radio checked={correct === index} onChange={() => setCorrect(index)} />
       </Grid>
       <Grid flexGrow={1} item>
         <TextField
@@ -93,21 +90,22 @@ const OptionItem = ({
             <Delete />
           </IconButton>
         </Tooltip>
-        <IconButton
-          title="Add new Option"
-          onClick={() => {
-            index === options.length - 1
-              ? setOptions([...options, defaultOption])
-              : setOptions(
-                  options
-                    .slice(0, index + 1)
-                    .concat([defaultOption])
-                    .concat(options.slice(index + 1))
-                );
-          }}
-        >
-          <Add />
-        </IconButton>
+        <Tooltip title="Add new Option">
+          <IconButton
+            onClick={() => {
+              index === options.length - 1
+                ? setOptions([...options, defaultOption])
+                : setOptions(
+                    options
+                      .slice(0, index + 1)
+                      .concat([defaultOption])
+                      .concat(options.slice(index + 1))
+                  );
+            }}
+          >
+            <Add />
+          </IconButton>
+        </Tooltip>
       </Grid>
     </Grid>
   );
@@ -136,12 +134,16 @@ const CreateQuestions = ({
 
   const [selectedTopic, setSelectedTopic] = useState<Topic>({} as Topic);
   const [selectedType, setSelectedType] = useState("MCQ");
+  const [correct, setCorrect] = useState(0);
   const middleware = async () => {
     const payload = { options: [] as Option[], image: "" };
     if (selectedType === "MCQ") {
       const optionsC = options.slice();
       for (let index = 0; index < optionsC.length; index++) {
         const element = optionsC[index];
+        if (index === correct) {
+          element.correct = true;
+        }
         if (element.image) {
           try {
             element.image = (await fileUpload(element.image))?.filename;
@@ -255,30 +257,34 @@ const CreateQuestions = ({
           </Button>
           <Grid item xs={12}>
             <Typography width={"100%"}>Correct</Typography>
-            {selectedType === "MCQ" ? (
-              options.map((value, index) => (
-                <OptionItem
-                  key={index}
-                  index={index}
-                  value={value}
-                  options={options}
-                  setOptions={setOptions}
+            <RadioGroup>
+              {selectedType === "MCQ" ? (
+                options.map((value, index) => (
+                  <OptionItem
+                    key={index}
+                    index={index}
+                    value={value}
+                    correct={correct}
+                    setCorrect={setCorrect}
+                    options={options}
+                    setOptions={setOptions}
+                  />
+                ))
+              ) : (
+                <TextField
+                  label="Correct Answer"
+                  sx={{ background: "white" }}
+                  name="fill"
+                  required
+                  fullWidth
+                  InputLabelProps={{
+                    sx: {
+                      textTransform: "capitalize",
+                    },
+                  }}
                 />
-              ))
-            ) : (
-              <TextField
-                label="Correct Answer"
-                sx={{ background: "white" }}
-                name="fill"
-                required
-                fullWidth
-                InputLabelProps={{
-                  sx: {
-                    textTransform: "capitalize",
-                  },
-                }}
-              />
-            )}
+              )}
+            </RadioGroup>
           </Grid>
         </Grid>
       </FormWithLoading>

@@ -1,5 +1,5 @@
 "use client";
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Button, IconButton, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { config, reqParams } from "@/lib/consts";
 import { useSession } from "next-auth/react";
@@ -7,6 +7,7 @@ import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { Submission } from "@prisma/client";
 import ModalLay from "../ModalLay";
 import Link from "next/link";
+import EyeIcon from "@mui/icons-material/VisibilityOutlined";
 
 const GetSubmissions = ({ submissions }: { submissions: Submission[] }) => {
   const { data: session } = useSession();
@@ -23,32 +24,46 @@ const GetSubmissions = ({ submissions }: { submissions: Submission[] }) => {
       {
         field: "actions",
         headerName: "Actions",
-        renderCell: (params: any) => (
-          <ModalLay buttonTitle="View" buttonProps={{ color: "primary" }}>
-            <Box>
-              <Typography variant="button" component={"div"}>
-                Submitted On:
-              </Typography>
-              <Typography>
-                {new Date(params.row.createdAt).toLocaleString()}
-              </Typography>
-              <Typography variant="button" component={"div"}>
-                Description
-              </Typography>
-              <Typography>{params.row.description}</Typography>
-              <Typography variant="button" component={"div"}>
-                Files
-              </Typography>
-              {params.row.files.map((file: any, index: number) => (
-                <Box key={index}>
-                  <Link href={config.site.imageDomain + file.file}>
-                    {file.name}
-                  </Link>
+        renderCell: (params: any) => {
+          const [opener, setOpener] = useState(false);
+          return (
+            <>
+              <IconButton onClick={() => setOpener(true)}>
+                <EyeIcon />
+              </IconButton>
+              <ModalLay
+                buttonTitle="View"
+                isButton={false}
+                opener={opener}
+                setOpener={setOpener}
+                buttonProps={{ color: "primary" }}
+              >
+                <Box>
+                  <Typography variant="button" component={"div"}>
+                    Submitted On:
+                  </Typography>
+                  <Typography>
+                    {new Date(params.row.createdAt).toLocaleString()}
+                  </Typography>
+                  <Typography variant="button" component={"div"}>
+                    Description
+                  </Typography>
+                  <Typography>{params.row.description}</Typography>
+                  <Typography variant="button" component={"div"}>
+                    Files
+                  </Typography>
+                  {params.row.files.map((file: any, index: number) => (
+                    <Box key={index}>
+                      <Link href={config.site.imageDomain + file.file}>
+                        {file.name}
+                      </Link>
+                    </Box>
+                  ))}
                 </Box>
-              ))}
-            </Box>
-          </ModalLay>
-        ),
+              </ModalLay>
+            </>
+          );
+        },
       },
     ];
     const C = [

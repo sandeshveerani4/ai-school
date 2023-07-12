@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import Button from "@mui/material/Button";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
-import Checkbox from "@mui/material/Checkbox";
+import Radio from "@mui/material/Radio";
 import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
@@ -110,7 +110,7 @@ const GetQuestions = ({ reload }: { reload: boolean }) => {
                                 className="my-2 bg-neutral-200 rounded-2xl"
                               >
                                 <Grid item>
-                                  <Checkbox checked={option.correct} />
+                                  <Radio checked={option.correct} />
                                 </Grid>
                                 <Grid item flexGrow={1}>
                                   {option.option}

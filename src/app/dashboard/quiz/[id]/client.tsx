@@ -1,4 +1,5 @@
 "use client";
+import FormWithLoading from "@/components/FormWithLoading";
 import {
   Box,
   Button,
@@ -10,6 +11,7 @@ import {
   Typography,
 } from "@mui/material";
 import { Prisma } from "@prisma/client";
+import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 export type Quiz = Prisma.AssignmentGetPayload<{
   include: {
@@ -94,32 +96,42 @@ const Client = ({ quiz }: { quiz: Quiz }) => {
   const handleChange = ({ id, val }: { id: number; val: number | string }) => {
     setQuestions({ ...chosenQuestions, [id]: val });
   };
+  const [done, setDone] = useState(false);
+  const { push } = useRouter();
+  useEffect(() => {
+    if (done) push(`/dashboard/assignments/${quiz.id}`);
+  }, [done]);
   return (
-    <Grid container gap={2} direction={"row"} className="pb-4">
-      <Grid item xs={12}>
-        <Typography fontWeight={500} variant="h5">
-          {quiz.title}
-        </Typography>
-        <Typography>
-          Ends at: {new Date(quiz.deadline).toLocaleString()}
-        </Typography>
-        <Typography fontWeight={"medium"}>
-          Remaining Time: {days && `${days}d `} {hours && `${hours}h`}{" "}
-          {`${minutes}m`} {`${seconds}s`}
-        </Typography>
+    <FormWithLoading
+      endpoint={`/api/assignments/${quiz.id}/quiz`}
+      submitName="Submit Quiz"
+      buttonProps={{ variant: "contained", color: "secondary" }}
+      setDone={setDone}
+      data={chosenQuestions}
+    >
+      <Grid container gap={2} direction={"row"} className="pb-4">
+        <Grid item xs={12}>
+          <Typography fontWeight={500} variant="h5">
+            {quiz.title}
+          </Typography>
+          <Typography>
+            Ends at: {new Date(quiz.deadline).toLocaleString()}
+          </Typography>
+          <Typography fontWeight={"medium"}>
+            Remaining Time: {days && `${days}d `} {hours && `${hours}h`}{" "}
+            {`${minutes}m`} {`${seconds}s`}
+          </Typography>
+        </Grid>
+        {quiz.questions.map((item, index) => (
+          <Question
+            question={item.question}
+            key={index}
+            index={index}
+            handleChange={handleChange}
+          />
+        ))}
       </Grid>
-      {quiz.questions.map((item, index) => (
-        <Question
-          question={item.question}
-          key={index}
-          index={index}
-          handleChange={handleChange}
-        />
-      ))}
-      <Button variant="contained" color="secondary">
-        Submit Quiz
-      </Button>
-    </Grid>
+    </FormWithLoading>
   );
 };
 

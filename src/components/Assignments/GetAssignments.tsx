@@ -18,7 +18,9 @@ import { useSession } from "next-auth/react";
 import EyeIcon from "@mui/icons-material/VisibilityOutlined";
 export type Assignment = Prisma.AssignmentGetPayload<{
   include: {
-    _count: { select: { submissions: true } };
+    _count: {
+      select: { submissions: true; questions: true };
+    };
     submissions: true;
     topic: {
       include: {

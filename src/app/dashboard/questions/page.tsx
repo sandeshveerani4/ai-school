@@ -1,6 +1,6 @@
 "use client";
 import CreateStudent from "@/components/Students/CreateStudent";
-import { Box, Button } from "@mui/material";
+import { Box, Button, IconButton } from "@mui/material";
 import Add from "@mui/icons-material/Add";
 import React, { useEffect } from "react";
 import GetStudents from "@/components/Students/GetStudents";
@@ -38,15 +38,9 @@ const Questions = () => {
           <SearchTopics changeTopic={changeTopic} />{" "}
           {topic.id && `Selected topic: ${topic.id}`}
         </BulkImport>
-        <Button
-          variant="outlined"
-          size={"small"}
-          onClick={() => setShow(!show)}
-          color="secondary"
-          className="float-right my-2"
-        >
-          <Add /> Add Question
-        </Button>
+        <IconButton onClick={() => setShow(!show)} className="float-right my-2">
+          <Add />
+        </IconButton>
       </Box>
       {show && <CreateQuestions reloadData={reloadData} />}
       <GetQuestions reload={reload} />

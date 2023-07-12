@@ -4,8 +4,8 @@ import { DateCalendar, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import Person2OutlinedIcon from "@mui/icons-material/Person2Outlined";
 import { useSession } from "next-auth/react";
-import Image from "next/image";
 import React from "react";
+import { config } from "@/lib/consts";
 
 const Calendar = () => {
   const { data: session } = useSession();
@@ -14,15 +14,16 @@ const Calendar = () => {
       <Grid container className="p-2" spacing={2}>
         <Grid item>
           <Box
-            className="bg-neutral-100 flex items-center justify-center text-center rounded-full p-2"
+            className=" flex items-center justify-center text-center"
             width={80}
             height={80}
           >
             {session?.user.pictureURL ? (
               <CardMedia
-                src={session.user.pictureURL}
-                className="rounded-lg"
-                sx={{ width: "100%" }}
+                component={"img"}
+                src={config.site.imageDomain + session.user.pictureURL}
+                className="rounded-full bg-neutral-100"
+                sx={{ width: "100%", height: "100%" }}
               />
             ) : (
               <Person2OutlinedIcon sx={{ fontSize: 50 }} color="primary" />

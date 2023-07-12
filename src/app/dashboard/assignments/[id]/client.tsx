@@ -91,6 +91,19 @@ const Client = ({ data }: { data: Assignment }) => {
             {show && <CreateSubmissions assignmentId={`${data.id}`} />}
             <GetSubmissions submissions={data.submissions} />
           </>
+        ) : data.submissions.length > 0 ? (
+          <Box className="border border-solid rounded-2xl p-2 w-auto">
+            <Typography fontWeight={"medium"}>Results</Typography>
+            <Box>Score: {data.submissions[0].score}</Box>
+            <Box>Correct: {data.submissions[0].correct}</Box>
+            <Box>
+              Accuracy:{" "}
+              {((data.submissions[0].correct as number) /
+                data._count.questions) *
+                100}
+              %
+            </Box>
+          </Box>
         ) : (
           <Button
             variant="contained"
