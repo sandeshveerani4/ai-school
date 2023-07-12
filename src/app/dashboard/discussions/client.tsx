@@ -1,6 +1,6 @@
 import React from "react";
 
-const Client = () => {
+const Client = ({ discussions }: { discussions: any }) => {
   return <div>client</div>;
 };
 
