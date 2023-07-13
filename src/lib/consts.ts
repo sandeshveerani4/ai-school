@@ -19,9 +19,10 @@ export const config = {
   site: {
     name: "Ai School",
     description: "AI School",
-    url: process.env.VERCEL
-      ? "https://ai-school-git-master-sandeshveerani4.vercel.app"
-      : "http://localhost:3000",
+    url:
+      process.env.NODE_ENV === "production"
+        ? "https://ai-school-git-master-sandeshveerani4.vercel.app"
+        : "http://localhost:3000",
     imageDomain: "https://labs.barathkumaar.com",
   },
 };

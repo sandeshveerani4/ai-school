@@ -1,7 +1,5 @@
 import prisma from "@/lib/prisma";
-import * as bcrypt from "bcrypt";
 import { NextRequest, NextResponse } from "next/server";
-import { Prisma } from "@prisma/client";
 import { User, authorize, unAuthorized } from "@/lib/authorize";
 
 export async function GET(req: NextRequest) {
