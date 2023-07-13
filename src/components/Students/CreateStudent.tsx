@@ -9,7 +9,7 @@ import {
   Typography,
 } from "@mui/material";
 import { SelectChangeEvent } from "@mui/material/Select";
-import React from "react";
+import React, { useEffect } from "react";
 import { getClasses } from "../Classes/GetClasses";
 import { DateField, DatePicker } from "@mui/x-date-pickers";
 import { LocalizationProvider } from "@mui/x-date-pickers";
@@ -19,6 +19,7 @@ import { getSections } from "../Classes/ClassRow";
 import { useDropzone } from "react-dropzone";
 import ImageIcon from "@mui/icons-material/Image";
 import { fileUpload } from "@/lib/file_upload";
+import { useRouter } from "next/navigation";
 
 const getOptions = (array: any) => {
   return array.map((item: any, index: any) => (
@@ -27,18 +28,13 @@ const getOptions = (array: any) => {
     </MenuItem>
   ));
 };
-const CreateStudent = ({
-  reloadData,
-}: {
-  reloadData: React.Dispatch<React.SetStateAction<boolean>>;
-}) => {
+const CreateStudent = () => {
   const [classes, setClasses] = React.useState([]);
   const [selectedClass, setSelectedClass] = React.useState(0);
   const [sections, setSections] = React.useState([]);
   const [image, setImage] = React.useState<any>(undefined);
-
+  const [done, setDone] = React.useState(false);
   const classChange = (event: SelectChangeEvent) => {
-    console.log("called");
     setSelectedClass(event.target.value as unknown as number);
   };
   const fields = [
@@ -54,7 +50,7 @@ const CreateStudent = ({
       onChange: (e: any) => classChange(e),
     },
     { label: "Section", name: "section", select: true, required: true },
-    { label: "Date of Birth", name: "date_of_birth" },
+    { label: "Date of Birth", name: "date_of_birth", required: true },
   ];
   React.useEffect(() => {
     (async () => {
@@ -80,6 +76,10 @@ const CreateStudent = ({
       return await fileUpload(image);
     } catch {}
   };
+  const router = useRouter();
+  useEffect(() => {
+    if (done) router.refresh();
+  }, [done]);
   return (
     <>
       <Box
@@ -109,7 +109,7 @@ const CreateStudent = ({
       <FormWithLoading
         submitName="Create Student"
         endpoint="/api/students"
-        setDone={reloadData}
+        setDone={setDone}
         middleware={middleware}
       >
         <Grid container rowSpacing={1} columnSpacing={1}>

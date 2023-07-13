@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import ModalLay from "../ModalLay";
 import FormWithLoading from "../FormWithLoading";
 import {
@@ -20,6 +20,7 @@ import {
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import { Topic } from "./GetTopics";
+import { config, reqParams } from "@/lib/consts";
 const SearchTopics = ({
   changeTopic,
 }: {
@@ -30,42 +31,64 @@ const SearchTopics = ({
   const [loading, setLoading] = useState(false);
   const [selectedTopic, setSelectedTopic] = useState<Topic>({} as Topic);
   useEffect(() => {
+    if (topics.length === 0) {
+      const loadTopics = async () => {
+        const options: RequestInit = await reqParams();
+        const res = await fetch(`${config.site.url}/api/topics/search`, {
+          ...options,
+          body: JSON.stringify({ query: "" }),
+          method: "POST",
+        });
+        if (!res.ok) {
+          console.log("Failed to fetch data");
+        }
+        setTopics(await res.json());
+      };
+      loadTopics();
+    }
+  }, []);
+  useEffect(() => {
     changeTopic(selectedTopic);
   }, [selectedTopic]);
   return (
     <ModalLay
-      buttonTitle="Select Topic *"
+      buttonTitle={`${selectedTopic.title ? "Change" : "Select"} Topic *`}
       buttonProps={{ variant: "outlined", color: "secondary" }}
       width={600}
       opener={open}
       setOpener={setOpen}
       extras={
         selectedTopic.title && (
-          <Box className="mt-2">
-            <Typography>
-              Topic:{" "}
-              <Typography component={"span"} fontWeight={"medium"}>
-                {selectedTopic.title}
+          <Box>
+            <Box
+              className="mt-2 text-white rounded-lg p-3 inline-block"
+              sx={{ bgcolor: "secondary.main" }}
+            >
+              <Typography>
+                Topic:{" "}
+                <Typography component={"span"} fontWeight={"medium"}>
+                  {selectedTopic.title}
+                </Typography>
               </Typography>
-            </Typography>
-            <Typography>
-              Subject:{" "}
-              <Typography component={"span"} fontWeight={"medium"}>
-                {selectedTopic.subject.name}
+              <Typography>
+                Subject:{" "}
+                <Typography component={"span"} fontWeight={"medium"}>
+                  {selectedTopic.subject.name}
+                </Typography>
               </Typography>
-            </Typography>
-            <Typography>
-              Class:{" "}
-              <Typography component={"span"} fontWeight={"medium"}>
-                {selectedTopic.subject.class.name}
+              <Typography>
+                Class:{" "}
+                <Typography component={"span"} fontWeight={"medium"}>
+                  {selectedTopic.subject.class.name}
+                </Typography>
               </Typography>
-            </Typography>
-            <Typography>
-              Section:{" "}
-              <Typography component={"span"} fontWeight={"medium"}>
-                {selectedTopic.subject.section.name}
+              <Typography>
+                Section:{" "}
+                <Typography component={"span"} fontWeight={"medium"}>
+                  {selectedTopic.subject.section.name}
+                </Typography>
               </Typography>
-            </Typography>
+            </Box>
           </Box>
         )
       }
@@ -123,7 +146,7 @@ const SearchTopics = ({
                 <TableCell>
                   <Button
                     variant="contained"
-                    color="success"
+                    color="secondary"
                     onClick={() => {
                       setSelectedTopic(topic);
                       setOpen(false);

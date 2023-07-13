@@ -10,7 +10,7 @@ import { config } from "@/lib/consts";
 const Calendar = () => {
   const { data: session } = useSession();
   return (
-    <Box className="p-4 bg-white rounded-2xl">
+    <Grid container direction={"column"} className="p-4 bg-white rounded-2xl">
       <Grid container className="p-2" spacing={2}>
         <Grid item>
           <Box
@@ -46,13 +46,16 @@ const Calendar = () => {
         </Grid>
       </Grid>
       <Divider className="my-2" />
-      <LocalizationProvider dateAdapter={AdapterDayjs}>
-        <DateCalendar />
-      </LocalizationProvider>
-      <Box>
+      <Grid item>
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
+          <DateCalendar />
+        </LocalizationProvider>
+      </Grid>
+      <Divider className="my-2" />
+      <Grid item>
         <Typography variant="button">Timeline</Typography>
-      </Box>
-    </Box>
+      </Grid>
+    </Grid>
   );
 };
 

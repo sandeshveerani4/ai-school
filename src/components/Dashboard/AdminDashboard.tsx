@@ -12,10 +12,10 @@ interface Stats {
 const AdminDashboard = ({ stats }: { stats: Stats }) => {
   return (
     <Grid container spacing={1}>
-      <Grid item lg={8} xl={9}>
+      <Grid item lg={8} md={9}>
         <Stats stats={stats} />
       </Grid>
-      <Grid item lg={4} xl={3}>
+      <Grid item lg={4} md={3}>
         <Sidebar />
       </Grid>
     </Grid>

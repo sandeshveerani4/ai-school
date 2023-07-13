@@ -9,19 +9,19 @@ import {
 import { read, utils } from "xlsx";
 import { reqParams } from "@/lib/consts";
 import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
+import { useRouter } from "next/navigation";
 const BulkImport = ({
-  reloadData,
   endpoint,
   subText,
   middleware,
   children,
 }: {
-  reloadData: React.Dispatch<React.SetStateAction<boolean>>;
   endpoint: string;
   subText: string;
   children?: React.ReactNode;
   middleware?: any;
 }) => {
+  const router = useRouter();
   const [opener, setOpener] = useState(false);
   const [loading, setLoading] = useState(false);
   const inputFile = useRef<HTMLInputElement>(null);
@@ -75,7 +75,7 @@ const BulkImport = ({
             ...(await reqParams()),
           });
           setOpener(false);
-          reloadData(true);
+          router.refresh();
         } catch (e) {
           console.error(e);
         }

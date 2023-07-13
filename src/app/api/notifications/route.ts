@@ -5,12 +5,26 @@ import { User, authorize, unAuthorized } from "@/lib/authorize";
 export async function GET(req: NextRequest) {
   const auth = authorize(req) as User;
   if (auth === unAuthorized) return auth;
-  if (auth.role !== "ADMIN") return unAuthorized;
-  const students = await prisma.notificationMessage.findMany({
-    include: { _count: { select: { notifications: true } }, author: true },
+  const fetched = await prisma.notificationMessage.findMany({
+    ...(auth.role !== "ADMIN" && {
+      where: {
+        notifications: {
+          some: {
+            userId: auth.id,
+          },
+        },
+      },
+    }),
+    include: {
+      ...(auth.role !== "STUDENT" && {
+        _count: { select: { notifications: { where: { read: true } } } },
+      }),
+      author: true,
+      ...(auth.role !== "ADMIN" && { notifications: true }),
+    },
     orderBy: { createdAt: "desc" },
   });
-  return NextResponse.json(students);
+  return NextResponse.json(fetched);
 }
 export async function POST(req: NextRequest) {
   const auth = authorize(req) as User;
@@ -40,13 +54,16 @@ export async function POST(req: NextRequest) {
     }
     if (body.teachers) {
       (
-        await prisma.teacher.findMany({
+        await prisma.user.findMany({
+          where: {
+            role: "TEACHER",
+          },
           select: {
-            userId: true,
+            id: true,
           },
         })
       ).forEach((val) => {
-        target.push({ userId: val.userId });
+        target.push({ userId: val.id });
       });
     }
     await prisma.notificationMessage.create({

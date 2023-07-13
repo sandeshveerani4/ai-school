@@ -2,7 +2,6 @@
 import CreateNotification from "@/components/Notifications/CreateNotification";
 import { Box, IconButton } from "@mui/material";
 import { Prisma } from "@prisma/client";
-import { useSession } from "next-auth/react";
 import React, { useState } from "react";
 import Add from "@mui/icons-material/Add";
 import { Class } from "@/components/Classes/ClassRow";
@@ -22,7 +21,6 @@ const Client = ({
   notifications: NotificationMessage[];
   classes?: Class[];
 }) => {
-  const { data: session } = useSession();
   const [show, setShow] = useState(false);
   return (
     <Box>
@@ -36,7 +34,7 @@ const Client = ({
               <Add />
             </IconButton>
           </Box>
-          {show && <CreateNotification classes={classes} />}
+          {show && <CreateNotification classes={classes} setOpen={setShow} />}
         </>
       )}
       <GetNotifications notifications={notifications} />

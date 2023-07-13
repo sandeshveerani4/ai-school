@@ -3,7 +3,6 @@ import StudentFields, { Student } from "@/components/Students/StudentFields";
 import { getSession } from "next-auth/react";
 import React, { useEffect, useState } from "react";
 import Loading from "../../loading";
-import Image from "next/image";
 import { Typography } from "@mui/material";
 
 const ParticularStudent = ({ params }: { params: { id: string } }) => {
@@ -36,7 +35,6 @@ const ParticularStudent = ({ params }: { params: { id: string } }) => {
       <Typography variant="h4" className="mb-3">
         {student?.first_name + " " + student?.last_name}
       </Typography>
-      {/* <Image src={student?.profile?.pictureURL ?? ""} width={100} height={100} /> */}
       <StudentFields data={student} />
     </>
   );

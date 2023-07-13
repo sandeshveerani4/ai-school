@@ -59,6 +59,7 @@ export async function POST(req: NextRequest) {
         visible: Boolean(body.visible),
         enabled: Boolean(body.enabled),
         type: body.type,
+        ...(body.type === "VIDEO_LESSON" && { video_url: body.video_url }),
         ...(typeof body.willStartAt !== "string" && {
           willStartAt: new Date(body.willStartAt),
         }),

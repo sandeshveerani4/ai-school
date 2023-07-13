@@ -82,6 +82,13 @@ const NotificationItem = ({
         <Typography fontStyle={"italic"} fontSize={"small"} color="CaptionText">
           {timeL} By {val.author.first_name} {val.author.last_name}
         </Typography>
+        {Number(session.user.id) === val.authorId && (
+          <>
+            <Typography fontSize={"small"} color={"CaptionText"}>
+              Views: {val._count.notifications} users
+            </Typography>
+          </>
+        )}
       </Grid>
       <Grid className="items-center justify-center flex" item>
         <Tooltip title="View">
@@ -132,9 +139,6 @@ const NotificationItem = ({
           </Tooltip>
         )}
       </Grid>
-      {Number(session.user.id) === val.authorId && (
-        <Grid item>Sent to: {val._count.notifications} users</Grid>
-      )}
     </Grid>
   );
 };

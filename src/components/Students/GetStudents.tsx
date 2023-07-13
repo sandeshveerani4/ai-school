@@ -1,7 +1,8 @@
 "use client";
-import { Box, Grid, Skeleton, TextField } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import { Box, CardMedia } from "@mui/material";
+import React, { useState } from "react";
 import Button from "@mui/material/Button";
+import IconButton from "@mui/material/IconButton";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -10,21 +11,80 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import Loading from "@/app/dashboard/loading";
+import EyeIcon from "@mui/icons-material/VisibilityOutlined";
+import DeleteIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import Link from "next/link";
 import { Student } from "./StudentFields";
-import { reqParams } from "@/lib/consts";
-
-export const getStudents = async () => {
-  try {
-    const options: RequestInit = await reqParams();
-    const res = await fetch(`/api/students/`, options);
-    return await res.json();
-  } catch (e) {
-    console.error(e);
-  }
+import { config, reqParams } from "@/lib/consts";
+import ModalLay from "../ModalLay";
+import { useRouter } from "next/navigation";
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context";
+const StudentItem = ({
+  data,
+  router,
+}: {
+  data: Student;
+  router: AppRouterInstance;
+}) => {
+  const [show, setShow] = useState(false);
+  return (
+    <TableRow sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
+      <TableCell>
+        {data.pictureURL && (
+          <CardMedia
+            component="img"
+            className="rounded-lg my-3"
+            sx={{
+              width: "64px",
+            }}
+            src={config.site.imageDomain + data.pictureURL}
+          />
+        )}
+      </TableCell>
+      <TableCell>{data["username"]}</TableCell>
+      <TableCell>{data.first_name}</TableCell>
+      <TableCell>{data.last_name}</TableCell>
+      <TableCell>
+        {data.student?.class?.name} {data.student?.section.name}
+      </TableCell>
+      <TableCell>
+        <IconButton
+          LinkComponent={Link}
+          href={`/dashboard/students/${data["id"]}`}
+          className="mr-2"
+        >
+          <EyeIcon />
+        </IconButton>
+        <IconButton onClick={() => setShow(true)}>
+          <DeleteIcon />
+        </IconButton>
+        <ModalLay isButton={false} opener={show} setOpener={setShow}>
+          <Typography variant="h6" component="h2">
+            Confirm Deletion
+          </Typography>
+          <Typography>
+            Are you sure you want to delete this entity? All assignments,
+            messages, results, etc of this candidate will be deleted
+            permanently.
+          </Typography>
+          <Button
+            variant="contained"
+            color="error"
+            className="mt-2"
+            onClick={async () => {
+              await deleteStudent(data["id"]);
+              router.refresh();
+              setShow(false);
+            }}
+          >
+            Confirm
+          </Button>
+        </ModalLay>
+      </TableCell>
+    </TableRow>
+  );
 };
-export const deleteStudent = async (id: string) => {
+const deleteStudent = async (id: number) => {
   try {
     const options: RequestInit = {
       ...(await reqParams()),
@@ -36,31 +96,16 @@ export const deleteStudent = async (id: string) => {
     console.error(e);
   }
 };
+const GetStudents = ({ students }: { students: Student[] }) => {
+  const router = useRouter();
 
-const GetStudents = ({ reload }: { reload: boolean }) => {
-  const [data, setData] = useState<Student[]>([]);
-  const [loading, setLoading] = useState(true);
-  const deleteStd = async (id: number) => {
-    await deleteStudent(String(id));
-    loadData();
-  };
-  const loadData = async () => {
-    setData((await getStudents()) ?? data);
-    setLoading(false);
-  };
-  useEffect(() => {
-    loadData();
-  }, []);
-  useEffect(() => {
-    if (reload) loadData();
-  }, [reload]);
   return (
     <Box className="w-100 overflow-x-auto">
       <TableContainer component={Paper}>
         <Table aria-label="simple table">
           <TableHead>
             <TableRow>
-              <TableCell>Id</TableCell>
+              <TableCell>Photo</TableCell>
               <TableCell>Username</TableCell>
               <TableCell>First Name</TableCell>
               <TableCell>Last Name</TableCell>
@@ -69,7 +114,7 @@ const GetStudents = ({ reload }: { reload: boolean }) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {!loading && data.length == 0 ? (
+            {students.length == 0 ? (
               <TableRow>
                 <TableCell colSpan={5}>
                   <Typography component={"div"} textAlign={"center"}>
@@ -78,41 +123,12 @@ const GetStudents = ({ reload }: { reload: boolean }) => {
                 </TableCell>
               </TableRow>
             ) : (
-              data.map((data, index: number) => (
-                <TableRow
-                  key={data.id}
-                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                >
-                  <TableCell>{data["id"]}</TableCell>
-                  <TableCell>{data["username"]}</TableCell>
-                  <TableCell>{data.first_name}</TableCell>
-                  <TableCell>{data.last_name}</TableCell>
-                  <TableCell>
-                    {data.student?.class?.name} {data.student?.section.name}
-                  </TableCell>
-                  <TableCell>
-                    <Button
-                      variant="outlined"
-                      LinkComponent={Link}
-                      href={`/dashboard/students/${data["id"]}`}
-                      className="mr-2"
-                    >
-                      View Details
-                    </Button>
-                    <Button
-                      variant="outlined"
-                      onClick={() => deleteStd(data.id)}
-                      color="error"
-                    >
-                      Delete
-                    </Button>
-                  </TableCell>
-                </TableRow>
+              students.map((data) => (
+                <StudentItem data={data} router={router} key={data.id} />
               ))
             )}
           </TableBody>
         </Table>
-        {loading && <Loading />}
       </TableContainer>
     </Box>
   );

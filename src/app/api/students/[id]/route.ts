@@ -9,11 +9,10 @@ export async function DELETE(
   const auth = authorize(req) as User;
   if (auth === unAuthorized) return auth;
   if (auth.role !== "ADMIN") return unAuthorized;
-  const students = await prisma.user.delete({
-    where: { id: Number(params.id) },
-    include: { student: { include: { class: true } } },
+  const deletedStudent = await prisma.user.deleteMany({
+    where: { id: Number(params.id), role: "STUDENT" },
   });
-  return NextResponse.json(students);
+  return NextResponse.json({ success: true });
 }
 export async function GET(
   req: Request,

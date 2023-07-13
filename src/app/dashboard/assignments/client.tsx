@@ -1,31 +1,22 @@
 "use client";
 import { Box, Button, IconButton } from "@mui/material";
-import Add from "@mui/icons-material/Add";
 import React, { useState } from "react";
 import CreateAssignment from "@/components/Assignments/CreateAssignment";
 import GetAssignments, {
   Assignment,
 } from "@/components/Assignments/GetAssignments";
-import { useSession } from "next-auth/react";
+import { Session } from "next-auth";
 
-const Client = ({ assignments }: { assignments: Assignment[] }) => {
-  const { data: session } = useSession();
-  const [show, setShow] = useState(false);
+const Client = ({
+  assignments,
+  session,
+}: {
+  assignments: Assignment[];
+  session: Session | null;
+}) => {
   return (
     <Box>
-      {session && session.user.role !== "STUDENT" && (
-        <>
-          <Box overflow={"hidden"}>
-            <IconButton
-              onClick={() => setShow(!show)}
-              className="float-right my-2"
-            >
-              <Add />
-            </IconButton>
-          </Box>
-          {show && <CreateAssignment />}
-        </>
-      )}
+      {session && session.user.role !== "STUDENT" && <CreateAssignment />}
       <GetAssignments assignments={assignments} />
     </Box>
   );

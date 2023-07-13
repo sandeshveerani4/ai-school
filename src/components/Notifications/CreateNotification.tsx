@@ -14,7 +14,13 @@ import { inputProps, inputWhite } from "../Students/StudentFields";
 import { Class } from "../Classes/ClassRow";
 import { Section } from "@prisma/client";
 import { useRouter } from "next/navigation";
-const CreateNotification = ({ classes }: { classes: Class[] }) => {
+const CreateNotification = ({
+  classes,
+  setOpen,
+}: {
+  classes: Class[];
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}) => {
   const [students, setStudents] = useState(false);
   const [selectedClass, setSelectedClass] = useState(0);
   const [sections, setSections] = useState<Section[]>([]);
@@ -28,7 +34,10 @@ const CreateNotification = ({ classes }: { classes: Class[] }) => {
   const [done, setDone] = useState(false);
   const router = useRouter();
   useEffect(() => {
-    if (done) router.refresh();
+    if (done) {
+      router.refresh();
+      setOpen(false);
+    }
   }, [done]);
   return (
     <FormWithLoading

@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ModalLay from "../ModalLay";
 import FormWithLoading from "../FormWithLoading";
 import {
@@ -7,21 +7,11 @@ import {
   TextField,
   InputAdornment,
   IconButton,
-  TableContainer,
-  Table,
-  TableHead,
-  TableRow,
-  TableCell,
-  Paper,
-  TableBody,
-  Button,
   CircularProgress,
-  Box,
-  CardMedia,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import { Question } from "./GetQuestions";
-import { config } from "@/lib/consts";
+import { config, reqParams } from "@/lib/consts";
 import { DataGrid } from "@mui/x-data-grid";
 const SearchQuestions = ({
   selectedQuestions,
@@ -41,6 +31,23 @@ const SearchQuestions = ({
       ? [opener, setOpener]
       : useState(false);
   const [questions, setQuestions] = useState<Question[]>([]);
+  useEffect(() => {
+    if (questions.length === 0) {
+      const loadQuestions = async () => {
+        const options: RequestInit = await reqParams();
+        const res = await fetch(`${config.site.url}/api/questions/search`, {
+          ...options,
+          body: JSON.stringify({ query: "", topicId: topicId }),
+          method: "POST",
+        });
+        if (!res.ok) {
+          console.log("Failed to fetch data");
+        }
+        setQuestions(await res.json());
+      };
+      loadQuestions();
+    }
+  }, []);
   const [loading, setLoading] = useState(false);
   return (
     <ModalLay
@@ -85,6 +92,7 @@ const SearchQuestions = ({
         />
       </FormWithLoading>
       <DataGrid
+        autoHeight
         columns={[
           { field: "id", headerName: "ID" },
           { field: "question", headerName: "Question", width: 150, flex: 1 },

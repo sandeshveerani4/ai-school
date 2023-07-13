@@ -3,7 +3,6 @@ import * as React from "react";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import CssBaseline from "@mui/material/CssBaseline";
-import Divider from "@mui/material/Divider";
 import Drawer from "@mui/material/Drawer";
 import Button from "@mui/material/Button";
 import Dashboard from "@mui/icons-material/SpaceDashboardOutlined";
@@ -12,7 +11,6 @@ import ListItem from "@mui/material/ListItem";
 import MenuIcon from "@mui/icons-material/Menu";
 import Question from "@mui/icons-material/TextSnippetOutlined";
 import LibraryBooks from "@mui/icons-material/ImportContactsOutlined";
-import Topic from "@mui/icons-material/Topic";
 import PersonIcon from "@mui/icons-material/PeopleOutlined";
 import Forum from "@mui/icons-material/ChatOutlined";
 import AssignmentIcon from "@mui/icons-material/AssignmentOutlined";
@@ -23,19 +21,14 @@ import Typography from "@mui/material/Typography";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { Metadata } from "next";
-import { getSession, signOut, useSession } from "next-auth/react";
+import { signOut } from "next-auth/react";
 import { config } from "@/lib/consts";
 import Loading from "@/app/dashboard/loading";
 import ExitToApp from "@mui/icons-material/ExitToApp";
 import {
-  CircularProgress,
-  Fade,
-  Grow,
   Stack,
-  Menu,
   MenuItem,
   IconButton,
-  Slide,
   Zoom,
   Grid,
   Tooltip,
@@ -46,6 +39,7 @@ import InsightsIcon from "@mui/icons-material/AnalyticsOutlined";
 import AccountCircle from "@mui/icons-material/PersonOutlineOutlined";
 import FlashOnOutlinedIcon from "@mui/icons-material/FlashOnOutlined";
 import NotificationsOutlinedIcon from "@mui/icons-material/NotificationsOutlined";
+import { Session } from "next-auth";
 export const metadata: Metadata = {
   title: "Dashboard",
 };
@@ -55,6 +49,7 @@ interface Props {
   children: React.ReactNode;
   window?: () => Window;
   unread: number;
+  session: Session | null;
 }
 interface MenuItem {
   id: number;
@@ -154,9 +149,8 @@ const getValueFromPath = (path: string) => {
   return match.length > 2 ? match[2] : match[1];
 };
 const DashboardLayout = (props: Props) => {
-  const { data: session } = useSession();
   const currentPage = usePathname();
-  const { window, children, unread } = props;
+  const { window, children, unread, session } = props;
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const buttonSx = {
     justifyContent: "left",
@@ -169,37 +163,29 @@ const DashboardLayout = (props: Props) => {
     setMobileOpen(!mobileOpen);
   };
   const NavBarItem = (item: MenuItem, index: number) => (
-    <Fade
-      in={true}
-      key={item.id}
-      style={{ transitionDelay: `${index * 100}ms` }}
-    >
-      <ListItem disablePadding>
-        {currentPage === item.path.toLowerCase() && (
-          <Zoom in={true} style={{ transitionDelay: `0.5s` }}>
-            <Box
-              className="rounded-2xl ml-2"
-              sx={{ width: "4.3px", height: "30px", bgcolor: "secondary.main" }}
-            ></Box>
-          </Zoom>
-        )}
-        <Button
-          key={item.id}
-          variant="text"
-          href={item.path}
-          LinkComponent={Link}
-          sx={buttonSx}
-          size="large"
-          color={
-            currentPage === item.path.toLowerCase() ? "secondary" : "light"
-          }
-          fullWidth
-        >
-          {item.icon}
-          {item.name}
-        </Button>
-      </ListItem>
-    </Fade>
+    <ListItem disablePadding>
+      {currentPage === item.path.toLowerCase() && (
+        <Zoom in={true} style={{ transitionDelay: `0.5s` }}>
+          <Box
+            className="rounded-2xl ml-2"
+            sx={{ width: "4.3px", height: "30px", bgcolor: "secondary.main" }}
+          ></Box>
+        </Zoom>
+      )}
+      <Button
+        key={item.id}
+        variant="text"
+        href={item.path}
+        LinkComponent={Link}
+        sx={buttonSx}
+        size="large"
+        color={currentPage === item.path.toLowerCase() ? "secondary" : "light"}
+        fullWidth
+      >
+        {item.icon}
+        {item.name}
+      </Button>
+    </ListItem>
   );
   const drawer = (
     <Stack direction="column" justifyContent={"center"} height={"100%"}>
@@ -234,61 +220,67 @@ const DashboardLayout = (props: Props) => {
           })}
         </List>
       </Box>
-      {session && (
-        <List>
-          <ListItem>
-            <Grid
-              container
-              alignItems={"center"}
-              justifyContent={"center"}
-              direction={"row"}
-            >
-              <Grid container alignItems={"center"} item xs={10}>
-                <Tooltip title="View Profile">
-                  <Button
-                    LinkComponent={Link}
-                    href="/dashboard/profile"
-                    startIcon={
-                      session.user.pictureURL ? (
-                        <CardMedia
-                          component={"img"}
-                          src={
-                            config.site.imageDomain + session.user.pictureURL
-                          }
-                          className="rounded-full bg-neutral-100"
-                          sx={{ width: "20px", height: "20px" }}
-                        />
-                      ) : (
-                        <AccountCircle />
-                      )
-                    }
-                    sx={{ justifyContent: "left", alignItems: "center" }}
-                    fullWidth
-                  >
-                    {session.user.first_name} {session.user.last_name}
-                  </Button>
-                </Tooltip>
-              </Grid>
-              <Grid container alignItems={"center"} item xs={2}>
-                <Tooltip title="Logout">
-                  <IconButton
-                    edge="end"
-                    color="primary"
-                    onClick={() => signOut()}
-                  >
-                    <ExitToApp />
-                  </IconButton>
-                </Tooltip>
-              </Grid>
+      <List>
+        <ListItem>
+          <Grid
+            container
+            alignItems={"center"}
+            justifyContent={"center"}
+            direction={"row"}
+          >
+            <Grid container alignItems={"center"} item xs={10}>
+              <Tooltip title="View Profile">
+                <Button
+                  LinkComponent={Link}
+                  href="/dashboard/profile"
+                  startIcon={
+                    session?.user.pictureURL ? (
+                      <CardMedia
+                        component={"img"}
+                        src={config.site.imageDomain + session?.user.pictureURL}
+                        className="rounded-full bg-neutral-100"
+                        sx={{ width: "20px", height: "20px" }}
+                      />
+                    ) : (
+                      <AccountCircle />
+                    )
+                  }
+                  sx={{ justifyContent: "left", alignItems: "center" }}
+                  fullWidth
+                >
+                  {session?.user.first_name} {session?.user.last_name}
+                </Button>
+              </Tooltip>
             </Grid>
-          </ListItem>
-        </List>
-      )}
+            <Grid container alignItems={"center"} item xs={2}>
+              <Tooltip title="Logout">
+                <IconButton
+                  edge="end"
+                  color="primary"
+                  onClick={() => signOut()}
+                >
+                  <ExitToApp />
+                </IconButton>
+              </Tooltip>
+            </Grid>
+          </Grid>
+        </ListItem>
+      </List>
     </Stack>
   );
   const container =
     window !== undefined ? () => window().document.body : undefined;
-
+  const [title, setTitle] = React.useState("Dashboard");
+  React.useEffect(() => {
+    const res = getValueFromPath(currentPage);
+    if (res === "dashboard") {
+      setTitle(
+        "Welcome, " + session?.user.first_name + " " + session?.user.last_name
+      );
+    } else {
+      setTitle(res);
+    }
+  }, [currentPage]);
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
@@ -321,7 +313,7 @@ const DashboardLayout = (props: Props) => {
             fontWeight={600}
             textTransform={"capitalize"}
           >
-            {getValueFromPath(currentPage)}
+            {title}
           </Typography>
         </Toolbar>
       </AppBar>

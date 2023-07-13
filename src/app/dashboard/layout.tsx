@@ -1,6 +1,8 @@
 import { Metadata } from "next";
 import DashboardLayout from "@/components/DashboardLayout";
 import { config, reqParams } from "@/lib/consts";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 
 export const metadata: Metadata = {
   title: "Dashboard",
@@ -21,8 +23,11 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const serverSession = await getServerSession(authOptions);
   const unreadCount = await getUnreadNotifications();
   return (
-    <DashboardLayout unread={unreadCount.unread}>{children}</DashboardLayout>
+    <DashboardLayout unread={unreadCount.unread} session={serverSession}>
+      {children}
+    </DashboardLayout>
   );
 }
