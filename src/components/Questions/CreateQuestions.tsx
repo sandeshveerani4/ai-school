@@ -15,7 +15,7 @@ import {
   Radio,
   RadioGroup,
 } from "@mui/material";
-import React, { useCallback, useState, useRef } from "react";
+import React, { useCallback, useState, useRef, useEffect } from "react";
 import FormWithLoading from "../FormWithLoading";
 import { Topic } from "../Topics/GetTopics";
 import AttachmentIcon from "@mui/icons-material/Attachment";
@@ -23,6 +23,7 @@ import Add from "@mui/icons-material/Add";
 import Delete from "@mui/icons-material/Delete";
 import { fileUpload } from "@/lib/file_upload";
 import SearchTopics from "../Topics/SearchTopics";
+import BulkImport from "../Students/BulkImport";
 interface Option {
   option: string;
   correct: boolean;
@@ -120,11 +121,7 @@ const updateValue = (
   newOptions[index] = { ...options[index], ...newOpt };
   setOptions(newOptions);
 };
-const CreateQuestions = ({
-  reloadData,
-}: {
-  reloadData: React.Dispatch<React.SetStateAction<boolean>>;
-}) => {
+const CreateQuestions = () => {
   const onDrop = useCallback((acceptedFiles: any) => {
     console.log(acceptedFiles);
   }, []);
@@ -161,133 +158,166 @@ const CreateQuestions = ({
     }
     return payload;
   };
+  const [done, setDone] = useState(false);
+  useEffect(() => {
+    if (done) {
+    }
+  }, [done]);
+  const [show, setShow] = React.useState(false);
+  const [topic, changeTopic] = React.useState<Topic>({} as Topic);
+  const middlewareBulk = async () => {
+    if (topic) return { topicId: topic.id };
+    throw new Error("Please provide topic");
+  };
   return (
     <>
-      <input
-        type="file"
-        ref={inputFile}
-        onChange={(e) => e.target.files && setImage(e.target.files[0])}
-        style={{ display: "none" }}
-      />
-      <Box gap={1} className="mb-2">
-        <SearchTopics changeTopic={setSelectedTopic} />
+      <Box overflow={"hidden"}>
+        <BulkImport
+          endpoint="/api/questions/bulkimport"
+          middleware={middlewareBulk}
+          subText="Headings should be named: question, option_A, option_B, option_C,
+          option_D, correct,score"
+        >
+          <SearchTopics changeTopic={changeTopic} />{" "}
+          {topic.id && `Selected topic: ${topic.id}`}
+        </BulkImport>
+        <IconButton onClick={() => setShow(!show)} className="float-right my-2">
+          <Add />
+        </IconButton>
       </Box>
-      <FormWithLoading
-        submitName="Create Question"
-        endpoint="/api/questions"
-        middleware={middleware}
-        setDone={reloadData}
-      >
-        <input
-          type="number"
-          value={selectedTopic.id ?? ""}
-          name="topicId"
-          required
-          style={{ display: "none" }}
-        />
-        <Grid container rowSpacing={1} columnSpacing={1}>
-          <Grid item lg={6} md={12}>
-            <TextField
-              sx={{ background: "white" }}
-              InputLabelProps={{
-                sx: {
-                  textTransform: "capitalize",
-                },
-              }}
-              label="Question"
-              name="question"
-              multiline
-              required
-              fullWidth
-            ></TextField>
-          </Grid>
-          <Grid item lg={6} md={12}>
-            <TextField
-              sx={{ background: "white" }}
-              InputLabelProps={{
-                sx: {
-                  textTransform: "capitalize",
-                },
-              }}
-              label="Score"
-              name="score"
-              type="number"
-              inputProps={{ min: "0" }}
-              defaultValue={1}
-              required
-              fullWidth
-            ></TextField>
-          </Grid>
-          <Grid item lg={6} md={12}>
-            <FormLabel id="type">Type</FormLabel>
-            <RadioGroup
-              row
-              aria-labelledby="type"
-              name="type"
-              defaultValue={selectedType}
-              onChange={(e) => setSelectedType(e.target.value)}
-            >
-              <FormControlLabel value="MCQ" control={<Radio />} label="MCQ" />
-              <FormControlLabel
-                value="FILL"
-                control={<Radio />}
-                label="Fill in the blank"
-              />
-            </RadioGroup>
-          </Grid>
-          {image && (
-            <Box width="100%">
-              <Box height={"200px"}>
-                <CardMedia
-                  component="img"
-                  sx={{
-                    height: "100%",
-                    width: "auto",
-                  }}
-                  src={URL.createObjectURL(image)}
-                />
-              </Box>
-            </Box>
-          )}
-          <Button
-            startIcon={<AttachmentIcon />}
-            onClick={() => inputFile.current?.click()}
+      {show && (
+        <>
+          <input
+            type="file"
+            ref={inputFile}
+            onChange={(e) => e.target.files && setImage(e.target.files[0])}
+            style={{ display: "none" }}
+          />
+          <Box gap={1} className="mb-2">
+            <SearchTopics changeTopic={setSelectedTopic} />
+          </Box>
+          <FormWithLoading
+            submitName="Create Question"
+            endpoint="/api/questions"
+            middleware={middleware}
+            setDone={setDone}
           >
-            {image ? "Change" : "Attach"} Image
-          </Button>
-          <Grid item xs={12}>
-            <Typography width={"100%"}>Correct</Typography>
-            <RadioGroup>
-              {selectedType === "MCQ" ? (
-                options.map((value, index) => (
-                  <OptionItem
-                    key={index}
-                    index={index}
-                    value={value}
-                    correct={correct}
-                    setCorrect={setCorrect}
-                    options={options}
-                    setOptions={setOptions}
-                  />
-                ))
-              ) : (
+            <input
+              type="number"
+              value={selectedTopic.id ?? ""}
+              name="topicId"
+              required
+              style={{ display: "none" }}
+            />
+            <Grid container rowSpacing={1} columnSpacing={1}>
+              <Grid item lg={6} md={12}>
                 <TextField
-                  label="Correct Answer"
                   sx={{ background: "white" }}
-                  name="fill"
-                  required
-                  fullWidth
                   InputLabelProps={{
                     sx: {
                       textTransform: "capitalize",
                     },
                   }}
-                />
+                  label="Question"
+                  name="question"
+                  multiline
+                  required
+                  fullWidth
+                ></TextField>
+              </Grid>
+              <Grid item lg={6} md={12}>
+                <TextField
+                  sx={{ background: "white" }}
+                  InputLabelProps={{
+                    sx: {
+                      textTransform: "capitalize",
+                    },
+                  }}
+                  label="Score"
+                  name="score"
+                  type="number"
+                  inputProps={{ min: "0" }}
+                  defaultValue={1}
+                  required
+                  fullWidth
+                ></TextField>
+              </Grid>
+              <Grid item lg={6} md={12}>
+                <FormLabel id="type">Type</FormLabel>
+                <RadioGroup
+                  row
+                  aria-labelledby="type"
+                  name="type"
+                  defaultValue={selectedType}
+                  onChange={(e) => setSelectedType(e.target.value)}
+                >
+                  <FormControlLabel
+                    value="MCQ"
+                    control={<Radio />}
+                    label="MCQ"
+                  />
+                  <FormControlLabel
+                    value="FILL"
+                    control={<Radio />}
+                    label="Fill in the blank"
+                  />
+                </RadioGroup>
+              </Grid>
+              {image && (
+                <Box width="100%">
+                  <Box height={"200px"}>
+                    <CardMedia
+                      component="img"
+                      sx={{
+                        height: "100%",
+                        width: "auto",
+                      }}
+                      src={URL.createObjectURL(image)}
+                    />
+                  </Box>
+                </Box>
               )}
-            </RadioGroup>
-          </Grid>
-        </Grid>
-      </FormWithLoading>
+              <Button
+                startIcon={<AttachmentIcon />}
+                onClick={() => inputFile.current?.click()}
+              >
+                {image ? "Change" : "Attach"} Image
+              </Button>
+              <Grid item xs={12}>
+                <Typography width={"100%"}>Correct</Typography>
+                <RadioGroup>
+                  {selectedType === "MCQ" ? (
+                    options.map((value, index) => (
+                      <OptionItem
+                        key={index}
+                        index={index}
+                        value={value}
+                        correct={correct}
+                        setCorrect={setCorrect}
+                        options={options}
+                        setOptions={setOptions}
+                      />
+                    ))
+                  ) : (
+                    <TextField
+                      label="Correct Answer"
+                      sx={{ background: "white" }}
+                      name="fill"
+                      required
+                      fullWidth
+                      InputLabelProps={{
+                        sx: {
+                          textTransform: "capitalize",
+                        },
+                      }}
+                    />
+                  )}
+                </RadioGroup>
+              </Grid>
+            </Grid>
+          </FormWithLoading>
+        </>
+      )}
     </>
   );
 };

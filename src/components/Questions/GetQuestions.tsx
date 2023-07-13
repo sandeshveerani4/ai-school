@@ -29,116 +29,99 @@ export const getQuestions = async () => {
   }
 };
 
-const GetQuestions = ({ reload }: { reload: boolean }) => {
-  const [data, setData] = useState<Question[]>([]);
-  const [loading, setLoading] = useState(true);
-  const loadData = async () => {
-    setLoading(true);
-    setData((await getQuestions()) ?? data);
-    setLoading(false);
-  };
-  useEffect(() => {
-    loadData();
-  }, []);
-  useEffect(() => {
-    if (reload) loadData();
-  }, [reload]);
+const GetQuestions = ({ questions }: { questions: Question[] }) => {
   return (
     <Box className="w-100 overflow-x-auto">
-      {loading ? (
-        <Loading />
-      ) : (
-        <TableContainer component={Paper}>
-          <Table aria-label="simple table">
-            <TableHead>
+      <TableContainer component={Paper}>
+        <Table aria-label="simple table">
+          <TableHead>
+            <TableRow>
+              <TableCell>Id</TableCell>
+              <TableCell>Question</TableCell>
+              <TableCell>Topic</TableCell>
+              <TableCell>Image</TableCell>
+              <TableCell>Score</TableCell>
+              <TableCell>Actions</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {questions.length == 0 ? (
               <TableRow>
-                <TableCell>Id</TableCell>
-                <TableCell>Question</TableCell>
-                <TableCell>Topic</TableCell>
-                <TableCell>Image</TableCell>
-                <TableCell>Score</TableCell>
-                <TableCell>Actions</TableCell>
+                <TableCell colSpan={5}>
+                  <Typography component={"div"} textAlign={"center"}>
+                    No Data Found
+                  </Typography>
+                </TableCell>
               </TableRow>
-            </TableHead>
-            <TableBody>
-              {data.length == 0 ? (
-                <TableRow>
-                  <TableCell colSpan={5}>
-                    <Typography component={"div"} textAlign={"center"}>
-                      No Data Found
-                    </Typography>
+            ) : (
+              questions.map((data, index: number) => (
+                <TableRow
+                  key={data.id}
+                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                >
+                  <TableCell>{data.id}</TableCell>
+                  <TableCell>{data.question}</TableCell>
+                  <TableCell>{data.topic.title}</TableCell>
+                  <TableCell>
+                    {data.image && (
+                      <Box width={"200px"}>
+                        <CardMedia
+                          component="img"
+                          sx={{
+                            width: "100%",
+                          }}
+                          src={config.site.imageDomain + data.image}
+                        />
+                      </Box>
+                    )}
+                  </TableCell>
+                  <TableCell>{data.score}</TableCell>
+                  <TableCell>
+                    <ModalLay
+                      buttonTitle="View Options"
+                      buttonProps={{ color: "primary" }}
+                    >
+                      <Typography variant="h6" component="h2">
+                        Options
+                      </Typography>
+                      {data.type === "FILL"
+                        ? `Correct answer: ${data.fill}`
+                        : data.options.map((option) => (
+                            <Grid
+                              container
+                              justifyContent={"center"}
+                              alignItems={"flex-start"}
+                              className="my-2 bg-neutral-200 rounded-2xl"
+                            >
+                              <Grid item>
+                                <Radio checked={option.correct} />
+                              </Grid>
+                              <Grid item flexGrow={1}>
+                                {option.option}
+                                {option.image && (
+                                  <Box width={"200px"}>
+                                    <CardMedia
+                                      component="img"
+                                      sx={{
+                                        width: "100%",
+                                      }}
+                                      src={
+                                        config.site.imageDomain + option.image
+                                      }
+                                    />
+                                  </Box>
+                                )}
+                              </Grid>
+                            </Grid>
+                          ))}
+                    </ModalLay>
                   </TableCell>
                 </TableRow>
-              ) : (
-                data.map((data, index: number) => (
-                  <TableRow
-                    key={data.id}
-                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                  >
-                    <TableCell>{data.id}</TableCell>
-                    <TableCell>{data.question}</TableCell>
-                    <TableCell>{data.topic.title}</TableCell>
-                    <TableCell>
-                      {data.image && (
-                        <Box width={"200px"}>
-                          <CardMedia
-                            component="img"
-                            sx={{
-                              width: "100%",
-                            }}
-                            src={config.site.imageDomain + data.image}
-                          />
-                        </Box>
-                      )}
-                    </TableCell>
-                    <TableCell>{data.score}</TableCell>
-                    <TableCell>
-                      <ModalLay
-                        buttonTitle="View Options"
-                        buttonProps={{ color: "primary" }}
-                      >
-                        <Typography variant="h6" component="h2">
-                          Options
-                        </Typography>
-                        {data.type === "FILL"
-                          ? `Correct answer: ${data.fill}`
-                          : data.options.map((option) => (
-                              <Grid
-                                container
-                                justifyContent={"center"}
-                                alignItems={"flex-start"}
-                                className="my-2 bg-neutral-200 rounded-2xl"
-                              >
-                                <Grid item>
-                                  <Radio checked={option.correct} />
-                                </Grid>
-                                <Grid item flexGrow={1}>
-                                  {option.option}
-                                  {option.image && (
-                                    <Box width={"200px"}>
-                                      <CardMedia
-                                        component="img"
-                                        sx={{
-                                          width: "100%",
-                                        }}
-                                        src={
-                                          config.site.imageDomain + option.image
-                                        }
-                                      />
-                                    </Box>
-                                  )}
-                                </Grid>
-                              </Grid>
-                            ))}
-                      </ModalLay>
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      )}
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </TableContainer>
     </Box>
   );
 };
