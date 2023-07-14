@@ -7,7 +7,9 @@ export async function GET(req: NextRequest) {
   if (auth === unAuthorized) return auth;
   const classes = await prisma.class.findMany({
     orderBy: { rank: "desc" },
-    include: { classTeacher: { include: { user: true } }, sections: true },
+    include: {
+      sections: { include: { classTeacher: { include: { user: true } } } },
+    },
   });
   return NextResponse.json(classes);
 }
@@ -20,12 +22,6 @@ export async function POST(req: NextRequest) {
     data: {
       name: body.name,
       rank: Number(body.rank),
-      classTeacher: {
-        connectOrCreate: {
-          where: { userId: Number(body.teacher) },
-          create: { userId: Number(body.teacher) },
-        },
-      },
     },
   });
   return NextResponse.json(sclass);

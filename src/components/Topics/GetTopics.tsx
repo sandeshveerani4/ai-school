@@ -28,71 +28,48 @@ export const getTopics = async (subjectId: string) => {
   }
 };
 
-const GetTopics = ({
-  reload,
-  subjectId,
-}: {
-  reload: boolean;
-  subjectId: string;
-}) => {
-  const [data, setData] = useState<Topic[]>([]);
-  const [loading, setLoading] = useState(true);
-  const loadData = async () => {
-    setLoading(true);
-    setData((await getTopics(subjectId)) ?? data);
-    setLoading(false);
-  };
-  useEffect(() => {
-    loadData();
-  }, []);
-  useEffect(() => {
-    if (reload) loadData();
-  }, [reload]);
+const GetTopics = ({ topics }: { topics: Topic[] }) => {
   return (
     <Box className="w-100 overflow-x-auto">
-      {loading ? (
-        <Loading />
-      ) : (
-        <TableContainer component={Paper}>
-          <Table aria-label="simple table">
-            <TableHead>
+      <TableContainer component={Paper}>
+        <Table aria-label="simple table">
+          <TableHead>
+            <TableRow>
+              <TableCell>Id</TableCell>
+              <TableCell>Title</TableCell>
+              <TableCell>Description</TableCell>
+              <TableCell>Actions</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {topics.length == 0 ? (
               <TableRow>
-                <TableCell>Id</TableCell>
-                <TableCell>Title</TableCell>
-                <TableCell>Description</TableCell>
-                <TableCell>Actions</TableCell>
+                <TableCell colSpan={5}>
+                  <Typography component={"div"} textAlign={"center"}>
+                    No Data Found
+                  </Typography>
+                </TableCell>
               </TableRow>
-            </TableHead>
-            <TableBody>
-              {data.length == 0 ? (
-                <TableRow>
-                  <TableCell colSpan={5}>
-                    <Typography component={"div"} textAlign={"center"}>
-                      No Data Found
-                    </Typography>
+            ) : (
+              topics.map((data, index: number) => (
+                <TableRow
+                  key={data.id}
+                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                >
+                  <TableCell>{data.id}</TableCell>
+                  <TableCell>{data.title}</TableCell>
+                  <TableCell>{data.description}</TableCell>
+                  <TableCell>
+                    <Button variant="outlined" className="mr-2">
+                      View Details
+                    </Button>
                   </TableCell>
                 </TableRow>
-              ) : (
-                data.map((data, index: number) => (
-                  <TableRow
-                    key={data.id}
-                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                  >
-                    <TableCell>{data.id}</TableCell>
-                    <TableCell>{data.title}</TableCell>
-                    <TableCell>{data.description}</TableCell>
-                    <TableCell>
-                      <Button variant="outlined" className="mr-2">
-                        View Details
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      )}
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </TableContainer>
     </Box>
   );
 };

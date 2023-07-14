@@ -10,12 +10,9 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import { getSession } from "next-auth/react";
-import Loading from "@/app/dashboard/loading";
-import ModalLay from "../ModalLay";
-import FormWithLoading from "../FormWithLoading";
 import ClassRow, { Class } from "./ClassRow";
 import { reqParams } from "@/lib/consts";
+import { Teacher } from "../Teachers/TeacherFields";
 
 export const getClasses = async () => {
   const options: RequestInit = await reqParams();
@@ -26,21 +23,13 @@ export const getClasses = async () => {
   return await res.json();
 };
 
-const GetClasses = ({ reload }: { reload: boolean }) => {
-  const [fetchedData, setData] = useState<Class[]>([]);
-  const [loading, setLoading] = useState(true);
-  const loadData = async () => {
-    setData((await getClasses()) ?? fetchedData);
-    setLoading(false);
-  };
-  useEffect(() => {
-    loadData();
-  }, []);
-  useEffect(() => {
-    if (reload) {
-      loadData();
-    }
-  }, [reload]);
+const GetClasses = ({
+  classes,
+  teachers,
+}: {
+  classes: Class[];
+  teachers: Teacher[];
+}) => {
   return (
     <Box className="w-100 overflow-x-auto">
       <TableContainer component={Paper}>
@@ -50,12 +39,11 @@ const GetClasses = ({ reload }: { reload: boolean }) => {
               <TableCell>ID</TableCell>
               <TableCell>Name</TableCell>
               <TableCell>Rank</TableCell>
-              <TableCell>Class Teacher</TableCell>
               <TableCell>Sections</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {!loading && fetchedData.length == 0 ? (
+            {classes.length == 0 ? (
               <TableRow>
                 <TableCell colSpan={5}>
                   <Typography component={"div"} textAlign={"center"}>
@@ -64,13 +52,12 @@ const GetClasses = ({ reload }: { reload: boolean }) => {
                 </TableCell>
               </TableRow>
             ) : (
-              fetchedData.map((data, index: number) => (
-                <ClassRow data={data} key={data.id} />
+              classes.map((data, index: number) => (
+                <ClassRow data={data} key={data.id} teachers={teachers} />
               ))
             )}
           </TableBody>
         </Table>
-        {loading && <Loading />}
       </TableContainer>
     </Box>
   );

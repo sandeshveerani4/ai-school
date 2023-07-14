@@ -1,16 +1,11 @@
-import { config, reqParams } from "@/lib/consts";
+import { getDiscussions } from "@/lib/srv-funcs";
 import Client from "./client";
-const getDiscussions = async () => {
-  const options: RequestInit = await reqParams(true);
-  const res = await fetch(`${config.site.url}/api/discussions/`, options);
-  if (!res.ok) {
-    throw new Error("Failed to fetch data");
-  }
-  return await res.json();
-};
+import { getServerSession } from "next-auth";
+
 const Discussions = async () => {
+  const session = await getServerSession();
   const discussions = await getDiscussions();
-  return <Client discussions={discussions} />;
+  return <Client discussions={discussions} session={session} />;
 };
 
 export default Discussions;

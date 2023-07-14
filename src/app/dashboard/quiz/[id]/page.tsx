@@ -16,6 +16,11 @@ const Quiz = async ({ params }: { params: { id: string } }) => {
   const quiz = await getQuiz(params.id);
   if (quiz.submissions.length !== 0)
     return "You have already attempted this quiz!";
+  if (new Date(quiz.willStartAt) > new Date())
+    return (
+      "Please wait, Quiz will start on: " +
+      new Date(quiz.willStartAt).toLocaleString()
+    );
   if (new Date(quiz.deadline) <= new Date()) return "Sorry, Time is up!";
   return <Client quiz={quiz} />;
 };

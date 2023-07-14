@@ -10,7 +10,8 @@ const CreateDiscussion = () => {
     <Box>
       <SearchTopics changeTopic={changeTopic} />
       <FormWithLoading
-        endpoint="/api/discussion"
+        data={{ topicId: selectedTopic.id }}
+        endpoint="/api/discussions"
         submitName="Open Discussion"
       ></FormWithLoading>
     </Box>

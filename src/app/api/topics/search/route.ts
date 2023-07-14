@@ -5,7 +5,6 @@ import { User, authorize, unAuthorized } from "@/lib/authorize";
 export async function POST(req: NextRequest) {
   const auth = authorize(req) as User;
   if (auth === unAuthorized) return auth;
-  if (auth.role === "STUDENT") return unAuthorized;
   const body = await req.json();
   const result = await prisma.topic.findMany({
     where: {
@@ -25,6 +24,9 @@ export async function POST(req: NextRequest) {
           },
         },
       ],
+      ...(auth.role === "STUDENT" && {
+        subject: { classId: auth.student?.classId },
+      }),
     },
     include: { subject: { include: { class: true, section: true } } },
   });

@@ -26,9 +26,8 @@ model User {
   updatedAt          DateTime              @default(now()) @updatedAt
   notifications      Notification[]
   sent_notifications NotificationMessage[]
-  studentDiscussions Discussion[]          @relation(name: "sD")
-  teacherDiscussion  Discussion[]          @relation(name: "tD")
   messages           Messages[]
+  remarks            Remarks[]
 }
 
 model Admin {
@@ -44,33 +43,34 @@ model Student {
   section     Section      @relation(fields: [sectionId], references: [id], onDelete: Cascade)
   sectionId   Int
   submissions Submission[]
+  discussions Discussion[]
 }
 
 model Teacher {
   userId   Int       @id
   user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  class    Class[]
+  sections Section[]
   subjects Subject[]
 }
 
 model Class {
-  id           Int       @id @default(autoincrement())
-  name         String
-  rank         Int
-  students     Student[]
-  sections     Section[]
-  subjects     Subject[]
-  classTeacher Teacher   @relation(fields: [teacherId], references: [userId], onDelete: Cascade)
-  teacherId    Int
+  id       Int       @id @default(autoincrement())
+  name     String
+  rank     Int
+  students Student[]
+  sections Section[]
+  subjects Subject[]
 }
 
 model Section {
-  id       Int       @id @default(autoincrement())
-  name     String
-  class    Class     @relation(fields: [classId], references: [id], onDelete: Cascade)
-  classId  Int
-  students Student[]
-  subjects Subject[]
+  id           Int       @id @default(autoincrement())
+  name         String
+  class        Class     @relation(fields: [classId], references: [id], onDelete: Cascade)
+  classId      Int
+  students     Student[]
+  subjects     Subject[]
+  classTeacher Teacher   @relation(fields: [teacherId], references: [userId], onDelete: Cascade)
+  teacherId    Int
 }
 
 model Subject {
@@ -127,8 +127,20 @@ model Submission {
   chosenOptions Json?
   score         Int?       @default(1)
   correct       Int?
+  remarks       Remarks[]
 
   @@index([studentId])
+}
+
+model Remarks {
+  id           Int        @id @default(autoincrement())
+  remarks      String
+  user         User       @relation(fields: [userId], references: [id])
+  userId       Int
+  submission   Submission @relation(fields: [submissionId], references: [id])
+  submissionId Int
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @default(now()) @updatedAt
 }
 
 model QuestionForAssignment {
@@ -193,23 +205,23 @@ model Notification {
 
 model Discussion {
   id        Int        @id @default(autoincrement())
-  student   User       @relation(name: "sD", fields: [studentId], references: [id], onDelete: Cascade)
+  student   Student    @relation(fields: [studentId], references: [userId], onDelete: Cascade)
   studentId Int
-  teacher   User       @relation(name: "tD", fields: [teacherId], references: [id], onDelete: Cascade)
-  teacherId Int
   createdAt DateTime   @default(now())
   updatedAt DateTime   @default(now()) @updatedAt
   topic     Topic      @relation(fields: [topicId], references: [id], onDelete: Cascade)
   topicId   Int
   messages  Messages[]
+
+  @@unique([studentId, topicId])
 }
 
 model Messages {
   id           Int        @id @default(autoincrement())
   discussion   Discussion @relation(fields: [discussionId], references: [id], onDelete: Cascade)
   discussionId Int
-  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId       Int
+  user         User?      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId       Int?
   is_student   Boolean    @default(false)
   is_AI        Boolean    @default(false)
   content      String

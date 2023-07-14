@@ -9,7 +9,24 @@ export async function GET(req: NextRequest) {
     ...(auth.role === "STUDENT" && {
       where: { topic: { subject: { classId: auth.student?.classId } } },
     }),
-    include: { topic: true },
+    include: {
+      topic: {
+        include: {
+          subject: {
+            include: {
+              section: {
+                include: { classTeacher: { include: { user: true } } },
+              },
+            },
+          },
+        },
+      },
+      student: {
+        include: {
+          user: true,
+        },
+      },
+    },
     orderBy: { createdAt: "desc" },
   });
   return NextResponse.json(discussions);
@@ -18,22 +35,20 @@ export async function POST(req: NextRequest) {
   const auth = authorize(req) as User;
   if (auth === unAuthorized) return auth;
   const body = await req.json();
+  console.log(body);
   try {
-    await prisma.question.create({
+    await prisma.discussion.create({
       data: {
-        score: Number(body.score),
-        question: body.question,
-        image: body.image,
-        topic: {
+        student: {
           connect: {
-            id: Number(body.topicId),
+            userId: auth.id,
           },
         },
-        type: body.type,
-        fill: body.fill,
-        ...(body.type === "MCQ" && {
-          options: { createMany: { data: body.options } },
-        }),
+        topic: {
+          connect: {
+            id: body.topicId,
+          },
+        },
       },
     });
     return NextResponse.json({ success: true });

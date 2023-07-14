@@ -4,22 +4,21 @@ import {
   CardMedia,
   Grid,
   MenuItem,
-  Select,
   TextField,
   Typography,
 } from "@mui/material";
 import { SelectChangeEvent } from "@mui/material/Select";
 import React, { useEffect } from "react";
-import { getClasses } from "../Classes/GetClasses";
-import { DateField, DatePicker } from "@mui/x-date-pickers";
+import { DateField } from "@mui/x-date-pickers";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import FormWithLoading from "../FormWithLoading";
-import { getSections } from "../Classes/ClassRow";
 import { useDropzone } from "react-dropzone";
 import ImageIcon from "@mui/icons-material/Image";
 import { fileUpload } from "@/lib/file_upload";
 import { useRouter } from "next/navigation";
+import { Class } from "../Classes/ClassRow";
+import { Section } from "@prisma/client";
 
 const getOptions = (array: any) => {
   return array.map((item: any, index: any) => (
@@ -28,14 +27,13 @@ const getOptions = (array: any) => {
     </MenuItem>
   ));
 };
-const CreateStudent = () => {
-  const [classes, setClasses] = React.useState([]);
+const CreateStudent = ({ classes }: { classes: Class[] }) => {
   const [selectedClass, setSelectedClass] = React.useState(0);
-  const [sections, setSections] = React.useState([]);
+  const [sections, setSections] = React.useState<Section[]>([]);
   const [image, setImage] = React.useState<any>(undefined);
   const [done, setDone] = React.useState(false);
   const classChange = (event: SelectChangeEvent) => {
-    setSelectedClass(event.target.value as unknown as number);
+    setSelectedClass(Number(event.target.value));
   };
   const fields = [
     { label: "First Name", name: "first_name", required: true },
@@ -52,16 +50,12 @@ const CreateStudent = () => {
     { label: "Section", name: "section", select: true, required: true },
     { label: "Date of Birth", name: "date_of_birth", required: true },
   ];
-  React.useEffect(() => {
-    (async () => {
-      setClasses(await getClasses());
-    })();
-  }, []);
+
   React.useEffect(() => {
     if (selectedClass !== 0) {
-      (async () => {
-        setSections(await getSections(selectedClass));
-      })();
+      setSections(
+        classes.filter((val) => val.id === selectedClass)[0].sections
+      );
     }
   }, [selectedClass]);
   const { getRootProps, getInputProps } = useDropzone({

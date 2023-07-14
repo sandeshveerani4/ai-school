@@ -60,7 +60,7 @@ export async function POST(req: NextRequest) {
         enabled: Boolean(body.enabled),
         type: body.type,
         ...(body.type === "VIDEO_LESSON" && { video_url: body.video_url }),
-        ...(typeof body.willStartAt !== "string" && {
+        ...(body.willStartAt !== "Invalid Date" && {
           willStartAt: new Date(body.willStartAt),
         }),
         topic: {

@@ -83,8 +83,8 @@ const menuItems = (unread: number): MenuItem[] => {
     },
     {
       id: 10,
-      name: "Practice",
-      path: "/dashboard/practice",
+      name: "Practise",
+      path: "/dashboard/practise",
       roles: ["STUDENT"],
       icon: <FlashOnOutlinedIcon />,
     },
@@ -162,7 +162,7 @@ const DashboardLayout = (props: Props) => {
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
-  const NavBarItem = (item: MenuItem, index: number) => (
+  const NavBarItem = ({ item, index }: { item: MenuItem; index: number }) => (
     <ListItem disablePadding>
       {currentPage === item.path.toLowerCase() && (
         <Zoom in={true} style={{ transitionDelay: `0.5s` }}>
@@ -214,9 +214,11 @@ const DashboardLayout = (props: Props) => {
       >
         <List>
           {menuItems(unread).map((item: MenuItem, index: number) => {
-            return item.roles.includes(session?.user.role)
-              ? NavBarItem(item, index)
-              : "";
+            return item.roles.includes(session?.user.role) ? (
+              <NavBarItem {...{ item, index }} key={index} />
+            ) : (
+              ""
+            );
           })}
         </List>
       </Box>

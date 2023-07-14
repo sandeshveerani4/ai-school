@@ -10,11 +10,9 @@ import {
   MenuItem,
   CardMedia,
 } from "@mui/material";
-import { Class, Prisma } from "@prisma/client";
-import { getClasses } from "../Classes/GetClasses";
-import { getSession } from "next-auth/react";
-import { getSections } from "../Classes/ClassRow";
+import { Prisma, Section } from "@prisma/client";
 import { config } from "@/lib/consts";
+import { Class } from "../Classes/ClassRow";
 export type Student = Prisma.UserGetPayload<{
   include: {
     student: { include: { class: true; section: true } };
@@ -34,23 +32,24 @@ export const inputProps = {
   },
 };
 export const inputWhite = { background: "white" };
-const StudentFields = ({ data, ...props }: { data: Student }) => {
-  const [classes, setClasses] = React.useState([]);
+const StudentFields = ({
+  student,
+  classes,
+  ...props
+}: {
+  student: Student;
+  classes: Class[];
+}) => {
   const [selectedClass, setSelectedClass] = React.useState(0);
-  const [sections, setSections] = React.useState([]);
+  const [sections, setSections] = React.useState<Section[]>([]);
   const classChange = (event: SelectChangeEvent) => {
-    setSelectedClass(event.target.value as unknown as number);
+    setSelectedClass(Number(event.target.value));
   };
   React.useEffect(() => {
-    (async () => {
-      setClasses(await getClasses());
-    })();
-  }, []);
-  React.useEffect(() => {
     if (selectedClass !== 0) {
-      (async () => {
-        setSections(await getSections(selectedClass));
-      })();
+      setSections(
+        classes.filter((val) => val.id === selectedClass)[0].sections
+      );
     }
   }, [classes]);
   const FieldComp = (props: TextFieldProps) => {
@@ -67,26 +66,26 @@ const StudentFields = ({ data, ...props }: { data: Student }) => {
   };
   return (
     <>
-      {data.pictureURL && (
+      {student.pictureURL && (
         <CardMedia
           component="img"
           className="rounded-lg my-3"
           sx={{
             width: "170px",
           }}
-          src={config.site.imageDomain + data.pictureURL}
+          src={config.site.imageDomain + student.pictureURL}
         />
       )}
       <Grid container rowSpacing={1} columnSpacing={1}>
-        <FieldComp label="ID" disabled value={data["id"]} />
-        <FieldComp label="Username" value={data["username"]} />
-        <FieldComp label="First Name" value={data.first_name} />
-        <FieldComp label="Last Name" value={data.last_name} />
+        <FieldComp label="ID" disabled value={student["id"]} />
+        <FieldComp label="Username" value={student["username"]} />
+        <FieldComp label="First Name" value={student.first_name} />
+        <FieldComp label="Last Name" value={student.last_name} />
         <Grid item md={6} xs={12}>
           <TextField
             select
             label="Class"
-            defaultValue={data.student?.classId}
+            defaultValue={student.student?.classId}
             sx={inputWhite}
             fullWidth
             name="Class"

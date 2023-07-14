@@ -6,13 +6,32 @@ import GetDiscussions from "@/components/Discussions/GetDiscussions";
 import { useSession } from "next-auth/react";
 import Add from "@mui/icons-material/Add";
 import CreateDiscussion from "@/components/Discussions/CreateDiscussion";
+import { Session } from "next-auth";
 export type Discussion = Prisma.DiscussionGetPayload<{
   include: {
-    topic: true;
+    topic: {
+      include: {
+        subject: {
+          include: {
+            section: { include: { classTeacher: { include: { user: true } } } };
+          };
+        };
+      };
+    };
+    student: {
+      include: {
+        user: true;
+      };
+    };
   };
 }>;
-const Client = ({ discussions }: { discussions: Discussion[] }) => {
-  const { data: session } = useSession();
+const Client = ({
+  discussions,
+  session,
+}: {
+  discussions: Discussion[];
+  session: Session | null;
+}) => {
   const [show, setShow] = useState(false);
 
   return (
@@ -30,7 +49,7 @@ const Client = ({ discussions }: { discussions: Discussion[] }) => {
           {show && <CreateDiscussion />}
         </>
       )}
-      <GetDiscussions discussions={discussions} />
+      <GetDiscussions discussions={discussions} session={session} />
     </Box>
   );
 };

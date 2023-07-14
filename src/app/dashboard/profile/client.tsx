@@ -11,7 +11,8 @@ const Client = ({ userDetails }: { userDetails: User }) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [image, setImage] = useState<any>(undefined);
   const middleware = async () => {
-    return { filename: (await fileUpload(image)).filename };
+    const fln = (await fileUpload(image)).filename;
+    return { filename: fln };
   };
   return (
     <FormWithLoading
@@ -20,14 +21,14 @@ const Client = ({ userDetails }: { userDetails: User }) => {
       submitName="Save Changes"
     >
       <Grid container spacing={1}>
-        <Grid item md={12}>
+        <Grid item xs={12}>
           {userDetails.pictureURL || image ? (
             <CardMedia
               component={"img"}
               src={
-                userDetails.pictureURL
-                  ? config.site.imageDomain + userDetails.pictureURL
-                  : URL.createObjectURL(image)
+                image
+                  ? URL.createObjectURL(image)
+                  : config.site.imageDomain + userDetails.pictureURL
               }
               className="rounded-2xl"
               sx={{ width: "200px", height: "200px" }}
@@ -51,7 +52,7 @@ const Client = ({ userDetails }: { userDetails: User }) => {
         >
           Upload Image
         </Button>
-        <Grid item md={12}>
+        <Grid item xs={12}>
           <TextField
             name="password"
             label="Change Password"

@@ -1,7 +1,6 @@
 "use client";
-import { Box, Grid, Skeleton, TextField } from "@mui/material";
-import React, { useEffect, useState } from "react";
-import Modal from "@mui/material/Modal";
+import { Box } from "@mui/material";
+import React from "react";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import Table from "@mui/material/Table";
@@ -11,7 +10,6 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import Loading from "@/app/dashboard/loading";
 import Link from "next/link";
 import { Teacher } from "./TeacherFields";
 import ModalLay from "../ModalLay";
@@ -22,20 +20,7 @@ export const getTeachers = async () => {
   const res = await fetch(`/api/teachers/`, options);
   return await res.json();
 };
-const GetTeachers = ({ reload }: { reload: boolean }) => {
-  const [fetchedData, setData] = useState<Teacher[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  const loadData = async () => {
-    setData((await getTeachers()) ?? fetchedData);
-    setLoading(false);
-  };
-  useEffect(() => {
-    loadData();
-  }, []);
-  useEffect(() => {
-    if (reload) loadData();
-  }, [reload]);
+const GetTeachers = ({ teachers }: { teachers: Teacher[] }) => {
   return (
     <Box className="w-100 overflow-x-auto">
       <TableContainer component={Paper}>
@@ -50,7 +35,7 @@ const GetTeachers = ({ reload }: { reload: boolean }) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {!loading && fetchedData.length == 0 ? (
+            {teachers.length == 0 ? (
               <TableRow>
                 <TableCell colSpan={5}>
                   <Typography component={"div"} textAlign={"center"}>
@@ -59,7 +44,7 @@ const GetTeachers = ({ reload }: { reload: boolean }) => {
                 </TableCell>
               </TableRow>
             ) : (
-              fetchedData.map((data, index: number) => (
+              teachers.map((data, index: number) => (
                 <TableRow
                   key={data.id}
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
@@ -98,7 +83,6 @@ const GetTeachers = ({ reload }: { reload: boolean }) => {
             )}
           </TableBody>
         </Table>
-        {loading && <Loading />}
       </TableContainer>
     </Box>
   );

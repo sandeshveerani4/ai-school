@@ -1,56 +1,52 @@
 "use client";
-import { Grid, MenuItem, TextField } from "@mui/material";
-import React from "react";
+import { Grid, MenuItem, TextField, Box, IconButton } from "@mui/material";
+import React, { useEffect, useState } from "react";
 import FormWithLoading from "../FormWithLoading";
-import { getTeachers } from "../Teachers/GetTeachers";
+import { useRouter } from "next/navigation";
+import Add from "@mui/icons-material/Add";
 const fields = [
   { label: "Class Name", name: "name", required: true },
   { label: "Rank", name: "rank", type: "number", required: true },
-  { label: "Class Teacher", select: true, name: "teacher", required: true },
 ];
-const getOptions = (array: any) => {
-  return array.map((item: any, index: any) => (
-    <MenuItem key={index} value={item.id}>
-      {item.first_name} {item.last_name} #{item.id}
-    </MenuItem>
-  ));
-};
-const CreateClass = ({
-  reloadData,
-}: {
-  reloadData: React.Dispatch<React.SetStateAction<boolean>>;
-}) => {
-  const [teachers, setTeachers] = React.useState([]);
-  React.useEffect(() => {
-    (async () => {
-      setTeachers(await getTeachers());
-    })();
-  }, []);
+const CreateClass = () => {
+  const [done, setDone] = useState(false);
+  const router = useRouter();
+  const [show, setShow] = React.useState(false);
+  useEffect(() => {
+    if (done) router.refresh();
+  }, [done]);
   return (
-    <FormWithLoading
-      submitName="Create Class"
-      endpoint="/api/classes"
-      setDone={reloadData}
-    >
-      <Grid container rowSpacing={1} columnSpacing={1}>
-        {fields.map((value, index) => (
-          <Grid key={index} item md={6}>
-            <TextField
-              sx={{ background: "white" }}
-              InputLabelProps={{
-                sx: {
-                  textTransform: "capitalize",
-                },
-              }}
-              {...value}
-              fullWidth
-            >
-              {value.select && value.name == "teacher" && getOptions(teachers)}
-            </TextField>
+    <>
+      <Box overflow={"hidden"}>
+        <IconButton onClick={() => setShow(!show)} className="float-right my-2">
+          <Add />
+        </IconButton>
+      </Box>
+      {show && (
+        <FormWithLoading
+          submitName="Create Class"
+          endpoint="/api/classes"
+          setDone={setDone}
+        >
+          <Grid container rowSpacing={1} columnSpacing={1}>
+            {fields.map((value, index) => (
+              <Grid key={index} item md={6}>
+                <TextField
+                  sx={{ background: "white" }}
+                  InputLabelProps={{
+                    sx: {
+                      textTransform: "capitalize",
+                    },
+                  }}
+                  {...value}
+                  fullWidth
+                ></TextField>
+              </Grid>
+            ))}
           </Grid>
-        ))}
-      </Grid>
-    </FormWithLoading>
+        </FormWithLoading>
+      )}
+    </>
   );
 };
 

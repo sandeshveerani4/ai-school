@@ -1,17 +1,9 @@
-import { config, reqParams } from "@/lib/consts";
 import Client from "./client";
+import { getClasses, getStudents } from "@/lib/srv-funcs";
 
-const getStudents = async () => {
-  const options: RequestInit = await reqParams(true);
-  const res = await fetch(`${config.site.url}/api/students/`, options);
-  if (!res.ok) {
-    throw new Error("Failed to fetch data");
-  }
-  return await res.json();
-};
 const Students = async () => {
-  const students = await getStudents();
-  return <Client students={students} />;
+  const [students, classes] = await Promise.all([getStudents(), getClasses()]);
+  return <Client students={students} classes={classes} />;
 };
 
 export default Students;

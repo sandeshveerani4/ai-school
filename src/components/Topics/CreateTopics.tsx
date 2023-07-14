@@ -9,16 +9,12 @@ import {
   Typography,
 } from "@mui/material";
 import { SelectChangeEvent } from "@mui/material/Select";
-import React, { Fragment, useCallback } from "react";
-import { getClasses } from "../Classes/GetClasses";
-import { DatePicker, DateTimeField } from "@mui/x-date-pickers";
-import { LocalizationProvider } from "@mui/x-date-pickers";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import React, { Fragment, useCallback, useEffect, useState } from "react";
 import FormWithLoading from "../FormWithLoading";
-import { getSections } from "../Classes/ClassRow";
-import ModalLay from "../ModalLay";
-import ImageIcon from "@mui/icons-material/Image";
 import Dropzone, { useDropzone } from "react-dropzone";
+import { Class } from "../Classes/ClassRow";
+import { Section } from "@prisma/client";
+import { useRouter } from "next/navigation";
 
 const getOptions = (array: any) => {
   return array.map((item: any, index: any) => (
@@ -27,38 +23,7 @@ const getOptions = (array: any) => {
     </MenuItem>
   ));
 };
-const CreateTopic = ({
-  reloadData,
-  subjectId,
-}: {
-  reloadData: React.Dispatch<React.SetStateAction<boolean>>;
-  subjectId: string;
-}) => {
-  const [classes, setClasses] = React.useState([]);
-  const [selectedClass, setSelectedClass] = React.useState(0);
-  const [sections, setSections] = React.useState([]);
-  const classChange = (event: SelectChangeEvent) => {
-    console.log("called");
-    setSelectedClass(event.target.value as unknown as number);
-  };
-  const fields = [
-    { label: "Title", name: "title", required: true },
-    { label: "Description", name: "description", required: true },
-    // { label: "Topic", name: "topic", required: true },
-    { label: "Deadline", name: "deadline", required: true },
-  ];
-  React.useEffect(() => {
-    (async () => {
-      setClasses(await getClasses());
-    })();
-  }, []);
-  React.useEffect(() => {
-    if (selectedClass !== 0) {
-      (async () => {
-        setSections(await getSections(selectedClass));
-      })();
-    }
-  }, [selectedClass]);
+const CreateTopic = ({ subjectId }: { subjectId: number }) => {
   const onDrop = useCallback((acceptedFiles: any) => {
     console.log(acceptedFiles);
   }, []);
@@ -66,12 +31,16 @@ const CreateTopic = ({
     onDrop,
     multiple: false,
   });
-
+  const [done, setDone] = useState(false);
+  const router = useRouter();
+  useEffect(() => {
+    if (done) router.refresh();
+  }, [done]);
   return (
     <FormWithLoading
       submitName="Create Topic"
       endpoint={`/api/subjects/${subjectId}/topics`}
-      setDone={reloadData}
+      setDone={setDone}
     >
       <Grid container rowSpacing={1} columnSpacing={1}>
         <Grid item width={"100%"}>

@@ -5,37 +5,29 @@ import {
   TableCell,
   TableRow,
   TextField,
+  Grid,
+  MenuItem,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import ModalLay from "../ModalLay";
 import FormWithLoading from "../FormWithLoading";
 import Add from "@mui/icons-material/Add";
-import { Prisma, Section } from "@prisma/client";
-import { getSession } from "next-auth/react";
-import { reqParams } from "@/lib/consts";
+import { Prisma } from "@prisma/client";
+import { Teacher } from "../Teachers/TeacherFields";
+import { useRouter } from "next/navigation";
 export type Class = Prisma.ClassGetPayload<{
   include: {
-    sections: true;
-    classTeacher: { include: { user: true } };
+    sections: { include: { classTeacher: { include: { user: true } } } };
   };
 }>;
-export const getSections = async (classId: number) => {
-  const options: RequestInit = await reqParams();
-  const res = await fetch(`/api/classes/${classId}/sections`, options);
-  return await res.json();
-};
-const ClassRow = ({ data }: { data: Class }) => {
-  const [sections, setSections] = useState(data.sections);
+const ClassRow = ({ data, teachers }: { data: Class; teachers: Teacher[] }) => {
   const [open, setOpen] = useState(false);
   const [done, setDone] = useState(false);
-  const loadData = async () => {
-    setSections(await getSections(data.id));
-  };
+  const router = useRouter();
   useEffect(() => {
     if (done) {
+      router.refresh();
       setOpen(false);
-      loadData();
-      setDone(false);
     }
   }, [done]);
   return (
@@ -47,19 +39,26 @@ const ClassRow = ({ data }: { data: Class }) => {
       <TableCell>{data["name"]}</TableCell>
       <TableCell>{data["rank"]}</TableCell>
       <TableCell>
-        {data.classTeacher.user.first_name} {data.classTeacher.user.last_name}
-      </TableCell>
-      <TableCell>
-        {sections.map((item: Section, index: number) => (
-          <Chip
-            key={index}
-            label={item.name}
-            component="a"
-            href="#basic-chip"
-            variant="outlined"
-            clickable
-          />
-        ))}
+        <Grid container direction={"column"} spacing={1}>
+          {data.sections.map((item, index: number) => (
+            <Grid item>
+              <Chip
+                key={index}
+                label={
+                  item.name +
+                  ": " +
+                  item.classTeacher.user.first_name +
+                  " " +
+                  item.classTeacher.user.last_name
+                }
+                component="a"
+                href="#basic-chip"
+                variant="outlined"
+                clickable
+              />
+            </Grid>
+          ))}
+        </Grid>
         <IconButton onClick={() => setOpen(true)}>
           <Add />
         </IconButton>
@@ -69,7 +68,25 @@ const ClassRow = ({ data }: { data: Class }) => {
             endpoint={`/api/classes/${data.id}/sections/`}
             setDone={setDone}
           >
-            <TextField label="Section Name" name="name" />
+            <Grid container spacing={1}>
+              <Grid item xs={12}>
+                <TextField label="Section Name" name="name" fullWidth />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  label="Class Teacher"
+                  name="teacherId"
+                  fullWidth
+                  select
+                >
+                  {teachers.map((val) => (
+                    <MenuItem key={val.id} value={val.id}>
+                      {val.first_name} {val.last_name}
+                    </MenuItem>
+                  ))}
+                </TextField>
+              </Grid>
+            </Grid>
           </FormWithLoading>
         </ModalLay>
       </TableCell>

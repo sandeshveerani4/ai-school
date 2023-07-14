@@ -37,7 +37,6 @@ const NotificationItem = ({
   const handleOpen = async () => {
     if (session.user.role !== "ADMIN" && !val.notifications[0].read) {
       const options: RequestInit = await reqParams();
-      console.log("reached there");
       await fetch(
         `${config.site.url}/api/notifications/${val.notifications[0].id}/read`,
         { ...options, method: "POST" }

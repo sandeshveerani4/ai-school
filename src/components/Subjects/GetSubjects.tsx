@@ -31,11 +31,9 @@ export const getSubjects = async (classId: number, sectionId: number) => {
 };
 
 const GetSubjects = ({
-  reload,
   classId,
   sectionId,
 }: {
-  reload: boolean;
   classId: number;
   sectionId: number;
 }) => {
@@ -52,9 +50,6 @@ const GetSubjects = ({
   useEffect(() => {
     loadData();
   }, [classId, sectionId]);
-  useEffect(() => {
-    if (reload) loadData();
-  }, [reload]);
   return (
     <Box className="w-100 overflow-x-auto">
       {loading ? (

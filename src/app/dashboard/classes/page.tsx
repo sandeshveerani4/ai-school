@@ -1,30 +1,10 @@
-"use client";
-import { Box, IconButton } from "@mui/material";
-import Add from "@mui/icons-material/Add";
-import CreateClass from "@/components/Classes/CreateClass";
-import GetClasses from "@/components/Classes/GetClasses";
-import React, { useEffect } from "react";
+import Client from "./client";
+import { getClasses, getTeachers } from "@/lib/srv-funcs";
 
-const Classes = () => {
-  const [show, setShow] = React.useState(false);
-  const [reload, reloadData] = React.useState(false);
-  useEffect(() => {
-    if (reload) {
-      setShow(!show);
-      reloadData(false);
-    }
-  }, [reload]);
-  return (
-    <Box>
-      <Box overflow={"hidden"}>
-        <IconButton onClick={() => setShow(!show)} className="float-right my-2">
-          <Add />
-        </IconButton>
-      </Box>
-      {show && <CreateClass reloadData={reloadData} />}
-      <GetClasses reload={reload} />
-    </Box>
-  );
+const Classes = async () => {
+  const classes = await getClasses();
+  const teachers = await getTeachers();
+  return <Client classes={classes} teachers={teachers} />;
 };
 
 export default Classes;

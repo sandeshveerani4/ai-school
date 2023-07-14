@@ -6,7 +6,14 @@ import React, { useEffect } from "react";
 import GetStudents from "@/components/Students/GetStudents";
 import BulkImport from "@/components/Students/BulkImport";
 import { Student } from "@/components/Students/StudentFields";
-const Client = ({ students }: { students: Student[] }) => {
+import { Class } from "@/components/Classes/ClassRow";
+const Client = ({
+  students,
+  classes,
+}: {
+  students: Student[];
+  classes: Class[];
+}) => {
   const [show, setShow] = React.useState(false);
   return (
     <Box>
@@ -20,7 +27,7 @@ const Client = ({ students }: { students: Student[] }) => {
           <Add />
         </IconButton>
       </Box>
-      {show && <CreateStudent />}
+      {show && <CreateStudent classes={classes} />}
       <GetStudents students={students} />
     </Box>
   );
