@@ -32,7 +32,9 @@ const Client = ({
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     setSelectedClass(Number(e.target.value));
-    setSections(classes[Number(e.target.value)].sections);
+    setSections(
+      classes.filter((val) => val.id === Number(e.target.value))[0].sections
+    );
   };
 
   return (
