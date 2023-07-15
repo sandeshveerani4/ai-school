@@ -16,13 +16,15 @@ const GetDiscussions = ({
     <Box>
       <DataGrid
         autoHeight
+        sx={{ bgcolor: "white" }}
         columns={[
           { field: "id", headerName: "ID" },
-          { field: "topic", headerName: "Topic" },
+          { field: "topic", headerName: "Topic", width: 150 },
           {
             field: "teacher",
             headerName:
               session?.user.role === "STUDENT" ? "Teacher" : "Student",
+            width: 150,
           },
           {
             field: "action",
@@ -53,6 +55,7 @@ const GetDiscussions = ({
             teacher: teacherDetails.first_name + " " + teacherDetails.last_name,
           };
         })}
+        hideFooter
       />
     </Box>
   );

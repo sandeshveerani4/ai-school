@@ -83,7 +83,12 @@ const menuItems = (unread: number): MenuItem[] => {
     },
     {
       id: 10,
-      name: "Practise",
+      name: (
+        <>
+          Practise{" "}
+          <Chip label="New ✨" variant="filled" size="small" color="primary" />
+        </>
+      ),
       path: "/dashboard/practise",
       roles: ["STUDENT"],
       icon: <FlashOnOutlinedIcon />,
