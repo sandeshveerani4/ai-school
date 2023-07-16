@@ -5,9 +5,14 @@ import React from "react";
 
 const Client = ({ topics }: { topics: Topic[] }) => {
   return (
-    <Grid container>
+    <Grid container spacing={1}>
       {topics.map((topic) => (
-        <Grid item lg={3}>
+        <Grid
+          className="bg-white p-2 rounded-3xl text-center"
+          item
+          lg={3}
+          xs={12}
+        >
           {topic.title}
         </Grid>
       ))}

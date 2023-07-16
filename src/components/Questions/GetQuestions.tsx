@@ -90,7 +90,7 @@ const GetQuestions = ({ questions }: { questions: Question[] }) => {
                             <Grid
                               container
                               justifyContent={"center"}
-                              alignItems={"flex-start"}
+                              alignItems={"center"}
                               className="my-2 bg-neutral-200 rounded-2xl"
                             >
                               <Grid item>

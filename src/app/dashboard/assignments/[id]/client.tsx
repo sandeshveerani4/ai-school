@@ -98,36 +98,60 @@ const Client = ({ data }: { data: Assignment }) => {
         </Grid>
       )}
       <Grid className="mt-2" item>
-        {data.type === "HOMEWORK" ? (
+        {session?.user.role !== "STUDENT" ? (
           <>
-            <Box overflow={"hidden"}>
-              <IconButton
-                className="my-2 float-right"
-                onClick={() => setShow(!show)}
-              >
-                <Add />
-              </IconButton>
-              <Typography fontWeight={"medium"}>Submissions</Typography>
-            </Box>
-            {show && <CreateSubmissions assignmentId={`${data.id}`} />}
-            <GetSubmissions submissions={data.submissions} />
+            {data.type === "HOMEWORK" && (
+              <Box overflow={"hidden"}>
+                <IconButton
+                  className="my-2 float-right"
+                  onClick={() => setShow(!show)}
+                >
+                  <Add />
+                </IconButton>
+                <Typography fontWeight={"medium"}>Submissions</Typography>
+              </Box>
+            )}
+            {data.type === "HOMEWORK" && show && (
+              <CreateSubmissions assignmentId={`${data.id}`} />
+            )}
+            {session && (
+              <GetSubmissions
+                submissions={data.submissions}
+                assignment={data}
+                role={session.user.role}
+              />
+            )}
           </>
         ) : (
           data.type === "QUIZ" &&
-          (data.submissions.length > 0 ? (
-            <Box className="border border-solid rounded-2xl p-2 w-auto">
-              <Typography fontWeight={"medium"}>Results</Typography>
-              <Box>Score: {data.submissions[0].score}</Box>
-              <Box>Correct: {data.submissions[0].correct}</Box>
-              <Box>
-                Accuracy:{" "}
-                {((data.submissions[0].correct as number) /
-                  data._count.questions) *
-                  100}
-                %
+          data.submissions.length > 0 && (
+            <Grid container item>
+              <Box
+                className="mt-2 text-white rounded-lg p-3 inline-block"
+                sx={{ bgcolor: "secondary.main" }}
+              >
+                <Typography fontWeight={"medium"}>Results</Typography>
+                <Box>Score: {data.submissions[0].score}</Box>
+                <Box>
+                  Correct: {data.submissions[0].correct} /{" "}
+                  {data._count.questions}
+                </Box>
+                <Box>
+                  Accuracy:{" "}
+                  {(
+                    ((data.submissions[0].correct as number) /
+                      data._count.questions) *
+                    100
+                  ).toFixed(2)}
+                  %
+                </Box>
               </Box>
-            </Box>
-          ) : (
+            </Grid>
+          )
+        )}
+        {data.type === "QUIZ" &&
+          session?.user.role === "STUDENT" &&
+          data.submissions.length < 1 && (
             <Button
               variant="contained"
               LinkComponent={Link}
@@ -136,8 +160,7 @@ const Client = ({ data }: { data: Assignment }) => {
             >
               Attempt Quiz Now
             </Button>
-          ))
-        )}
+          )}
       </Grid>
     </Grid>
   );

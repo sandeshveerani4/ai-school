@@ -1,8 +1,6 @@
 import prisma from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import { User, authorize, unAuthorized } from "@/lib/authorize";
-import { openAI } from "@/lib/srv-funcs";
-import { ChatCompletionRequestMessage } from "openai";
 
 export async function GET(
   req: NextRequest,
@@ -53,44 +51,6 @@ export async function POST(
       },
     });
   };
-  try {
-    await createMessage(body.content);
-    if (body.is_AI) {
-      const discussion = await prisma.discussion.findFirst({
-        where: { id: Number(params.id) },
-        include: {
-          topic: {
-            include: {
-              subject: {
-                include: {
-                  section: {
-                    include: { classTeacher: { include: { user: true } } },
-                  },
-                },
-              },
-            },
-          },
-          student: {
-            include: {
-              user: true,
-            },
-          },
-        },
-        orderBy: { createdAt: "desc" },
-      });
-      const msgArr: ChatCompletionRequestMessage[] = [
-        {
-          content: `You are a teacher and have to discuss queries "${discussion?.topic.title}" of Subject "${discussion?.topic.subject.name} to ${discussion?.student.user.first_name}. Here are the queries:"`,
-          role: "system",
-        },
-        { content: body.content, role: "user" },
-      ];
-      const aiResp = await openAI(msgArr);
-      console.log(aiResp);
-      aiResp && (await createMessage(aiResp as string, true));
-    }
-    return NextResponse.json({ success: true });
-  } catch (e) {
-    console.error(e);
-  }
+  await createMessage(body.content);
+  return NextResponse.json({ success: true });
 }

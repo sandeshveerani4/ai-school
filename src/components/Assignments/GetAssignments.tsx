@@ -33,6 +33,15 @@ export type Assignment = Prisma.AssignmentGetPayload<{
         };
       };
     };
+    questions: {
+      include: {
+        question: {
+          include: {
+            options: true;
+          };
+        };
+      };
+    };
   };
 }>;
 const GetAssignments = ({ assignments }: { assignments: Assignment[] }) => {

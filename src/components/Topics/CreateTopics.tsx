@@ -73,21 +73,6 @@ const CreateTopic = ({ subjectId }: { subjectId: number }) => {
           ></TextField>
         </Grid>
       </Grid>
-      <Box
-        className={`w-100 ${
-          isDragActive ? "bg-neutral-300" : "bg-neutral-200"
-        } rounded-lg p-4 py-7 my-2`}
-        {...getRootProps()}
-      >
-        <input {...getInputProps()} />
-        <Typography
-          textAlign={"center"}
-          {...(isDragActive && { variant: "h4" })}
-          sx={{ userSelect: "none" }}
-        >
-          {isDragActive ? "Drop the file here." : "Choose Featured Image"}
-        </Typography>
-      </Box>
     </FormWithLoading>
   );
 };

@@ -26,6 +26,15 @@ export async function GET(
           questions: true,
         },
       },
+      questions: {
+        include: {
+          question: {
+            include: {
+              options: true,
+            },
+          },
+        },
+      },
     },
   });
   return NextResponse.json(assignments);

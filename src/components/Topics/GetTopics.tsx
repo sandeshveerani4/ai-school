@@ -38,7 +38,7 @@ const GetTopics = ({ topics }: { topics: Topic[] }) => {
               <TableCell>Id</TableCell>
               <TableCell>Title</TableCell>
               <TableCell>Description</TableCell>
-              <TableCell>Actions</TableCell>
+              {/* <TableCell>Actions</TableCell> */}
             </TableRow>
           </TableHead>
           <TableBody>
@@ -59,11 +59,11 @@ const GetTopics = ({ topics }: { topics: Topic[] }) => {
                   <TableCell>{data.id}</TableCell>
                   <TableCell>{data.title}</TableCell>
                   <TableCell>{data.description}</TableCell>
-                  <TableCell>
+                  {/* <TableCell>
                     <Button variant="outlined" className="mr-2">
                       View Details
                     </Button>
-                  </TableCell>
+                  </TableCell> */}
                 </TableRow>
               ))
             )}

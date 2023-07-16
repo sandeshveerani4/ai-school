@@ -161,6 +161,8 @@ const CreateQuestions = () => {
   const [done, setDone] = useState(false);
   useEffect(() => {
     if (done) {
+      setShow(false);
+      setDone(false);
     }
   }, [done]);
   const [show, setShow] = React.useState(false);

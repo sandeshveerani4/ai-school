@@ -35,6 +35,8 @@ const ModalLay = ({
     bgcolor: "background.paper",
     boxShadow: 24,
     p: 3,
+    overflowY: "auto",
+    maxHeight: "90%",
   };
   return (
     <>
@@ -63,12 +65,6 @@ const ModalLay = ({
               Back
             </Button>
             {children}
-            {/* <Typography id="modal-modal-title" variant="h6" component="h2">
-              Are you sure you want to delete this entity?
-            </Typography>
-            <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-              Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
-            </Typography> */}
           </Box>
         </Modal>
       )}
