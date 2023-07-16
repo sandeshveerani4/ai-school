@@ -21,7 +21,10 @@ const CreateTeacher = () => {
   const [show, setShow] = React.useState(false);
 
   useEffect(() => {
-    if (done) router.refresh();
+    if (done) {
+      router.refresh();
+      setDone(false);
+    }
   }, [done]);
 
   return (

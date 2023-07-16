@@ -1,5 +1,6 @@
 "use client";
 import FormWithLoading from "@/components/FormWithLoading";
+import { Question } from "@/components/Questions/GetQuestions";
 import { inputWhite } from "@/components/Students/StudentFields";
 import { config } from "@/lib/consts";
 import {
@@ -118,14 +119,21 @@ const Question = ({
     </Grid>
   );
 };
-const Client = ({ quiz }: { quiz: Quiz }) => {
+const Client = ({
+  questions,
+  topicId,
+}: {
+  questions: Question[];
+  topicId: number;
+}) => {
   const [chosenQuestions, setQuestions] = useState<any>({});
   const [days, setDays] = useState(0);
   const [hours, setHours] = useState(0);
   const [minutes, setMinutes] = useState(0);
   const [seconds, setSeconds] = useState(0);
+  const thirtyfor = new Date().getTime() + questions.length * 60 * 1000;
   const getTime = () => {
-    const time = new Date(quiz.deadline).getTime() - Date.now();
+    const time = new Date(thirtyfor).getTime() - Date.now();
 
     setDays(Math.floor(time / (1000 * 60 * 60 * 24)));
     setHours(Math.floor((time / (1000 * 60 * 60)) % 24));
@@ -141,29 +149,37 @@ const Client = ({ quiz }: { quiz: Quiz }) => {
     setQuestions({ ...chosenQuestions, [id]: val });
   };
   const [done, setDone] = useState(false);
-  const { push, refresh } = useRouter();
   useEffect(() => {
     if (done) {
-      refresh();
-      push(`/dashboard/assignments/${quiz.id}`);
+      setDone(false);
     }
   }, [done]);
   const [currentQuestion, setCurrent] = useState(0);
+  const [data, setData] = useState<{ score: number; count: number }>({
+    score: 0,
+    count: 0,
+  });
+  useEffect(() => {
+    if (done && data)
+      alert(
+        `Score: ${data.score}\nCorrect:${data.count}/${
+          questions.length
+        }\nAccuracy:${((data.count / questions.length) * 100).toFixed(2)}`
+      );
+  }, [data]);
   return (
     <FormWithLoading
-      endpoint={`/api/assignments/${quiz.id}/quiz`}
+      endpoint={`/api/topics/${topicId}/practise/`}
       submitName="Submit Quiz"
       setDone={setDone}
       data={chosenQuestions}
       button={false}
+      setData={setData}
     >
       <Grid container gap={2} direction={"row"} className="pb-4">
         <Grid item xs={12}>
           <Typography fontWeight={500} variant="h5">
-            {quiz.title}
-          </Typography>
-          <Typography>
-            Ends at: {new Date(quiz.deadline).toLocaleString()}
+            Practise Test
           </Typography>
           <Typography fontWeight={"medium"}>
             Remaining Time: {days !== 0 && `${days}d `}{" "}
@@ -174,7 +190,7 @@ const Client = ({ quiz }: { quiz: Quiz }) => {
           <Grid item>
             <Question
               key={currentQuestion}
-              question={quiz.questions[currentQuestion].question}
+              question={questions[currentQuestion]}
               index={currentQuestion}
               handleChange={handleChange}
               questions={chosenQuestions}
@@ -194,7 +210,7 @@ const Client = ({ quiz }: { quiz: Quiz }) => {
                 Previous
               </Button>
             )}
-            {quiz.questions.length !== currentQuestion + 1 ? (
+            {questions.length !== currentQuestion + 1 ? (
               <Button
                 key="next"
                 className="float-right"

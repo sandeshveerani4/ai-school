@@ -48,6 +48,28 @@ export const getTopics = async (subjectId: number) => {
   }
   return await res.json();
 };
+export const getTopicsBySection = async (sectionId: number) => {
+  const options: RequestInit = await reqParams(true);
+  const res = await fetch(
+    `${config.site.url}/api/topics/${sectionId}`,
+    options
+  );
+  if (!res.ok) {
+    throw new Error("Failed to fetch data");
+  }
+  return await res.json();
+};
+export const getQuestionsByTopicId = async (topicId: number) => {
+  const options: RequestInit = await reqParams(true);
+  const res = await fetch(
+    `${config.site.url}/api/topics/${topicId}/practise`,
+    options
+  );
+  if (!res.ok) {
+    throw new Error("Failed to fetch data");
+  }
+  return await res.json();
+};
 export const getDiscussions = async () => {
   const options: RequestInit = await reqParams(true);
   const res = await fetch(`${config.site.url}/api/discussions/`, options);

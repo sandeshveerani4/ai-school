@@ -51,7 +51,10 @@ const CreateSubject = ({
   const [done, setDone] = useState(false);
   const router = useRouter();
   useEffect(() => {
-    if (done) router.refresh();
+    if (done) {
+      router.refresh();
+      setDone(false);
+    }
   }, [done]);
   return (
     <FormWithLoading
