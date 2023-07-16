@@ -5,10 +5,17 @@ import { User, authorize, unAuthorized } from "@/lib/authorize";
 export async function GET(req: NextRequest) {
   const auth = authorize(req) as User;
   if (auth === unAuthorized) return auth;
+  const searchParams = req.nextUrl.searchParams;
+  const topics = searchParams.get("topics");
   const classes = await prisma.class.findMany({
     orderBy: { rank: "desc" },
     include: {
-      sections: { include: { classTeacher: { include: { user: true } } } },
+      sections: {
+        include: {
+          classTeacher: { include: { user: true } },
+          ...(topics && { subjects: { include: { topics: true } } }),
+        },
+      },
     },
   });
   return NextResponse.json(classes);

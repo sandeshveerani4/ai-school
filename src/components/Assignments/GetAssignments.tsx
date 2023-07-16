@@ -1,6 +1,6 @@
 "use client";
 import { Box, IconButton } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import Typography from "@mui/material/Typography";
 import Table from "@mui/material/Table";
 import Chip from "@mui/material/Chip";
@@ -10,12 +10,11 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import Loading from "@/app/dashboard/loading";
 import Link from "next/link";
-import { reqParams } from "@/lib/consts";
 import { Prisma } from "@prisma/client";
 import { useSession } from "next-auth/react";
 import EyeIcon from "@mui/icons-material/VisibilityOutlined";
+import CircleIcon from "@mui/icons-material/Circle";
 export type Assignment = Prisma.AssignmentGetPayload<{
   include: {
     _count: {
@@ -72,7 +71,22 @@ const GetAssignments = ({ assignments }: { assignments: Assignment[] }) => {
                 sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
               >
                 <TableCell>
-                  {data.title}{" "}
+                  <Box>
+                    <Typography
+                      {...(data._count.submissions < 1 && {
+                        fontWeight: "medium",
+                        color: "secondary.main",
+                      })}
+                    >
+                      {data._count.submissions < 1 && (
+                        <CircleIcon
+                          color="secondary"
+                          sx={{ fontSize: "10px" }}
+                        />
+                      )}{" "}
+                      {data.title}
+                    </Typography>
+                  </Box>
                   <Box>
                     <Chip
                       label={data.type}

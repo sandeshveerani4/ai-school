@@ -24,6 +24,7 @@ import Delete from "@mui/icons-material/Delete";
 import { fileUpload } from "@/lib/file_upload";
 import SearchTopics from "../Topics/SearchTopics";
 import BulkImport from "../Students/BulkImport";
+import { useRouter } from "next/navigation";
 interface Option {
   option: string;
   correct: boolean;
@@ -159,9 +160,11 @@ const CreateQuestions = () => {
     return payload;
   };
   const [done, setDone] = useState(false);
+  const router = useRouter();
   useEffect(() => {
     if (done) {
       setShow(false);
+      router.refresh();
       setDone(false);
     }
   }, [done]);

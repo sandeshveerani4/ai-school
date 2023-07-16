@@ -17,7 +17,12 @@ import { Teacher } from "../Teachers/TeacherFields";
 import { useRouter } from "next/navigation";
 export type Class = Prisma.ClassGetPayload<{
   include: {
-    sections: { include: { classTeacher: { include: { user: true } } } };
+    sections: {
+      include: {
+        classTeacher: { include: { user: true } };
+        subjects: { include: { topics: true } };
+      };
+    };
   };
 }>;
 const ClassRow = ({ data, teachers }: { data: Class; teachers: Teacher[] }) => {

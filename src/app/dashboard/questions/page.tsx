@@ -1,5 +1,6 @@
 import { config, reqParams } from "@/lib/consts";
 import Client from "./client";
+import { getClasses } from "@/lib/srv-funcs";
 
 const getQuestions = async () => {
   const options: RequestInit = await reqParams(true);
@@ -11,7 +12,8 @@ const getQuestions = async () => {
 };
 const Questions = async () => {
   const questions = await getQuestions();
-  return <Client questions={questions} />;
+  const classes = await getClasses(true);
+  return <Client questions={questions} classes={classes} />;
 };
 
 export default Questions;

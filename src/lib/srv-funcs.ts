@@ -1,7 +1,10 @@
 import { config, reqParams } from "./consts";
-export const getClasses = async () => {
+export const getClasses = async (getTopics: boolean = false) => {
   const options: RequestInit = await reqParams(true);
-  const res = await fetch(`${config.site.url}/api/classes/`, options);
+  const res = await fetch(
+    `${config.site.url}/api/classes/${getTopics ? "?topics=true" : ""}`,
+    options
+  );
   if (!res.ok) {
     throw new Error("Failed to fetch data");
   }

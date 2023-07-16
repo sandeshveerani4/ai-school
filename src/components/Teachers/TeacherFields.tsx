@@ -62,7 +62,7 @@ const TeacherFields = ({ data, ...props }: { data: any }) => {
     <FormWithLoading
       endpoint={`/api/teachers/${data["id"]}`}
       submitName="Update Teacher"
-      method="PUT"
+      method="PATCH"
       buttonProps={{ color: "secondary" }}
     >
       <Grid container rowSpacing={1} columnSpacing={1}>

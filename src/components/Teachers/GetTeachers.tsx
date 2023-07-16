@@ -1,6 +1,6 @@
 "use client";
-import { Box } from "@mui/material";
-import React from "react";
+import { Box, IconButton } from "@mui/material";
+import React, { useState } from "react";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import Table from "@mui/material/Table";
@@ -15,12 +15,29 @@ import { Teacher } from "./TeacherFields";
 import ModalLay from "../ModalLay";
 import { reqParams } from "@/lib/consts";
 
+import EyeIcon from "@mui/icons-material/VisibilityOutlined";
+import DeleteIcon from "@mui/icons-material/DeleteOutlineOutlined";
+import { useRouter } from "next/navigation";
 export const getTeachers = async () => {
   const options: RequestInit = await reqParams();
   const res = await fetch(`/api/teachers/`, options);
   return await res.json();
 };
+const deleteTeacher = async (id: number) => {
+  try {
+    const options: RequestInit = {
+      ...(await reqParams()),
+      method: "DELETE",
+    };
+    const res = await fetch(`/api/teachers/${id}`, options);
+    return await res.json();
+  } catch (e) {
+    console.error(e);
+  }
+};
 const GetTeachers = ({ teachers }: { teachers: Teacher[] }) => {
+  const [show, setShow] = useState(false);
+  const router = useRouter();
   return (
     <Box className="w-100 overflow-x-auto">
       <TableContainer component={Paper}>
@@ -54,15 +71,21 @@ const GetTeachers = ({ teachers }: { teachers: Teacher[] }) => {
                   <TableCell>{data.first_name}</TableCell>
                   <TableCell>{data.last_name}</TableCell>
                   <TableCell>
-                    <Button
-                      variant="outlined"
+                    <IconButton
                       LinkComponent={Link}
                       href={`/dashboard/teachers/${data["id"]}`}
                       className="mr-2"
                     >
-                      View Details
-                    </Button>
-                    <ModalLay buttonTitle="Delete Teacher">
+                      <EyeIcon />
+                    </IconButton>
+                    <IconButton onClick={() => setShow(true)}>
+                      <DeleteIcon />
+                    </IconButton>
+                    <ModalLay
+                      isButton={false}
+                      opener={show}
+                      setOpener={setShow}
+                    >
                       <Typography variant="h6" component="h2">
                         Confirm Deletion
                       </Typography>
@@ -70,6 +93,11 @@ const GetTeachers = ({ teachers }: { teachers: Teacher[] }) => {
                         Are you sure you want to delete this entity?
                       </Typography>
                       <Button
+                        onClick={async () => {
+                          await deleteTeacher(data["id"]);
+                          router.refresh();
+                          setShow(false);
+                        }}
                         variant="contained"
                         color="error"
                         className="mt-2"

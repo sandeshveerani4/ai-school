@@ -8,7 +8,10 @@ export async function GET(req: NextRequest) {
   const auth = authorize(req) as User;
   if (auth === unAuthorized) return auth;
   if (auth.role === "STUDENT") return unAuthorized;
+  const searchParams = req.nextUrl.searchParams;
+  const topicId = searchParams.get("topicId");
   const questions = await prisma.question.findMany({
+    ...(topicId && { where: { topicId: Number(topicId) } }),
     include: { options: true, topic: true },
     orderBy: { id: "desc" },
   });

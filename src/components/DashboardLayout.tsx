@@ -374,7 +374,7 @@ const DashboardLayout = (props: Props) => {
           width: { sm: `calc(100% - ${drawerWidth}px)` },
         }}
       >
-        <Toolbar variant="dense" className="py-5 mb-1" />
+        <Toolbar variant="dense" className="py-5 mb-2" />
         <React.Suspense fallback={<Loading />}>{children}</React.Suspense>
       </Box>
     </Box>
