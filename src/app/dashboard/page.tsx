@@ -1,18 +1,12 @@
 import AdminDashboard from "@/components/Dashboard/AdminDashboard";
-import { config, reqParams } from "@/lib/consts";
+import { authOptions } from "@/lib/auth";
+import { getStats } from "@/lib/srv-funcs";
+import { getServerSession } from "next-auth";
 import React from "react";
-
-const getStats = async () => {
-  const options: RequestInit = await reqParams(true);
-  const res = await fetch(`${config.site.url}/api/dashboard/`, options);
-  if (!res.ok) {
-    throw new Error("Failed to fetch data");
-  }
-  return await res.json();
-};
 
 const Dashboard = async () => {
   const stats = await getStats();
-  return <AdminDashboard stats={stats} />;
+  const session = await getServerSession(authOptions);
+  return <AdminDashboard stats={stats} session={session} />;
 };
 export default Dashboard;

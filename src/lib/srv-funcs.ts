@@ -89,3 +89,11 @@ export const getMessages = async (discussionId: number) => {
   }
   return await res.json();
 };
+export const getStats = async () => {
+  const options: RequestInit = await reqParams(true);
+  const res = await fetch(`${config.site.url}/api/dashboard/`, options);
+  if (!res.ok) {
+    throw new Error("Failed to fetch data");
+  }
+  return await res.json();
+};

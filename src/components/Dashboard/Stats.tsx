@@ -11,29 +11,30 @@ const Stats = ({ stats }: { stats: Stats }) => {
     title,
     number,
     children,
+    pcolor,
   }: {
     title: string;
     number: number;
     children?: React.ReactNode;
+    pcolor: string;
   }) => (
     <Grid container direction={"column"} md={3} xs={12} item>
       <Box
         sx={{
-          borderLeft: "5px solid",
-          borderColor: "secondary.main",
+          // outline: "2px solid #f7f7f7",
+          /* borderLeft: "5px solid",
+          borderColor: pcolor, */
           userSelect: "none",
+          background: pcolor,
           "&:hover": {
-            boxShadow: "1px 0 30px -28px black",
+            // boxShadow: "1px 0 10px -5px black",
+            transform: "skewY(-5deg) scale(1.1)",
           },
+          transition: "all 0.2s ease-in-out",
         }}
-        className="rounded-lg p-3 bg-white m-2"
+        className="rounded-lg p-3 m-2"
       >
-        <Typography
-          textTransform={"uppercase"}
-          fontSize={"small"}
-          color={"InactiveCaptionText"}
-          fontWeight={"medium"}
-        >
+        <Typography fontSize={"small"} color={"white"} fontWeight={"medium"}>
           {title}
         </Typography>
         <Typography
@@ -41,7 +42,7 @@ const Stats = ({ stats }: { stats: Stats }) => {
           variant="h4"
           fontWeight={"medium"}
           sx={{
-            color: "secondary.main",
+            color: "white",
           }}
         >
           {number}
@@ -52,10 +53,26 @@ const Stats = ({ stats }: { stats: Stats }) => {
   );
   return (
     <Grid container>
-      <Item title="Students" number={stats.students}></Item>
-      <Item title="Teachers" number={stats.teachers}></Item>
-      <Item title="Assignments" number={stats.assignments}></Item>
-      <Item title="Questions" number={stats.questions}></Item>
+      <Item
+        title="Questions"
+        number={stats.questions}
+        pcolor="linear-gradient(45deg, #f12711, #f5b119)"
+      ></Item>
+      <Item
+        title="Assignments"
+        number={stats.assignments}
+        pcolor="linear-gradient(45deg,#0540e6,#00f2dc)"
+      ></Item>
+      <Item
+        title="Students"
+        number={stats.students}
+        pcolor="linear-gradient(45deg,#56068d,#f347d6)"
+      ></Item>
+      <Item
+        title="Teachers"
+        number={stats.teachers}
+        pcolor="linear-gradient(45deg,#45b649,#dce35b)"
+      ></Item>
     </Grid>
   );
 };

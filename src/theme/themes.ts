@@ -33,9 +33,18 @@ export const darkTheme = createTheme({
       main: "#454344", //blueGrey[800],
     },
     secondary: {
-      main: "#4540e1",
+      main: "#ed6c02",
       contrastText: "white",
     },
     light: { main: grey[500] },
+  },
+  components: {
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          borderRadius: "10px",
+        },
+      },
+    },
   },
 });

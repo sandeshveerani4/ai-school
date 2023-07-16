@@ -3,12 +3,11 @@ import { Box, CardMedia, Divider, Grid, Typography } from "@mui/material";
 import { DateCalendar, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import Person2OutlinedIcon from "@mui/icons-material/Person2Outlined";
-import { useSession } from "next-auth/react";
 import React from "react";
 import { config } from "@/lib/consts";
+import { Session } from "next-auth";
 
-const Calendar = () => {
-  const { data: session } = useSession();
+const Calendar = ({ session }: { session: Session | null }) => {
   return (
     <Grid container direction={"column"} className="p-4 bg-white rounded-2xl">
       <Grid container className="p-2" spacing={2}>

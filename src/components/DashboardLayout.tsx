@@ -198,8 +198,8 @@ const DashboardLayout = (props: Props) => {
         <Typography
           variant="h5"
           textAlign={"center"}
-          fontWeight={500}
-          className="text-blue-800"
+          fontWeight={"medium"}
+          color={"primary.main"}
         >
           {config.site.name}
         </Typography>
@@ -315,7 +315,7 @@ const DashboardLayout = (props: Props) => {
             variant="h5"
             component="h5"
             className="flex-grow"
-            color={"#454344"}
+            color={"black"}
             noWrap
             fontWeight={600}
             textTransform={"capitalize"}
