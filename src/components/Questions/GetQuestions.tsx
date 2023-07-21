@@ -2,6 +2,7 @@
 import {
   Box,
   Grid,
+  IconButton,
   MenuItem,
   Skeleton,
   TextField,
@@ -23,6 +24,9 @@ import { Prisma, Section, Topic } from "@prisma/client";
 import ModalLay from "../ModalLay";
 import { inputWhite } from "../Students/StudentFields";
 import { Class } from "../Classes/ClassRow";
+import DeleteOulinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context";
+import { useRouter } from "next/navigation";
 export type Question = Prisma.QuestionGetPayload<{
   include: { options: true; topic: true };
 }>;
@@ -35,7 +39,106 @@ export const getQuestions = async (topicId: number) => {
     console.error(e);
   }
 };
+const deleteQuestion = async (id: number) => {
+  try {
+    const options: RequestInit = {
+      ...(await reqParams()),
+      method: "DELETE",
+    };
+    const res = await fetch(`/api/questions/${id}`, options);
+    return await res.json();
+  } catch (e) {
+    console.error(e);
+  }
+}
+const QuestionItem = ({ data, refresh }: { data: Question, refresh: ()=>Promise<void> }) => {
+  const [opener, setOpener] = useState(false);
 
+  return <TableRow
+    key={data.id}
+    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+  >
+    <TableCell>{data.id}</TableCell>
+    <TableCell>{data.question}</TableCell>
+    <TableCell>{data.topic.title}</TableCell>
+    <TableCell>
+      {data.image && (
+        <Box width={"200px"}>
+          <CardMedia
+            component="img"
+            sx={{
+              width: "100%",
+            }}
+            src={config.site.imageDomain + data.image}
+          />
+        </Box>
+      )}
+    </TableCell>
+    <TableCell>{data.score}</TableCell>
+    <TableCell>
+      <ModalLay
+        buttonTitle="View Options"
+        buttonProps={{ color: "primary" }}
+      >
+        <Typography variant="h6" component="h2">
+          Options
+        </Typography>
+        {data.type === "FILL"
+          ? `Correct answer: ${data.fill}`
+          : data.options.map((option) => (
+            <Grid
+              container
+              justifyContent={"center"}
+              alignItems={"center"}
+              className="my-2 bg-neutral-200 rounded-2xl"
+            >
+              <Grid item>
+                <Radio checked={option.correct} />
+              </Grid>
+              <Grid item flexGrow={1}>
+                {option.option}
+                {option.image && (
+                  <Box width={"200px"}>
+                    <CardMedia
+                      component="img"
+                      sx={{
+                        width: "100%",
+                      }}
+                      src={
+                        config.site.imageDomain +
+                        option.image
+                      }
+                    />
+                  </Box>
+                )}
+              </Grid>
+            </Grid>
+          ))}
+      </ModalLay>
+      <IconButton onClick={() => setOpener(!opener)}><DeleteOulinedIcon /></IconButton>
+      <ModalLay isButton={false} opener={opener} setOpener={setOpener}>
+        <Typography variant="h6" component="h2">
+          Confirm Deletion
+        </Typography>
+        <Typography>
+          Are you sure you want to delete this entity?
+        </Typography>
+        <Button
+          variant="contained"
+          color="error"
+          className="mt-2"
+          onClick={async () => {
+            await deleteQuestion(data["id"]);
+            await refresh();
+            setOpener(false);
+          }}
+        >
+          Confirm
+        </Button>
+      </ModalLay>
+    </TableCell>
+  </TableRow>
+}
 const GetQuestions = ({ classes }: { classes: Class[] }) => {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [classId, setClass] = useState(0);
@@ -61,11 +164,12 @@ const GetQuestions = ({ classes }: { classes: Class[] }) => {
       );
     }
   }, [classId, sectionId]);
+  const refresh=async () => {
+    setQuestions(await getQuestions(topicId));
+  };
   useEffect(() => {
     if (classId && sectionId && topicId) {
-      (async () => {
-        setQuestions(await getQuestions(topicId));
-      })();
+      refresh();  
     }
   }, [classId, sectionId, topicId]);
   return (
@@ -142,71 +246,7 @@ const GetQuestions = ({ classes }: { classes: Class[] }) => {
                     </TableCell>
                   </TableRow>
                 ) : (
-                  questions.map((data, index: number) => (
-                    <TableRow
-                      key={data.id}
-                      sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                    >
-                      <TableCell>{data.id}</TableCell>
-                      <TableCell>{data.question}</TableCell>
-                      <TableCell>{data.topic.title}</TableCell>
-                      <TableCell>
-                        {data.image && (
-                          <Box width={"200px"}>
-                            <CardMedia
-                              component="img"
-                              sx={{
-                                width: "100%",
-                              }}
-                              src={config.site.imageDomain + data.image}
-                            />
-                          </Box>
-                        )}
-                      </TableCell>
-                      <TableCell>{data.score}</TableCell>
-                      <TableCell>
-                        <ModalLay
-                          buttonTitle="View Options"
-                          buttonProps={{ color: "primary" }}
-                        >
-                          <Typography variant="h6" component="h2">
-                            Options
-                          </Typography>
-                          {data.type === "FILL"
-                            ? `Correct answer: ${data.fill}`
-                            : data.options.map((option) => (
-                                <Grid
-                                  container
-                                  justifyContent={"center"}
-                                  alignItems={"center"}
-                                  className="my-2 bg-neutral-200 rounded-2xl"
-                                >
-                                  <Grid item>
-                                    <Radio checked={option.correct} />
-                                  </Grid>
-                                  <Grid item flexGrow={1}>
-                                    {option.option}
-                                    {option.image && (
-                                      <Box width={"200px"}>
-                                        <CardMedia
-                                          component="img"
-                                          sx={{
-                                            width: "100%",
-                                          }}
-                                          src={
-                                            config.site.imageDomain +
-                                            option.image
-                                          }
-                                        />
-                                      </Box>
-                                    )}
-                                  </Grid>
-                                </Grid>
-                              ))}
-                        </ModalLay>
-                      </TableCell>
-                    </TableRow>
-                  ))
+                  questions.map((data) => <QuestionItem data={data} refresh={refresh} key={data.id} />)
                 )}
               </TableBody>
             </Table>

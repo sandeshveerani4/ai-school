@@ -25,7 +25,7 @@ const Client = ({
           color="secondary"
           className="float-right my-2"
         >
-          <Add /> Add Topic
+          <Add /> Add Topic  
         </Button>
       </Box>
       {show && <CreateTopics subjectId={subjectId} />}
