@@ -21,6 +21,7 @@ export type Assignment = Prisma.AssignmentGetPayload<{
       select: { submissions: true; questions: true };
     };
     submissions: true;
+    user: true;
     topic: {
       include: {
         subject: {
@@ -65,7 +66,7 @@ const GetAssignments = ({ assignments }: { assignments: Assignment[] }) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {assignments.map((data, index: number) => (
+            {assignments.map((data) => (
               <TableRow
                 key={data.id}
                 sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
@@ -123,8 +124,7 @@ const GetAssignments = ({ assignments }: { assignments: Assignment[] }) => {
                 </TableCell>
                 <TableCell>{data.topic.title}</TableCell>
                 <TableCell>
-                  {data.topic.subject.teacher.user.first_name}{" "}
-                  {data.topic.subject.teacher.user.last_name}
+                  {data.user.first_name} {data.user.last_name}
                 </TableCell>
                 {session && session.user.role !== "STUDENT" && (
                   <TableCell>

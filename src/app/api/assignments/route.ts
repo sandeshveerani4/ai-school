@@ -5,6 +5,7 @@ import { User, authorize, unAuthorized } from "@/lib/authorize";
 export async function GET(req: NextRequest) {
   const auth = authorize(req) as User;
   if (auth === unAuthorized) return unAuthorized;
+  const count=req.nextUrl.searchParams.get('count');
   const students = await prisma.assignment.findMany({
     ...(auth.role === "STUDENT" && {
       where: {
@@ -15,6 +16,11 @@ export async function GET(req: NextRequest) {
           },
         },
         visible: true,
+      },
+    }),
+    ...(auth.role === "TEACHER" && {
+      where: {
+        userID:auth.id
       },
     }),
     include: {
@@ -40,8 +46,10 @@ export async function GET(req: NextRequest) {
           where: { studentId: auth.id },
         },
       }),
+      user:true
     },
     orderBy: { id: "desc" },
+    ...count && {take:Number(count)}
   });
   return NextResponse.json(students);
 }
@@ -58,6 +66,9 @@ export async function POST(req: NextRequest) {
         description: body.description,
         visible: Boolean(body.visible),
         enabled: Boolean(body.enabled),
+        user:{connect:{
+          id:auth.id
+        }},
         type: body.type,
         ...(body.type === "VIDEO_LESSON" && { video_url: body.video_url }),
         ...(body.willStartAt && {

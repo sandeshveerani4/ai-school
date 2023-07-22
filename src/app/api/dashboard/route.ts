@@ -1,7 +1,5 @@
 import prisma from "@/lib/prisma";
-import * as bcrypt from "bcrypt";
 import { NextRequest, NextResponse } from "next/server";
-import { Prisma } from "@prisma/client";
 import { User, authorize, unAuthorized } from "@/lib/authorize";
 
 export async function GET(req: NextRequest) {
@@ -9,7 +7,16 @@ export async function GET(req: NextRequest) {
   if (auth === unAuthorized) return auth;
   const students = await prisma.student.count();
   const teachers = await prisma.teacher.count();
-  const assignments = await prisma.assignment.count();
+  const assignments = await prisma.assignment.count({
+    ...(auth.role === "TEACHER" && { where: { userID: auth.id } }),
+  });
   const questions = await prisma.question.count();
-  return NextResponse.json({ students, teachers, assignments, questions });
+  const submissions = await prisma.submission.count();
+  return NextResponse.json({
+    students,
+    teachers,
+    assignments,
+    questions,
+    submissions,
+  });
 }

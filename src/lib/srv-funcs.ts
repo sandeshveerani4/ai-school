@@ -18,7 +18,14 @@ export const getTeachers = async () => {
   }
   return await res.json();
 };
-
+export const getNotifications = async (count?: number) => {
+  const options: RequestInit = await reqParams(true);
+  const res = await fetch(`${config.site.url}/api/notifications${count ? `?count=${count}` : ""}`, options);
+  if (!res.ok) {
+    throw new Error("Failed to fetch data");
+  }
+  return await res.json();
+};
 export const getStudent = async (id: number) => {
   const options: RequestInit = await reqParams(true);
   const res = await fetch(`${config.site.url}/api/students/${id}`, options);

@@ -28,6 +28,7 @@ model User {
   sent_notifications NotificationMessage[]
   messages           Messages[]
   remarks            Remarks[]
+  assignments        Assignment[]
 }
 
 model Admin {
@@ -102,6 +103,8 @@ model Assignment {
   description String?
   topic       Topic                   @relation(fields: [topicId], references: [id], onDelete: Cascade)
   topicId     Int
+  user        User                    @relation(fields: [userID], references: [id], onDelete: Cascade)
+  userID      Int
   files       Json[]
   deadline    DateTime
   type        AssignmentType          @default(HOMEWORK)

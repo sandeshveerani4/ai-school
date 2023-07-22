@@ -5,6 +5,7 @@ import { User, authorize, unAuthorized } from "@/lib/authorize";
 export async function GET(req: NextRequest) {
   const auth = authorize(req) as User;
   if (auth === unAuthorized) return auth;
+  const count=req.nextUrl.searchParams.get('count');
   const fetched = await prisma.notificationMessage.findMany({
     ...(auth.role !== "ADMIN" && {
       where: {
@@ -23,6 +24,7 @@ export async function GET(req: NextRequest) {
       ...(auth.role !== "ADMIN" && { notifications: true }),
     },
     orderBy: { createdAt: "desc" },
+    ...count && {take:Number(count)}
   });
   return NextResponse.json(fetched);
 }

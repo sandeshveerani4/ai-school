@@ -1,14 +1,23 @@
 "use client";
 import React from "react";
 import Stats from "./Stats";
-import { Box, Button, CardMedia, Grid, IconButton, Typography } from "@mui/material";
+import {
+  Box,
+  BoxProps,
+  Button,
+  CardMedia,
+  Grid,
+  IconButton,
+  Typography,
+} from "@mui/material";
 import Sidebar from "./Sidebar";
 import { Session } from "next-auth";
 import { Assignment } from "../Assignments/GetAssignments";
-import { Submission } from "@prisma/client";
-import { config } from "@/lib/consts";
 import EyeIcon from "@mui/icons-material/VisibilityOutlined";
 import Link from "next/link";
+import { NotificationMessage } from "@/app/dashboard/notifications/client";
+import ArticleOutlinedIcon from "@mui/icons-material/ArticleOutlined";
+import AssignmentOutlinedIcon from "@mui/icons-material/AssignmentOutlined";
 interface Stats {
   students: number;
   teachers: number;
@@ -16,25 +25,207 @@ interface Stats {
   questions: number;
 }
 
-const Card = ({ children, title }: { children?: React.ReactNode, title: string }) => {
-  return <Grid item lg={6} className="bg-white rounded-3xl p-3" xs={12}><Typography variant="caption">{title}</Typography><Box>{children}</Box></Grid>
-}
-
+const Card = ({
+  children,
+  title,
+  bodyProps,
+}: {
+  children?: React.ReactNode;
+  title?: string;
+  bodyProps?: BoxProps;
+}) => {
+  return (
+    <Grid item xs={12} lg={6}>
+      <Box
+        className="bg-white relative h-[100%] rounded-3xl p-3 m-1"
+        {...bodyProps}
+      >
+        {" "}
+        {title && <Typography fontWeight={500}>{title}</Typography>}
+        {children}
+      </Box>
+    </Grid>
+  );
+};
+const AssignmentItem = ({ assignment }: { assignment: Assignment }) => {
+  const picture = assignment.user.pictureURL;
+  const teacher = assignment.user;
+  return (
+    <Grid
+      container
+      item
+      className="p-2"
+      alignItems={"center"}
+      justifyContent={"center"}
+    >
+      <Grid item flex={1}>
+        {picture && <CardMedia src={picture} className="rounded-full" />}
+        <Box>
+          <Typography fontWeight={600}>{assignment.title}</Typography>
+          <Typography variant="caption" fontSize="small" fontStyle={"italic"}>
+            By {teacher.first_name} {teacher.last_name} Deadline:{" "}
+            {new Date(assignment.deadline).toLocaleString()}
+          </Typography>
+        </Box>
+      </Grid>
+      <Grid item>
+        <IconButton
+          LinkComponent={Link}
+          href={`/dashboard/assignments/${assignment.id}`}
+        >
+          <EyeIcon />
+        </IconButton>
+      </Grid>
+    </Grid>
+  );
+};
+const NotificationItem = ({
+  notification,
+}: {
+  notification: NotificationMessage;
+}) => {
+  const picture = notification.author.pictureURL;
+  return (
+    <Grid
+      container
+      item
+      className="p-2"
+      alignItems={"center"}
+      justifyContent={"center"}
+    >
+      <Grid item flex={1}>
+        {picture && <CardMedia src={picture} className="rounded-full" />}
+        <Box>
+          <Typography fontWeight={600}>{notification.title}</Typography>
+          <Typography variant="caption" fontSize="small" fontStyle={"italic"}>
+            By {notification.author.first_name} {notification.author.last_name}
+          </Typography>
+        </Box>
+      </Grid>
+      <Grid item>
+        <IconButton
+          LinkComponent={Link}
+          href={`/dashboard/notifications/${notification.id}`}
+        >
+          <EyeIcon />
+        </IconButton>
+      </Grid>
+    </Grid>
+  );
+};
 const AdminDashboard = ({
   stats,
   session,
   assignments,
+  notifications,
 }: {
   stats: Stats;
   session: Session | null;
   assignments: Assignment[];
+  notifications: NotificationMessage[];
 }) => {
   return (
     <Grid container spacing={1}>
       <Grid item lg={8} md={12} xs={12}>
         <Stats stats={stats} />
-        <Grid container >
-          <Card title="Assignments">{assignments.map((assignment) => <Grid container item className="p-2" alignItems={'center'} justifyContent={'center'}><Grid item flex={1}>{assignment.title}</Grid><Grid item><IconButton LinkComponent={Link} href={`/dashboard/assignments/${assignment.id}`}><EyeIcon /></IconButton></Grid></Grid>)}<Button variant="contained" color="secondary" LinkComponent={Link} href='/dashboard/assignments' fullWidth>View all assignments</Button></Card>
+        <Grid container rowGap={2}>
+          <Card title="Assignments">
+            {assignments.length === 0
+              ? "No Assignments Found"
+              : assignments.map((assignment) => (
+                  <AssignmentItem {...{ assignment }} key={assignment.id} />
+                ))}
+            <Button
+              color="secondary"
+              LinkComponent={Link}
+              href="/dashboard/assignments"
+              fullWidth
+            >
+              View all Assignments
+            </Button>
+          </Card>
+          <Card
+            title="Overall Quiz Performance"
+            bodyProps={{
+              style: {
+                background: "linear-gradient(45deg,#0540e6,#00f2dc)",
+                color: "white",
+              },
+            }}
+          >
+            <Grid minHeight={"100px"} container>
+              <Grid
+                container
+                alignItems={"center"}
+                justifyItems={"center"}
+                item
+                xs={3}
+              >
+                <ArticleOutlinedIcon style={{ fontSize: "100px" }} />
+              </Grid>
+              <Grid
+                container
+                item
+                xs={9}
+                alignItems={"center"}
+                justifyItems={"center"}
+              >
+                <Typography variant="h3" fontWeight={700}>
+                  100%
+                </Typography>
+              </Grid>
+            </Grid>
+          </Card>
+          <Card
+            title="Overall Submissions"
+            bodyProps={{
+              style: {
+                background: "linear-gradient(45deg,#56068d,#f347d6)",
+                color: "white",
+              },
+            }}
+          >
+            <Grid minHeight={"100px"} container>
+              <Grid
+                container
+                alignItems={"center"}
+                justifyItems={"center"}
+                item
+                xs={3}
+              >
+                <AssignmentOutlinedIcon style={{ fontSize: "100px" }} />
+              </Grid>
+              <Grid
+                container
+                item
+                xs={9}
+                alignItems={"center"}
+                justifyItems={"center"}
+              >
+                <Typography variant="h3" fontWeight={700}>
+                  100
+                </Typography>
+              </Grid>
+            </Grid>
+          </Card>
+          <Card title="Notifications">
+            {notifications.length === 0
+              ? "No Notifications Found"
+              : notifications.map((notification) => (
+                  <NotificationItem
+                    {...{ notification }}
+                    key={notification.id}
+                  />
+                ))}
+            <Button
+              color="secondary"
+              LinkComponent={Link}
+              href="/dashboard/notifications"
+              fullWidth
+            >
+              View all Notifications
+            </Button>
+          </Card>
         </Grid>
       </Grid>
       <Grid item lg={4} md={12} xs={12}>
