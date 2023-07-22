@@ -8,30 +8,32 @@ export async function POST(req: NextRequest) {
   if (auth === unAuthorized) return auth;
   if (auth.role !== "ADMIN") return unAuthorized;
   const { data, topicId }: { data: any; topicId: number } = await req.json();
-  console.log({ data, topicId });
   try {
     for (let index = 0; index < data.length; index++) {
       const element = data[index];
+      const fill = element.fill.trim();
       try {
         console.log(
           await prisma.question.create({
             data: {
               question: element.question,
               score: Number(element.score) ?? 1,
-              options: {
-                createMany: {
-                  data: Object.keys(element)
-                    .filter((item) => {
-                      return item.startsWith("option");
-                    })
-                    .map((item) => {
-                      const correct =
-                        item.split("option")[1].slice(-1).toLowerCase() ===
-                        element["correct"].toLowerCase();
-                      return { option: element[item], correct: correct };
-                    }),
-                },
-              },
+              ...(fill === '' ? {
+                options: {
+                  createMany: {
+                    data: Object.keys(element)
+                      .filter((item) => {
+                        return item.startsWith("option");
+                      })
+                      .map((item) => {
+                        const correct =
+                          item.split("option")[1].slice(-1).toLowerCase() ===
+                          element["correct"].toLowerCase();
+                        return { option: element[item], correct: correct };
+                      }),
+                  },
+                }
+              } : { fill: fill, type: 'FILL' }),
               topic: {
                 connect: {
                   id: topicId,
@@ -40,7 +42,7 @@ export async function POST(req: NextRequest) {
             },
           })
         );
-      } catch {}
+      } catch { }
     }
     // const { password, ...data } = result;
     return NextResponse.json({ success: true });

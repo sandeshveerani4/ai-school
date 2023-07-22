@@ -98,11 +98,11 @@ const OptionItem = ({
               index === options.length - 1
                 ? setOptions([...options, defaultOption])
                 : setOptions(
-                    options
-                      .slice(0, index + 1)
-                      .concat([defaultOption])
-                      .concat(options.slice(index + 1))
-                  );
+                  options
+                    .slice(0, index + 1)
+                    .concat([defaultOption])
+                    .concat(options.slice(index + 1))
+                );
             }}
           >
             <Add />
@@ -155,7 +155,7 @@ const CreateQuestions = () => {
     if (image) {
       try {
         payload.image = (await fileUpload(image))?.filename;
-      } catch {}
+      } catch { }
     }
     return payload;
   };
@@ -181,10 +181,9 @@ const CreateQuestions = () => {
           endpoint="/api/questions/bulkimport"
           middleware={middlewareBulk}
           subText="Headings should be named: question, option_A, option_B, option_C,
-          option_D, correct,score"
+          option_D, correct, score, fill(leave this blank if no options)"
         >
-          <SearchTopics changeTopic={changeTopic} />{" "}
-          {topic.id && `Selected topic: ${topic.id}`}
+          <SearchTopics changeTopic={changeTopic} />
         </BulkImport>
         <IconButton onClick={() => setShow(!show)} className="float-right my-2">
           <Add />

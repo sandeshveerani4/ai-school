@@ -37,6 +37,24 @@ export const getStudents = async () => {
   return await res.json();
 };
 
+export const getAssignments = async (count?: number) => {
+  const options: RequestInit = await reqParams(true);
+  const res = await fetch(`${config.site.url}/api/assignments${count ? `?count=${count}` : ""}`, options);
+  if (!res.ok) {
+    throw new Error("Failed to fetch data");
+  }
+  return await res.json();
+}
+
+export const getSubmissions = async () => {
+  const options: RequestInit = await reqParams(true);
+  const res = await fetch(`${config.site.url}/api/submissions/`, options);
+  if (!res.ok) {
+    throw new Error("Failed to fetch data");
+  }
+  return await res.json();
+}
+
 export const getTopics = async (subjectId: number) => {
   const options: RequestInit = await reqParams(true);
   const res = await fetch(
