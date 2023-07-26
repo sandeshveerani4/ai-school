@@ -57,7 +57,12 @@ export async function POST(
             if (file && file?.file) return file;
           }),
         }),
+        xpInc: 10,
       },
+    });
+    await prisma.student.update({
+      where: { userId: auth.id },
+      data: { xp: { increment: 10 } },
     });
     return NextResponse.json(result);
   } catch (e) {

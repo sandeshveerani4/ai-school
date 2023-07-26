@@ -1,23 +1,13 @@
 import { Metadata } from "next";
 import DashboardLayout from "@/components/DashboardLayout";
-import { config, reqParams } from "@/lib/consts";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { getUnreadNotifications } from "@/lib/srv-funcs";
 
 export const metadata: Metadata = {
   title: "Dashboard",
 };
-const getUnreadNotifications = async () => {
-  const options: RequestInit = await reqParams(true);
-  const res = await fetch(`${config.site.url}/api/notifications/fetch`, {
-    ...options,
-    method: "POST",
-  });
-  if (!res.ok) {
-    throw new Error("Failed to fetch data");
-  }
-  return await res.json();
-};
+
 export default async function RootLayout({
   children,
 }: {
@@ -26,7 +16,7 @@ export default async function RootLayout({
   const serverSession = await getServerSession(authOptions);
   const unreadCount = await getUnreadNotifications();
   return (
-    <DashboardLayout unread={unreadCount.unread} session={serverSession}>
+    <DashboardLayout unread={unreadCount} session={serverSession}>
       {children}
     </DashboardLayout>
   );

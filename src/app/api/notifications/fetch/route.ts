@@ -15,5 +15,18 @@ export async function POST(req: NextRequest) {
       },
     },
   });
+  if (auth.role === "STUDENT") {
+    const xp = (
+      await prisma.student.findFirst({
+        where: {
+          userId: auth.id,
+        },
+        select: {
+          xp: true,
+        },
+      })
+    )?.xp;
+    return NextResponse.json({ unread, xp });
+  }
   return NextResponse.json({ unread });
 }

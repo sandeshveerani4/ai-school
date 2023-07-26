@@ -43,6 +43,7 @@ model Student {
   classId     Int
   section     Section      @relation(fields: [sectionId], references: [id], onDelete: NoAction)
   sectionId   Int
+  xp          Int          @default(0)
   submissions Submission[]
   discussions Discussion[]
 }
@@ -131,6 +132,7 @@ model Submission {
   score         Int?       @default(1)
   correct       Int?
   remarks       Remarks[]
+  xpInc         Int        @default(0)
 
   @@index([studentId])
 }

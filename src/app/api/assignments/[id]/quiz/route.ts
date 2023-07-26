@@ -45,6 +45,8 @@ export async function GET(
 const checkOptions = async (assignId: number, payload: any) => {
   var score = 0,
     count = 0;
+  var xp = 0;
+  var extraXp = 0;
   const getQuestionsWithAnswers = await prisma.assignment.findFirst({
     where: {
       id: assignId,
@@ -65,14 +67,20 @@ const checkOptions = async (assignId: number, payload: any) => {
       if (question.type === "MCQ" && question.options[0].id === search) {
         score += question.score;
         count++;
-      }
-      if (question.type === "FILL" && question.fill === search) {
+        xp += 10;
+        extraXp += 10;
+      } else if (question.type === "FILL" && question.fill === search) {
         score++;
         count++;
+        xp += 10;
+        extraXp += 10;
+      } else {
+        extraXp = 0;
       }
     }
   });
-  return { score, count };
+  xp += extraXp;
+  return { score, count, xp };
 };
 export async function POST(
   req: NextRequest,
@@ -110,8 +118,21 @@ export async function POST(
         },
         score: checking.score,
         correct: checking.count,
+        ...(checking.xp > 0 && { xpInc: checking.xp }),
       },
     });
+    if (checking.xp > 0) {
+      await prisma.student.update({
+        where: {
+          userId: auth.id,
+        },
+        data: {
+          xp: {
+            increment: checking.xp,
+          },
+        },
+      });
+    }
     return NextResponse.json({ success: true });
   } catch (e) {
     console.error(e);

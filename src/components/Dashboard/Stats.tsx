@@ -5,6 +5,7 @@ export interface Stats {
   teachers: number;
   assignments: number;
   questions: number;
+  submissions: number;
 }
 const Stats = ({ stats }: { stats: Stats }) => {
   const Item = ({

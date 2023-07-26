@@ -46,7 +46,6 @@ const Client = ({ userDetails }: { userDetails: User }) => {
         </Grid>
         <Button
           className="my-2"
-          variant="contained"
           color="secondary"
           onClick={(e) => inputRef.current?.click()}
         >

@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import Stats from "./Stats";
+import Stats, { Stats as statType } from "./Stats";
 import {
   Box,
   BoxProps,
@@ -18,12 +18,6 @@ import Link from "next/link";
 import { NotificationMessage } from "@/app/dashboard/notifications/client";
 import ArticleOutlinedIcon from "@mui/icons-material/ArticleOutlined";
 import AssignmentOutlinedIcon from "@mui/icons-material/AssignmentOutlined";
-interface Stats {
-  students: number;
-  teachers: number;
-  assignments: number;
-  questions: number;
-}
 
 const Card = ({
   children,
@@ -119,7 +113,7 @@ const AdminDashboard = ({
   assignments,
   notifications,
 }: {
-  stats: Stats;
+  stats: statType;
   session: Session | null;
   assignments: Assignment[];
   notifications: NotificationMessage[];
@@ -203,7 +197,7 @@ const AdminDashboard = ({
                 justifyItems={"center"}
               >
                 <Typography variant="h3" fontWeight={700}>
-                  100
+                  {stats.submissions}
                 </Typography>
               </Grid>
             </Grid>

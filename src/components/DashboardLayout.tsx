@@ -48,7 +48,7 @@ const drawerWidth = 240;
 interface Props {
   children: React.ReactNode;
   window?: () => Window;
-  unread: number;
+  unread: { unread: number; xp?: number };
   session: Session | null;
 }
 interface MenuItem {
@@ -218,7 +218,7 @@ const DashboardLayout = (props: Props) => {
         flexGrow={1}
       >
         <List>
-          {menuItems(unread).map((item: MenuItem, index: number) => {
+          {menuItems(unread.unread).map((item: MenuItem, index: number) => {
             return item.roles.includes(session?.user.role) ? (
               <NavBarItem {...{ item, index }} key={index} />
             ) : (
@@ -228,6 +228,27 @@ const DashboardLayout = (props: Props) => {
         </List>
       </Box>
       <List>
+        {unread.xp !== undefined && (
+          <ListItem
+            sx={{
+              width: "90%",
+              background: "linear-gradient(45deg, #f12711, #f5b119)",
+              margin: "auto",
+            }}
+            className="rounded-lg text-white"
+          >
+            <Grid container>
+              <Grid item flex={1}>
+                <Typography fontWeight={700} fontStyle={"italic"}>
+                  XP:
+                </Typography>
+              </Grid>
+              <Grid item>
+                <Typography fontWeight={700}>{unread.xp}</Typography>
+              </Grid>
+            </Grid>
+          </ListItem>
+        )}
         <ListItem>
           <Grid
             container

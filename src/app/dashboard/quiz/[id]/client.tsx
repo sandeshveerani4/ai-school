@@ -43,12 +43,14 @@ const Question = ({
   questions: any;
   handleChange: ({ id, val }: { id: number; val: number | string }) => void;
 }) => {
-  const [value, setValue] = useState(undefined);
+  const [value, setValue] = useState("");
   useEffect(() => {
     if (questions[question.id]) {
       setValue(questions[question.id]);
+    } else {
+      setValue("");
     }
-  }, [questions]);
+  }, [questions, question.id]);
   return (
     <Grid item xs={12}>
       <Typography fontSize="medium" fontWeight={"medium"}>
@@ -74,7 +76,7 @@ const Question = ({
           label="Fill in the blank"
           sx={inputWhite}
           key={question.id}
-          value={value ?? ""}
+          value={value}
           onChange={(e) =>
             handleChange({ id: question.id, val: e.target.value })
           }
@@ -94,7 +96,7 @@ const Question = ({
               className="bg-white mb-2 rounded-3xl"
               key={index}
               value={item.id}
-              control={<Radio checked={item.id === value} />}
+              control={<Radio checked={item.id === (value as any)} />}
               label={
                 <Box>
                   {item.option}
@@ -159,16 +161,28 @@ const Client = ({ quiz }: { quiz: Quiz }) => {
     >
       <Grid container gap={2} direction={"row"} className="pb-4">
         <Grid item xs={12}>
-          <Typography fontWeight={500} variant="h5">
+          <Typography fontWeight={700} variant="h5">
             {quiz.title}
           </Typography>
-          <Typography>
-            Ends at: {new Date(quiz.deadline).toLocaleString()}
-          </Typography>
-          <Typography fontWeight={"medium"}>
-            Remaining Time: {days !== 0 && `${days}d `}{" "}
-            {hours !== 0 && `${hours}h`} {`${minutes}m`} {`${seconds}s`}
-          </Typography>
+          <Box className="bg-neutral-200 my-2 p-3 rounded-lg inline-block">
+            <Box>
+              <Typography color={"CaptionText"} variant="caption">
+                Ends at:
+              </Typography>
+              <Typography variant="subtitle1" color="black">
+                {new Date(quiz.deadline).toLocaleString()}
+              </Typography>
+            </Box>
+            <Box>
+              <Typography color={"CaptionText"} variant="caption">
+                Remaining Time:
+              </Typography>
+              <Typography variant="subtitle1" color="black">
+                {days !== 0 && `${days}d `} {hours !== 0 && `${hours}h`}{" "}
+                {`${minutes}m`} {`${seconds}s`}
+              </Typography>
+            </Box>
+          </Box>
         </Grid>
         <Grid container direction="column">
           <Grid item>

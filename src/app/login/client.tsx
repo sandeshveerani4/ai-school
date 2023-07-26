@@ -5,13 +5,15 @@ import TextField from "@mui/material/TextField";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
-import { Alert, Container } from "@mui/material";
+import { Alert, InputAdornment } from "@mui/material";
 import { config } from "@/lib/consts";
 import { signIn } from "next-auth/react";
 import { useRef, useState } from "react";
 import CircularProgress from "@mui/material/CircularProgress";
 import { useRouter } from "next/navigation";
-
+import Person2OutlinedIcon from "@mui/icons-material/Person2Outlined";
+import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import Link from "next/link";
 interface Props {
   searchParams: SearchParams;
 }
@@ -43,17 +45,33 @@ export default function Client(props: Props) {
     }
   };
   return (
-    <Container component="main" maxWidth="lg">
-      <Box
-        sx={{
-          marginTop: 8,
-        }}
+    <Grid
+      component="main"
+      flexDirection={"column"}
+      className="flex"
+      justifyContent={"center"}
+      alignItems={"center"}
+      height="100%"
+      width="100%"
+      py={3}
+      spacing={2}
+    >
+      <Grid
+        className="flex"
+        direction="column"
+        alignItems={"center"}
+        justifyContent={"center"}
+        flex={1}
+        container
+        item
       >
         <Typography
           component="h1"
+          fontSize={"30px"}
           fontWeight={"bold"}
           className="mb-4"
           textAlign={"center"}
+          color={"white"}
           variant="h5"
         >
           {config.site.name}
@@ -64,7 +82,7 @@ export default function Client(props: Props) {
             item
             xs={12}
             sm={8}
-            md={5}
+            md={7}
             className="rounded-2xl bg-white border-solid border-[0.5px] border-neutral-200"
           >
             <Box
@@ -79,37 +97,67 @@ export default function Client(props: Props) {
                 {error && <Alert severity="error">{error}</Alert>}
                 <TextField
                   margin="normal"
-                  label="Username"
+                  placeholder="Username"
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <Person2OutlinedIcon />
+                      </InputAdornment>
+                    ),
+                  }}
                   onChange={(e) => (userName.current = e.currentTarget.value)}
                   required
                   fullWidth
+                  size="small"
                   autoFocus
                 />
                 <TextField
                   margin="normal"
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <LockOutlinedIcon />
+                      </InputAdornment>
+                    ),
+                  }}
                   onChange={(e) => (password.current = e.currentTarget.value)}
-                  label="Password"
+                  placeholder="Password"
                   type="password"
                   required
+                  size="small"
                   fullWidth
                 />
+
                 <Button
                   type="submit"
                   fullWidth
-                  variant="outlined"
                   {...(loading && {
                     disabled: true,
                     startIcon: <CircularProgress size={20} />,
                   })}
-                  sx={{ mt: 3, mb: 2 }}
+                  sx={{
+                    mt: 3,
+                    mb: 2,
+                    background: "linear-gradient(45deg, #f12711, #f5b119)",
+                    color: "white",
+                    fontWeight: "700",
+                  }}
                 >
                   Sign In
                 </Button>
               </Box>
+              <Button LinkComponent={Link} href={"/forgot-password"}>
+                Reset your Password
+              </Button>
             </Box>
           </Grid>
         </Grid>
-      </Box>
-    </Container>
+      </Grid>
+      <Grid item>
+        <Typography sx={{ color: "#ffffff", opacity: "0.5" }}>
+          Copyright 2023 All rights reserved | Digital Barath
+        </Typography>
+      </Grid>
+    </Grid>
   );
 }
