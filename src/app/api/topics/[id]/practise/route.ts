@@ -6,26 +6,38 @@ import { Option } from "@prisma/client";
 const checkOptions = async (topicId: number, payload: any) => {
   var score = 0,
     count = 0;
-  const questions = await prisma.question.findMany({
+  var xp = 0;
+  var extraXp = 0;
+  const questions: {
+    [key: string]: any;
+  } = await prisma.question.findMany({
     where: {
       topicId: topicId,
     },
     include: { options: { where: { correct: true } } },
   });
-  questions.map((question) => {
+  questions.map((question: any) => {
     const search = payload[String(question.id)];
     if (search) {
       if (question.type === "MCQ" && question.options[0].id === search) {
+        question.right = true;
         score += question.score;
         count++;
-      }
-      if (question.type === "FILL" && question.fill === search) {
+        xp += 10;
+        extraXp += 10;
+      } else if (question.type === "FILL" && question.fill === search) {
+        question.right = true;
         score++;
         count++;
+        xp += 10;
+        extraXp += 10;
+      } else {
+        extraXp = 0;
       }
     }
   });
-  return { score, count };
+  xp += extraXp;
+  return { score, count, xp, questions };
 };
 export const POST = async (
   req: NextRequest,
@@ -34,7 +46,20 @@ export const POST = async (
   const auth = authorize(req) as User;
   if (auth === unAuthorized) return auth;
   const body = await req.json();
-  return NextResponse.json(await checkOptions(Number(params.id), body));
+  const checking = await checkOptions(Number(params.id), body);
+  if (checking.xp > 0) {
+    await prisma.student.update({
+      where: {
+        userId: auth.id,
+      },
+      data: {
+        xp: {
+          increment: checking.xp,
+        },
+      },
+    });
+  }
+  return NextResponse.json(checking);
 };
 export async function GET(
   req: NextRequest,

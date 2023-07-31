@@ -16,9 +16,17 @@ import { Assignment } from "../Assignments/GetAssignments";
 import EyeIcon from "@mui/icons-material/VisibilityOutlined";
 import Link from "next/link";
 import { NotificationMessage } from "@/app/dashboard/notifications/client";
-import ArticleOutlinedIcon from "@mui/icons-material/ArticleOutlined";
 import AssignmentOutlinedIcon from "@mui/icons-material/AssignmentOutlined";
+import { Prisma } from "@prisma/client";
+import Image from "next/image";
+import { config } from "@/lib/consts";
+import Person2OutlinedIcon from "@mui/icons-material/Person2Outlined";
 
+export type Student = Prisma.StudentGetPayload<{
+  include: {
+    user: true;
+  };
+}>;
 const Card = ({
   children,
   title,
@@ -107,16 +115,50 @@ const NotificationItem = ({
     </Grid>
   );
 };
+const StudentItem = ({ student }: { student: Student }) => {
+  return (
+    <Grid container spacing={1} py={1} alignItems={"center"}>
+      <Grid item>
+        <Box
+          className="relative flex items-center justify-center text-center"
+          width={32}
+          height={32}
+        >
+          {student?.user.pictureURL ? (
+            <Image
+              src={config.site.imageDomain + student.user.pictureURL}
+              className="rounded-full bg-neutral-100"
+              fill
+              alt="Profile Picture"
+            />
+          ) : (
+            <Person2OutlinedIcon sx={{ fontSize: 25, color: "white" }} />
+          )}
+        </Box>
+      </Grid>
+      <Grid item flex={1}>
+        <Typography fontWeight={"bold"}>
+          {student.user.first_name} {student.user.last_name}
+        </Typography>
+      </Grid>
+      <Grid item>
+        <Typography fontWeight={"bold"}>{student.xp} XP</Typography>
+      </Grid>
+    </Grid>
+  );
+};
 const AdminDashboard = ({
   stats,
   session,
   assignments,
   notifications,
+  performance,
 }: {
   stats: statType;
   session: Session | null;
   assignments: Assignment[];
   notifications: NotificationMessage[];
+  performance: Student[];
 }) => {
   return (
     <Grid container spacing={1}>
@@ -139,7 +181,7 @@ const AdminDashboard = ({
             </Button>
           </Card>
           <Card
-            title="Overall Quiz Performance"
+            title="Top Performance Students"
             bodyProps={{
               style: {
                 background: "linear-gradient(45deg,#0540e6,#00f2dc)",
@@ -147,28 +189,9 @@ const AdminDashboard = ({
               },
             }}
           >
-            <Grid minHeight={"100px"} container>
-              <Grid
-                container
-                alignItems={"center"}
-                justifyItems={"center"}
-                item
-                xs={3}
-              >
-                <ArticleOutlinedIcon style={{ fontSize: "100px" }} />
-              </Grid>
-              <Grid
-                container
-                item
-                xs={9}
-                alignItems={"center"}
-                justifyItems={"center"}
-              >
-                <Typography variant="h3" fontWeight={700}>
-                  100%
-                </Typography>
-              </Grid>
-            </Grid>
+            {performance.map((student) => (
+              <StudentItem key={student.userId} {...{ student }} />
+            ))}
           </Card>
           <Card
             title="Overall Submissions"

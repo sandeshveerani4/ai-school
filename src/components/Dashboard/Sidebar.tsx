@@ -6,6 +6,7 @@ import Person2OutlinedIcon from "@mui/icons-material/Person2Outlined";
 import React from "react";
 import { config } from "@/lib/consts";
 import { Session } from "next-auth";
+import Image from "next/image";
 
 const Calendar = ({ session }: { session: Session | null }) => {
   return (
@@ -13,16 +14,16 @@ const Calendar = ({ session }: { session: Session | null }) => {
       <Grid container className="p-2" spacing={2}>
         <Grid item>
           <Box
-            className=" flex items-center justify-center text-center"
+            className="relative flex items-center justify-center text-center"
             width={80}
             height={80}
           >
             {session?.user.pictureURL ? (
-              <CardMedia
-                component={"img"}
+              <Image
                 src={config.site.imageDomain + session.user.pictureURL}
                 className="rounded-full bg-neutral-100"
-                sx={{ width: "100%", height: "100%" }}
+                fill
+                alt="Profile Picture"
               />
             ) : (
               <Person2OutlinedIcon sx={{ fontSize: 50 }} color="primary" />

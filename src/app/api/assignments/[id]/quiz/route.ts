@@ -59,28 +59,36 @@ const checkOptions = async (assignId: number, payload: any) => {
       },
     },
   });
-  getQuestionsWithAnswers?.questions.map((val) => {
-    const question = val.question;
-    const search = payload[String(question.id)];
-    console.log(question.options);
-    if (search) {
-      if (question.type === "MCQ" && question.options[0].id === search) {
-        score += question.score;
-        count++;
-        xp += 10;
-        extraXp += 10;
-      } else if (question.type === "FILL" && question.fill === search) {
-        score++;
-        count++;
-        xp += 10;
-        extraXp += 10;
-      } else {
-        extraXp = 0;
+  if (getQuestionsWithAnswers) {
+    const questions: {
+      [key: string]: any;
+    } = getQuestionsWithAnswers.questions;
+    questions.map((val: any) => {
+      const question = val.question;
+      const search = payload[String(question.id)];
+      if (search) {
+        if (question.type === "MCQ" && question.options[0].id === search) {
+          question.right = true;
+          score += question.score;
+          count++;
+          xp += 10;
+          extraXp += 10;
+        } else if (question.type === "FILL" && question.fill === search) {
+          question.right = true;
+          score++;
+          count++;
+          xp += 10;
+          extraXp += 10;
+        } else {
+          extraXp = 0;
+        }
       }
-    }
-  });
-  xp += extraXp;
-  return { score, count, xp };
+    });
+    xp += extraXp;
+    return { score, count, xp, questions };
+  } else {
+    throw "Questions not found!";
+  }
 };
 export async function POST(
   req: NextRequest,
@@ -90,19 +98,21 @@ export async function POST(
   if (auth === unAuthorized) return auth;
   if (auth.role !== "STUDENT") return unAuthorized;
   const body = await req.json();
-  const checking = await checkOptions(Number(params.id), body);
+  const currentTime = new Date();
   try {
-    const previous = await prisma.submission.count({
-      where: {
-        assignmentId: Number(params.id),
-        studentId: auth.id,
-      },
+    const assignment = await prisma.assignment.findFirst({
+      where: { id: Number(params.id) },
+      include: { submissions: { where: { studentId: auth.id } } },
     });
-    if (previous)
+    if (assignment?.submissions.length)
       return NextResponse.json(
         { error: "You have already attempted this quiz!" },
         { status: 400 }
       );
+    if (new Date(assignment?.deadline as Date) >= currentTime)
+      return NextResponse.json({ error: "Timeout!" }, { status: 400 });
+    const checking = await checkOptions(Number(params.id), body);
+
     await prisma.submission.create({
       data: {
         chosenOptions: body,
@@ -133,7 +143,7 @@ export async function POST(
         },
       });
     }
-    return NextResponse.json({ success: true });
+    return NextResponse.json(checking);
   } catch (e) {
     console.error(e);
     return NextResponse.json({ error: "Some error Occured!" }, { status: 400 });

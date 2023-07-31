@@ -19,7 +19,7 @@ import EyeIcon from "@mui/icons-material/VisibilityOutlined";
 import { Assignment } from "./GetAssignments";
 import CheckIcon from "@mui/icons-material/CheckOutlined";
 import ClearOutlinedIcon from "@mui/icons-material/ClearOutlined";
-import { inputWhite } from "../Students/StudentFields";
+
 const GetSubmissions = ({
   submissions,
   assignment,

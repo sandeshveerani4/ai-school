@@ -8,6 +8,10 @@ import { config } from "@/lib/consts";
 import GetSubmissions from "@/components/Assignments/GetSubmissions";
 import { Assignment } from "@/components/Assignments/GetAssignments";
 import CreateSubmissions from "@/components/Assignments/CreateSubmissions";
+import EyeIcon from "@mui/icons-material/VisibilityOutlined";
+import ModalLay from "@/components/ModalLay";
+import CheckIcon from "@mui/icons-material/CheckOutlined";
+import ClearOutlinedIcon from "@mui/icons-material/ClearOutlined";
 const Client = ({ data }: { data: Assignment }) => {
   const { data: session } = useSession();
   const [show, setShow] = useState(false);
@@ -86,9 +90,9 @@ const Client = ({ data }: { data: Assignment }) => {
             Attachments: {data.files.length} Files
           </Typography>
           {data.files.map(
-            (item: any) =>
+            (item: any, index: number) =>
               item.file && (
-                <Box>
+                <Box key={index}>
                   <Link href={config.site.imageDomain + item.file}>
                     {item.name}
                   </Link>
@@ -98,9 +102,9 @@ const Client = ({ data }: { data: Assignment }) => {
         </Grid>
       )}
       <Grid className="mt-2" item>
-        {session?.user.role !== "STUDENT" ? (
+        {data.type === "HOMEWORK" ? (
           <>
-            {data.type === "HOMEWORK" && (
+            {data.type === "HOMEWORK" && session?.user.role === "STUDENT" && (
               <Box overflow={"hidden"}>
                 <IconButton
                   className="my-2 float-right"
@@ -111,7 +115,7 @@ const Client = ({ data }: { data: Assignment }) => {
                 <Typography fontWeight={"medium"}>Submissions</Typography>
               </Box>
             )}
-            {data.type === "HOMEWORK" && show && (
+            {session?.user.role === "STUDENT" && show && (
               <CreateSubmissions assignmentId={`${data.id}`} />
             )}
             {session && (
@@ -125,27 +129,82 @@ const Client = ({ data }: { data: Assignment }) => {
         ) : (
           data.type === "QUIZ" &&
           data.submissions.length > 0 && (
-            <Grid container item>
-              <Box
-                className="mt-2 text-white rounded-lg p-3 inline-block"
-                sx={{ bgcolor: "secondary.main" }}
-              >
-                <Typography fontWeight={"medium"}>Results</Typography>
-                <Box>Score: {data.submissions[0].score}</Box>
-                <Box>
-                  Correct: {data.submissions[0].correct} /{" "}
-                  {data._count.questions}
+            <Grid container direction={"column"} item spacing={2}>
+              <Grid item>
+                <Box
+                  className="mt-2 text-white rounded-lg p-3 inline-block"
+                  sx={{
+                    background: "linear-gradient(45deg, #f12711, #f5b119)",
+                  }}
+                >
+                  <Typography fontWeight={"bold"}>Results</Typography>
+                  <Box>Score: {data.submissions[0].score}</Box>
+                  <Box>
+                    Correct: {data.submissions[0].correct} /{" "}
+                    {data._count.questions}
+                  </Box>
+                  <Box>
+                    Accuracy:{" "}
+                    {(
+                      ((data.submissions[0].correct as number) /
+                        data._count.questions) *
+                      100
+                    ).toFixed(2)}
+                    %
+                  </Box>
+                  <Box>XP increased: {data.submissions[0].xpInc}</Box>
                 </Box>
-                <Box>
-                  Accuracy:{" "}
-                  {(
-                    ((data.submissions[0].correct as number) /
-                      data._count.questions) *
-                    100
-                  ).toFixed(2)}
-                  %
-                </Box>
-              </Box>
+              </Grid>
+              <Grid item>
+                <ModalLay
+                  buttonProps={{
+                    variant: "text",
+                    color: "primary",
+                    startIcon: <EyeIcon />,
+                    size: "medium",
+                  }}
+                  buttonTitle="View Details"
+                >
+                  {data.questions.length !== 0 &&
+                    data.questions.map((question, index: number) => {
+                      const chosen = (data.submissions[0].chosenOptions as any)[
+                        question.questionId
+                      ];
+                      const correct =
+                        chosen && question.question.type === "FILL"
+                          ? question.question.fill === chosen
+                          : question.question.options.find(
+                              (opt) => opt.correct === true
+                            )?.id === chosen;
+                      return (
+                        <Box key={question.questionId}>
+                          <Typography fontWeight={600}>
+                            {index + 1}. {question.question.question}
+                          </Typography>
+                          <Grid
+                            container
+                            alignItems={"center"}
+                            justifyContent={"center"}
+                            width={"32px"}
+                            height={"32px"}
+                            bgcolor={correct ? "success.main" : "error.main"}
+                            className="rounded-full"
+                          >
+                            {correct ? (
+                              <CheckIcon className="text-white" />
+                            ) : (
+                              <ClearOutlinedIcon className="text-white" />
+                            )}
+                          </Grid>{" "}
+                          Correct Answer:{" "}
+                          {question.question.type == "FILL"
+                            ? question.question.fill
+                            : question.question.options[0].option}
+                        </Box>
+                      );
+                    })}
+                </ModalLay>
+              </Grid>
             </Grid>
           )
         )}

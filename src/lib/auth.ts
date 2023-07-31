@@ -49,7 +49,11 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, session, trigger }) {
+      if (trigger === "update" && session?.pictureURL) {
+        // Note, that `session` can be any arbitrary object, remember to validate it!
+        token.pictureURL = session.pictureURL;
+      }
       return { ...token, ...user };
     },
 

@@ -1,5 +1,6 @@
 "use client";
 import FormWithLoading from "@/components/FormWithLoading";
+import ModalLay from "@/components/ModalLay";
 import { Question } from "@/components/Questions/GetQuestions";
 import { inputWhite } from "@/components/Students/StudentFields";
 import { config } from "@/lib/consts";
@@ -33,6 +34,9 @@ export type Quiz = Prisma.AssignmentGetPayload<{
 export type QuestionType = Prisma.QuestionGetPayload<{
   include: { options: { select: { id: true; option: true; image: true } } };
 }>;
+
+import CheckIcon from "@mui/icons-material/CheckOutlined";
+import ClearOutlinedIcon from "@mui/icons-material/ClearOutlined";
 const Question = ({
   question,
   index,
@@ -155,89 +159,143 @@ const Client = ({
     }
   }, [done]);
   const [currentQuestion, setCurrent] = useState(0);
-  const [data, setData] = useState<{ score: number; count: number }>({
+  const [data, setData] = useState<{
+    score: number;
+    count: number;
+    xp: number;
+    questions: any;
+  }>({
     score: 0,
     count: 0,
+    xp: 0,
+    questions: [],
   });
+  const [open, setOpen] = useState(false);
   useEffect(() => {
-    if (done && data)
-      alert(
-        `Score: ${data.score}\nCorrect:${data.count}/${
-          questions.length
-        }\nAccuracy:${((data.count / questions.length) * 100).toFixed(2)}`
-      );
+    if (done && data) setOpen(true);
   }, [data]);
+
+  const router = useRouter();
   return (
-    <FormWithLoading
-      endpoint={`/api/topics/${topicId}/practise/`}
-      submitName="Submit Quiz"
-      setDone={setDone}
-      data={chosenQuestions}
-      button={false}
-      setData={setData}
-    >
-      <Grid container gap={2} direction={"row"} className="pb-4">
-        <Grid item xs={12}>
-          <Typography fontWeight={500} variant="h5">
-            Practise Test
-          </Typography>
-          <Typography fontWeight={"medium"}>
-            Remaining Time: {days !== 0 && `${days}d `}{" "}
-            {hours !== 0 && `${hours}h`} {`${minutes}m`} {`${seconds}s`}
-          </Typography>
-        </Grid>
-        <Grid container direction="column">
-          <Grid item>
-            <Question
-              key={currentQuestion}
-              question={questions[currentQuestion]}
-              index={currentQuestion}
-              handleChange={handleChange}
-              questions={chosenQuestions}
-            />
+    <>
+      <ModalLay
+        opener={open}
+        setOpener={setOpen}
+        isButton={false}
+        onClose={() => {
+          router.refresh();
+          router.push("/dashboard/practise");
+        }}
+      >
+        <Typography variant="h6" component="h2">
+          Results
+        </Typography>
+        <Box>Score: {data.score}</Box>
+        <Box>Correct:{data.count / questions.length}</Box>
+        <Box>Accuracy:{((data.count / questions.length) * 100).toFixed(2)}</Box>
+        <Box>XP increased:{data.xp}</Box>
+        <Box>
+          <Typography variant="h6">Questions</Typography>
+          {data.questions.length !== 0 &&
+            data.questions.map((question: any, index: number) => (
+              <Box key={question.id}>
+                <Typography fontWeight={600}>
+                  {index + 1}. {question.question}
+                </Typography>
+                <Grid
+                  container
+                  alignItems={"center"}
+                  justifyContent={"center"}
+                  width={"32px"}
+                  height={"32px"}
+                  bgcolor={question.right ? "success.main" : "error.main"}
+                  className="rounded-full"
+                >
+                  {question.right ? (
+                    <CheckIcon className="text-white" />
+                  ) : (
+                    <ClearOutlinedIcon className="text-white" />
+                  )}
+                </Grid>{" "}
+                Correct Answer:{" "}
+                {question.type == "FILL"
+                  ? question.fill
+                  : question.options[0].option}
+              </Box>
+            ))}
+        </Box>
+      </ModalLay>
+      <FormWithLoading
+        endpoint={`/api/topics/${topicId}/practise/`}
+        submitName="Submit Quiz"
+        setDone={setDone}
+        data={chosenQuestions}
+        button={false}
+        setData={setData}
+      >
+        <Grid container gap={2} direction={"row"} className="pb-4">
+          <Grid item xs={12}>
+            <Typography fontWeight={500} variant="h5">
+              Practise Test
+            </Typography>
+            <Typography fontWeight={"medium"}>
+              Remaining Time: {days !== 0 && `${days}d `}{" "}
+              {hours !== 0 && `${hours}h`} {`${minutes}m`} {`${seconds}s`}
+            </Typography>
           </Grid>
-          <Box className="py-2 overflow-hidden">
-            {currentQuestion !== 0 && (
-              <Button
-                name="previous"
-                variant="outlined"
-                color="secondary"
-                type="button"
-                onClick={() => {
-                  setCurrent(currentQuestion - 1);
-                }}
-              >
-                Previous
-              </Button>
-            )}
-            {questions.length !== currentQuestion + 1 ? (
-              <Button
-                key="next"
-                className="float-right"
-                variant="outlined"
-                color="secondary"
-                type="button"
-                onClick={() => {
-                  setCurrent(currentQuestion + 1);
-                }}
-              >
-                Next
-              </Button>
-            ) : (
-              <Button
-                key="submit"
-                className="float-right"
-                variant="contained"
-                color="secondary"
-                type="submit"
-              >
-                Submit Quiz
-              </Button>
-            )}
-          </Box>
+          <Grid container direction="column">
+            <Grid item>
+              <Question
+                key={currentQuestion}
+                question={questions[currentQuestion]}
+                index={currentQuestion}
+                handleChange={handleChange}
+                questions={chosenQuestions}
+              />
+            </Grid>
+            <Box className="py-2 overflow-hidden">
+              {currentQuestion !== 0 && (
+                <Button
+                  name="previous"
+                  variant="outlined"
+                  color="secondary"
+                  type="button"
+                  onClick={() => {
+                    setCurrent(currentQuestion - 1);
+                  }}
+                >
+                  Previous
+                </Button>
+              )}
+              {questions.length !== currentQuestion + 1 ? (
+                <Button
+                  key="next"
+                  className="float-right"
+                  variant="outlined"
+                  color="secondary"
+                  type="button"
+                  onClick={() => {
+                    setCurrent(currentQuestion + 1);
+                  }}
+                >
+                  Next
+                </Button>
+              ) : (
+                <Button
+                  key="submit"
+                  className="float-right"
+                  variant="contained"
+                  color="secondary"
+                  type="submit"
+                >
+                  Submit Quiz
+                </Button>
+              )}
+            </Box>
+          </Grid>
         </Grid>
-      </Grid>
-    </FormWithLoading>
+      </FormWithLoading>
+    </>
   );
 };
 

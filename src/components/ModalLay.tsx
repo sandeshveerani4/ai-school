@@ -10,6 +10,7 @@ const ModalLay = ({
   width = 400,
   isButton = true,
   extras,
+  onClose,
 }: {
   children?: React.ReactNode;
   buttonTitle?: string;
@@ -19,13 +20,17 @@ const ModalLay = ({
   width?: number;
   isButton?: boolean;
   extras?: React.ReactNode;
+  onClose?: () => void;
 }) => {
   var [open, setOpen] =
     opener !== undefined && setOpener !== undefined
       ? [opener, setOpener]
       : useState(false);
   const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const handleClose = () => {
+    setOpen(false);
+    onClose && onClose();
+  };
   const style = {
     position: "absolute" as "absolute",
     top: "50%",

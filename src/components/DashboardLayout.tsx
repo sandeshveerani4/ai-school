@@ -40,6 +40,7 @@ import AccountCircle from "@mui/icons-material/PersonOutlineOutlined";
 import FlashOnOutlinedIcon from "@mui/icons-material/FlashOnOutlined";
 import NotificationsOutlinedIcon from "@mui/icons-material/NotificationsOutlined";
 import { Session } from "next-auth";
+import Image from "next/image";
 export const metadata: Metadata = {
   title: "Dashboard",
 };
@@ -263,11 +264,12 @@ const DashboardLayout = (props: Props) => {
                   href="/dashboard/profile"
                   startIcon={
                     session?.user.pictureURL ? (
-                      <CardMedia
-                        component={"img"}
+                      <Image
                         src={config.site.imageDomain + session?.user.pictureURL}
                         className="rounded-full bg-neutral-100"
-                        sx={{ width: "20px", height: "20px" }}
+                        width={20}
+                        height={20}
+                        alt="Profile Picture"
                       />
                     ) : (
                       <AccountCircle />

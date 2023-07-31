@@ -2,14 +2,14 @@
 const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
-  },
-  async rewrites() {
-    return [
+  },images: {
+    remotePatterns: [
       {
-        source: "/api/file_uploads/:path*",
-        destination: "https://labs.barathkumaar.com/:path*",
+        protocol: 'https',
+        hostname: 'labs.barathkumaar.com',
+        pathname: '/uploads/**',
       },
-    ];
+    ],
   },
 };
 
