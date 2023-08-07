@@ -12,7 +12,7 @@ export const reqParams = async (
         ? (await getServerSession(authOptions))?.user.accessToken
         : (await getSession())?.user.accessToken,
     },
-    cache: "no-store",
+    // cache: "no-store",
   };
 };
 export const config = {

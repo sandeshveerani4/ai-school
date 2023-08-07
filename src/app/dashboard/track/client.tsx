@@ -1,9 +1,13 @@
 "use client";
+import { Class } from "@/components/Classes/ClassRow";
 import AssignmentAnalysis from "@/components/Track/AssignmentAnalysis";
 import OverallPerformance from "@/components/Track/OverallPerformance";
 import StudentAnalysis from "@/components/Track/StudentAnalysis";
-import TestAnalysis from "@/components/Track/TestAnalysis";
+import TestAnalysis, {
+  testAnalysisType,
+} from "@/components/Track/TestAnalysis";
 import { Box, Tab, Tabs } from "@mui/material";
+import { Prisma } from "@prisma/client";
 import React from "react";
 
 interface TabPanelProps {
@@ -32,7 +36,20 @@ function a11yProps(index: number) {
     "aria-controls": `simple-tabpanel-${index}`,
   };
 }
-const Client = () => {
+export type assignmentAnalysisType = Prisma.AssignmentGetPayload<{
+  include: { options: true; topic: true };
+}>;
+const Client = ({
+  overallTrack,
+  classes,
+  testAnalysis,
+  assignmentAnalysis,
+}: {
+  overallTrack: any;
+  testAnalysis: testAnalysisType[];
+  assignmentAnalysis: assignmentAnalysisType[];
+  classes: Class[];
+}) => {
   const [value, setValue] = React.useState(0);
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
@@ -54,13 +71,13 @@ const Client = () => {
         </Tabs>
       </Box>
       <TabPanel value={value} index={0}>
-        <OverallPerformance />
+        <OverallPerformance {...{ overallTrack, classes }} />
       </TabPanel>
       <TabPanel value={value} index={1}>
-        <TestAnalysis />
+        <TestAnalysis {...{ testAnalysis, classes }} />
       </TabPanel>
       <TabPanel value={value} index={2}>
-        <AssignmentAnalysis />
+        <AssignmentAnalysis {...{ assignmentAnalysis, classes }} />
       </TabPanel>
       <TabPanel value={value} index={3}>
         <StudentAnalysis />

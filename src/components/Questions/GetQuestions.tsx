@@ -25,8 +25,6 @@ import ModalLay from "../ModalLay";
 import { inputWhite } from "../Students/StudentFields";
 import { Class } from "../Classes/ClassRow";
 import DeleteOulinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
-import { AppRouterInstance } from "next/dist/shared/lib/app-router-context";
-import { useRouter } from "next/navigation";
 export type Question = Prisma.QuestionGetPayload<{
   include: { options: true; topic: true };
 }>;

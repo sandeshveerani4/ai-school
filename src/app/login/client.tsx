@@ -52,7 +52,8 @@ export default function Client(props: Props) {
       justifyContent={"center"}
       alignItems={"center"}
       height="100%"
-      width="100%"
+      width="97%"
+      margin="auto"
       py={3}
       spacing={2}
     >
@@ -81,8 +82,9 @@ export default function Client(props: Props) {
           <Grid
             item
             xs={12}
-            sm={8}
-            md={7}
+            sm={6}
+            md={5}
+            lg={3}
             className="rounded-2xl bg-white border-solid border-[0.5px] border-neutral-200"
           >
             <Box

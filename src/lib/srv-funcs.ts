@@ -152,3 +152,36 @@ export const getUnreadNotifications = async () => {
   }
   return await res.json();
 };
+export const getOverrallTrack = async () => {
+  const options: RequestInit = await reqParams(true);
+  const res = await fetch(`${config.site.url}/api/track/overall`, {
+    ...options,
+    method: "POST",
+  });
+  if (!res.ok) {
+    throw new Error("Failed to fetch data");
+  }
+  return await res.json();
+};
+export const getTestAnalysis = async () => {
+  const options: RequestInit = await reqParams(true);
+  const res = await fetch(`${config.site.url}/api/track/test`, {
+    ...options,
+    method: "POST",
+  });
+  if (!res.ok) {
+    throw new Error("Failed to fetch data");
+  }
+  return await res.json();
+};
+export const getAssignmentAnalysis = async () => {
+  const options: RequestInit = await reqParams(true);
+  const res = await fetch(`${config.site.url}/api/track/assignment`, {
+    ...options,
+    method: "POST",
+  });
+  if (!res.ok) {
+    throw new Error("Failed to fetch data");
+  }
+  return await res.json();
+};

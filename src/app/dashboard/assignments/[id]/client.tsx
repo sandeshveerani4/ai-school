@@ -128,7 +128,9 @@ const Client = ({ data }: { data: Assignment }) => {
           </>
         ) : (
           data.type === "QUIZ" &&
-          data.submissions.length > 0 && (
+          session &&
+          data.submissions.length > 0 &&
+          (session.user.role === "STUDENT" ? (
             <Grid container direction={"column"} item spacing={2}>
               <Grid item>
                 <Box
@@ -206,7 +208,15 @@ const Client = ({ data }: { data: Assignment }) => {
                 </ModalLay>
               </Grid>
             </Grid>
-          )
+          ) : (
+            session.user.role === "ADMIN" && (
+              <GetSubmissions
+                submissions={data.submissions}
+                assignment={data}
+                role={session.user.role}
+              />
+            )
+          ))
         )}
         {data.type === "QUIZ" &&
           session?.user.role === "STUDENT" &&
