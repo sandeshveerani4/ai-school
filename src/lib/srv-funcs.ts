@@ -185,3 +185,24 @@ export const getAssignmentAnalysis = async () => {
   }
   return await res.json();
 };
+export type StudentAnalysisType = {
+  userId: number;
+  first_name: string;
+  last_name: string;
+  class: string;
+  section: string;
+  xp: number;
+  avg: number;
+  count: number;
+};
+export const getStudentAnalysis = async (): Promise<StudentAnalysisType[]> => {
+  const options: RequestInit = await reqParams(true);
+  const res = await fetch(`${config.site.url}/api/track/student`, {
+    ...options,
+    method: "POST",
+  });
+  if (!res.ok) {
+    throw new Error("Failed to fetch data");
+  }
+  return await res.json();
+};

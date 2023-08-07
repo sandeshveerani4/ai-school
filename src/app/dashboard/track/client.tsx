@@ -6,6 +6,7 @@ import StudentAnalysis from "@/components/Track/StudentAnalysis";
 import TestAnalysis, {
   testAnalysisType,
 } from "@/components/Track/TestAnalysis";
+import { StudentAnalysisType } from "@/lib/srv-funcs";
 import { Box, Tab, Tabs } from "@mui/material";
 import { Prisma } from "@prisma/client";
 import React from "react";
@@ -37,17 +38,23 @@ function a11yProps(index: number) {
   };
 }
 export type assignmentAnalysisType = Prisma.AssignmentGetPayload<{
-  include: { options: true; topic: true };
+  include: {
+    _count: { select: { submissions: true } };
+    options: true;
+    topic: true;
+  };
 }>;
 const Client = ({
   overallTrack,
   classes,
   testAnalysis,
   assignmentAnalysis,
+  studentAnalysis,
 }: {
   overallTrack: any;
   testAnalysis: testAnalysisType[];
   assignmentAnalysis: assignmentAnalysisType[];
+  studentAnalysis: StudentAnalysisType[];
   classes: Class[];
 }) => {
   const [value, setValue] = React.useState(0);
@@ -80,7 +87,7 @@ const Client = ({
         <AssignmentAnalysis {...{ assignmentAnalysis, classes }} />
       </TabPanel>
       <TabPanel value={value} index={3}>
-        <StudentAnalysis />
+        <StudentAnalysis {...{ studentAnalysis, classes }} />
       </TabPanel>
     </>
   );

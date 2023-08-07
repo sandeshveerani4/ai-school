@@ -29,8 +29,9 @@ const AssignmentAnalysis = ({
           headerName: "Title",
         },
         {
-          field: "result",
-          headerName: "XP",
+          field: "submissions",
+          headerName: "Submissions",
+          renderCell: (params) => <Box>{params.row._count.submissions}</Box>,
         },
         {
           field: "action",
