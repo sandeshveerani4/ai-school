@@ -23,14 +23,32 @@ const Client = ({
             field: "_",
             headerName: "Actions",
             renderCell: (params) => (
-              <Button
-                variant="contained"
-                size="small"
-                LinkComponent={Link}
-                href={`/dashboard/practise/${params.id}`}
-              >
-                Practise Now
-              </Button>
+              <Grid container spacing={1}>
+                <Grid item>
+                  <Button
+                    variant="outlined"
+                    size="small"
+                    LinkComponent={Link}
+                    href={`/dashboard/practise/${params.id}`}
+                  >
+                    Normal Mode
+                  </Button>
+                </Grid>
+                <Grid item>
+                  <Button
+                    variant="text"
+                    size="small"
+                    LinkComponent={Link}
+                    href={`/dashboard/practise/${params.id}?ai=true`}
+                    sx={{
+                      background: "linear-gradient(45deg, #f12711, #f5b119)",
+                      color: "white",
+                    }}
+                  >
+                    AI Mode
+                  </Button>
+                </Grid>
+              </Grid>
             ),
             minWidth: 200,
           },

@@ -1,9 +1,13 @@
-import { getQuestionsByTopicId } from "@/lib/srv-funcs";
 import Client from "./client";
-
-const PractiseSpe = async ({ params }: { params: { id: string } }) => {
-  const questions = await getQuestionsByTopicId(Number(params.id));
-  return <Client questions={questions} topicId={Number(params.id)} />;
+const PractiseSpe = async ({
+  params,
+  searchParams,
+}: {
+  params: { id: string };
+  searchParams?: { ai?: string };
+}) => {
+  const topicId = Number(params.id);
+  return <Client isAi={searchParams?.ai ? true : false} topicId={topicId} />;
 };
 
 export default PractiseSpe;

@@ -57,10 +57,10 @@ const Calendar = ({ session }: { session: Session | null }) => {
           />
         </LocalizationProvider>
       </Grid>
-      <Divider className="my-2" />
+      {/* <Divider className="my-2" />
       <Grid item>
         <Typography variant="button">Timeline</Typography>
-      </Grid>
+      </Grid> */}
     </Grid>
   );
 };

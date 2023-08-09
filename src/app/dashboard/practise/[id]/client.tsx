@@ -3,7 +3,7 @@ import FormWithLoading from "@/components/FormWithLoading";
 import ModalLay from "@/components/ModalLay";
 import { Question } from "@/components/Questions/GetQuestions";
 import { inputWhite } from "@/components/Students/StudentFields";
-import { config } from "@/lib/consts";
+import { config, reqParams } from "@/lib/consts";
 import {
   Box,
   Button,
@@ -37,6 +37,7 @@ export type QuestionType = Prisma.QuestionGetPayload<{
 
 import CheckIcon from "@mui/icons-material/CheckOutlined";
 import ClearOutlinedIcon from "@mui/icons-material/ClearOutlined";
+import Loading from "../../loading";
 const Question = ({
   question,
   index,
@@ -123,32 +124,44 @@ const Question = ({
     </Grid>
   );
 };
-const Client = ({
-  questions,
-  topicId,
-}: {
-  questions: Question[];
-  topicId: number;
-}) => {
+export const getQuestions = async (topicId: number, ai = false) => {
+  const options: RequestInit = await reqParams();
+  const res = await fetch(
+    `${config.site.url}/api/topics/${topicId}/practise?ai=${
+      ai ? "true" : "false"
+    }`,
+    options
+  );
+  if (!res.ok) {
+    throw new Error("Failed to fetch data");
+  }
+  return await res.json();
+};
+const Client = ({ isAi, topicId }: { isAi: boolean; topicId: number }) => {
+  const [questions, setInitQuestions] = useState<Question[]>([]);
+  useEffect(() => {
+    (async () => {
+      const qs = await getQuestions(topicId, isAi);
+      setInitQuestions(qs);
+      const thirtyfor = new Date().getTime() + qs.length * 60 * 1000;
+      const interval = setInterval(() => getTime(thirtyfor), 1000);
+
+      return () => clearInterval(interval);
+    })();
+  }, []);
   const [chosenQuestions, setQuestions] = useState<any>({});
   const [days, setDays] = useState(0);
   const [hours, setHours] = useState(0);
   const [minutes, setMinutes] = useState(0);
   const [seconds, setSeconds] = useState(0);
-  const thirtyfor = new Date().getTime() + questions.length * 60 * 1000;
-  const getTime = () => {
-    const time = new Date(thirtyfor).getTime() - Date.now();
+  const getTime = (dateTime: number) => {
+    const time = new Date(dateTime).getTime() - Date.now();
 
     setDays(Math.floor(time / (1000 * 60 * 60 * 24)));
     setHours(Math.floor((time / (1000 * 60 * 60)) % 24));
     setMinutes(Math.floor((time / 1000 / 60) % 60));
     setSeconds(Math.floor((time / 1000) % 60));
   };
-  useEffect(() => {
-    const interval = setInterval(() => getTime(), 1000);
-
-    return () => clearInterval(interval);
-  }, []);
   const handleChange = ({ id, val }: { id: number; val: number | string }) => {
     setQuestions({ ...chosenQuestions, [id]: val });
   };
@@ -225,76 +238,80 @@ const Client = ({
             ))}
         </Box>
       </ModalLay>
-      <FormWithLoading
-        endpoint={`/api/topics/${topicId}/practise/`}
-        submitName="Submit Quiz"
-        setDone={setDone}
-        data={chosenQuestions}
-        button={false}
-        setData={setData}
-      >
-        <Grid container gap={2} direction={"row"} className="pb-4">
-          <Grid item xs={12}>
-            <Typography fontWeight={500} variant="h5">
-              Practise Test
-            </Typography>
-            <Typography fontWeight={"medium"}>
-              Remaining Time: {days !== 0 && `${days}d `}{" "}
-              {hours !== 0 && `${hours}h`} {`${minutes}m`} {`${seconds}s`}
-            </Typography>
-          </Grid>
-          <Grid container direction="column">
-            <Grid item>
-              <Question
-                key={currentQuestion}
-                question={questions[currentQuestion]}
-                index={currentQuestion}
-                handleChange={handleChange}
-                questions={chosenQuestions}
-              />
+      {questions && questions.length > 0 ? (
+        <FormWithLoading
+          endpoint={`/api/topics/${topicId}/practise/`}
+          submitName="Submit Quiz"
+          setDone={setDone}
+          data={{ chosen: chosenQuestions, questions: questions }}
+          button={false}
+          setData={setData}
+        >
+          <Grid container gap={2} direction={"row"} className="pb-4">
+            <Grid item xs={12}>
+              <Typography fontWeight={500} variant="h5">
+                Practise Test
+              </Typography>
+              <Typography fontWeight={"medium"}>
+                Remaining Time: {days !== 0 && `${days}d `}{" "}
+                {hours !== 0 && `${hours}h`} {`${minutes}m`} {`${seconds}s`}
+              </Typography>
             </Grid>
-            <Box className="py-2 overflow-hidden">
-              {currentQuestion !== 0 && (
-                <Button
-                  name="previous"
-                  variant="outlined"
-                  color="secondary"
-                  type="button"
-                  onClick={() => {
-                    setCurrent(currentQuestion - 1);
-                  }}
-                >
-                  Previous
-                </Button>
-              )}
-              {questions.length !== currentQuestion + 1 ? (
-                <Button
-                  key="next"
-                  className="float-right"
-                  variant="outlined"
-                  color="secondary"
-                  type="button"
-                  onClick={() => {
-                    setCurrent(currentQuestion + 1);
-                  }}
-                >
-                  Next
-                </Button>
-              ) : (
-                <Button
-                  key="submit"
-                  className="float-right"
-                  variant="contained"
-                  color="secondary"
-                  type="submit"
-                >
-                  Submit Quiz
-                </Button>
-              )}
-            </Box>
+            <Grid container direction="column">
+              <Grid item>
+                <Question
+                  key={currentQuestion}
+                  question={questions[currentQuestion]}
+                  index={currentQuestion}
+                  handleChange={handleChange}
+                  questions={chosenQuestions}
+                />
+              </Grid>
+              <Box className="py-2 overflow-hidden">
+                {currentQuestion !== 0 && (
+                  <Button
+                    name="previous"
+                    variant="outlined"
+                    color="secondary"
+                    type="button"
+                    onClick={() => {
+                      setCurrent(currentQuestion - 1);
+                    }}
+                  >
+                    Previous
+                  </Button>
+                )}
+                {questions.length !== currentQuestion + 1 ? (
+                  <Button
+                    key="next"
+                    className="float-right"
+                    variant="outlined"
+                    color="secondary"
+                    type="button"
+                    onClick={() => {
+                      setCurrent(currentQuestion + 1);
+                    }}
+                  >
+                    Next
+                  </Button>
+                ) : (
+                  <Button
+                    key="submit"
+                    className="float-right"
+                    variant="contained"
+                    color="secondary"
+                    type="submit"
+                  >
+                    Submit Quiz
+                  </Button>
+                )}
+              </Box>
+            </Grid>
           </Grid>
-        </Grid>
-      </FormWithLoading>
+        </FormWithLoading>
+      ) : (
+        <Loading />
+      )}
     </>
   );
 };

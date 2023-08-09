@@ -1,4 +1,10 @@
 import { config, reqParams } from "./consts";
+import { Configuration, OpenAIApi, ChatCompletionRequestMessage } from "openai";
+const configuration = new Configuration({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+const openai = new OpenAIApi(configuration);
+
 export const getClasses = async (getTopics: boolean = false) => {
   const options: RequestInit = await reqParams(true);
   const res = await fetch(
@@ -90,10 +96,12 @@ export const getTopicsBySection = async (sectionId: number) => {
   }
   return await res.json();
 };
-export const getQuestionsByTopicId = async (topicId: number) => {
+export const getQuestionsByTopicId = async (topicId: number, ai = false) => {
   const options: RequestInit = await reqParams(true);
   const res = await fetch(
-    `${config.site.url}/api/topics/${topicId}/practise`,
+    `${config.site.url}/api/topics/${topicId}/practise?ai=${
+      ai ? "true" : "false"
+    }`,
     options
   );
   if (!res.ok) {
@@ -205,4 +213,23 @@ export const getStudentAnalysis = async (): Promise<StudentAnalysisType[]> => {
     throw new Error("Failed to fetch data");
   }
   return await res.json();
+};
+export const openAI = async (messages: ChatCompletionRequestMessage[]) => {
+  try {
+    const completion = await openai.createChatCompletion({
+      model: "gpt-3.5-turbo",
+      max_tokens: 1000,
+      temperature: 1,
+      top_p: 1,
+      messages: messages,
+    });
+    return completion.data.choices[0].message?.content;
+  } catch (error: any) {
+    if (error.response) {
+      console.log(error.response.status);
+      console.log(error.response.data);
+    } else {
+      console.log(error.message);
+    }
+  }
 };
