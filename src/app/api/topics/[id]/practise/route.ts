@@ -112,7 +112,7 @@ export async function GET(
         })
       );
     } catch (e) {
-      console.log("Error", e);
+      console.error("Error", e);
     }
   }
   const questions = await prisma.$queryRawUnsafe<Question[]>(

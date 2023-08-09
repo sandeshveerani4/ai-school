@@ -1,9 +1,5 @@
 import { config, reqParams } from "./consts";
 import { Configuration, OpenAIApi, ChatCompletionRequestMessage } from "openai";
-const configuration = new Configuration({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-const openai = new OpenAIApi(configuration);
 
 export const getClasses = async (getTopics: boolean = false) => {
   const options: RequestInit = await reqParams(true);
@@ -216,6 +212,10 @@ export const getStudentAnalysis = async (): Promise<StudentAnalysisType[]> => {
 };
 export const openAI = async (messages: ChatCompletionRequestMessage[]) => {
   try {
+    const configuration = new Configuration({
+      apiKey: process.env.OPENAI_API_KEY,
+    });
+    const openai = new OpenAIApi(configuration);
     const completion = await openai.createChatCompletion({
       model: "gpt-3.5-turbo",
       max_tokens: 1000,
@@ -226,10 +226,10 @@ export const openAI = async (messages: ChatCompletionRequestMessage[]) => {
     return completion.data.choices[0].message?.content;
   } catch (error: any) {
     if (error.response) {
-      console.log(error.response.status);
-      console.log(error.response.data);
+      console.error(error.response.status);
+      console.error(error.response.data);
     } else {
-      console.log(error.message);
+      console.error(error.message);
     }
   }
 };
